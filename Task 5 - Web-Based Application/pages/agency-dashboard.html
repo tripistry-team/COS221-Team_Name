@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agency Dashboard - Tripistry</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.agency-layout { display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;padding-top:2rem; }
+.agency-sidebar {
+  position:sticky;top:calc(var(--nav-h)+1rem);
+  border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;
+}
+.agency-sidebar-header {
+  padding:1.25rem;background:var(--accent);color:#fff;
+}
+.agency-nav { padding:0.5rem; }
+.agency-nav a {
+  display:flex;align-items:center;gap:0.625rem;
+  font-size:0.9rem;color:var(--col-muted);
+  text-decoration:none;padding:0.5rem 0.625rem;
+  border-radius:var(--radius-sm);transition:all 0.12s;
+}
+.agency-nav a:hover,.agency-nav a.active{color:var(--col);background:var(--bg-secondary);}
+.agency-nav a.active{font-weight:500;}
+.stats-row { display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem; }
+.booking-row {
+  display:flex;align-items:center;gap:1rem;
+  padding:0.875rem 0;border-bottom:1px solid var(--col-border);
+}
+.booking-row:last-child{border-bottom:none;}
+.booking-thumb-sm {
+  width:48px;height:44px;border-radius:var(--radius-sm);
+  background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="agency-packages.html">My Packages</a>
+    <a href="agency-group-trips.html">Group Trips</a>
+    <a href="agency-bookings.html">Bookings</a>
+  </div>
+  <div class="nav-actions">
+    <span class="text-sm text-muted">Wanderlust Co.</span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="agency-layout">
+      <aside class="agency-sidebar">
+        <div class="agency-sidebar-header">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:0.9rem;">WC</div>
+            <div><div style="font-weight:500;">Wanderlust Co.</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+          </div>
+        </div>
+        <div class="agency-nav">
+          <a href="agency-dashboard.html" class="active">Dashboard</a>
+          <a href="agency-packages.html">My packages</a>
+          <a href="agency-group-trips.html">Group trips</a>
+          <a href="agency-bookings.html">Bookings</a>
+          <a href="agency-reviews.html">Reviews</a>
+          <div style="border-top:1px solid var(--col-border);margin:0.5rem 0;padding-top:0.5rem;">
+            <a href="agency-profile.html">Agency profile</a>
+            <a href="login.html" style="color:var(--danger);"> Log out</a>
+          </div>
+        </div>
+      </aside>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <h2>Dashboard</h2>
+            <p class="text-muted text-sm">Welcome back, Wanderlust Co. Here's how things are looking.</p>
+          </div>
+          <a href="agency-package-form.html" class="btn btn-primary">+ New package</a>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-val">312</div>
+            <div class="stat-label">Total bookings</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">R2.4M</div>
+            <div class="stat-label">Revenue (2026)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">28</div>
+            <div class="stat-label">Active packages</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" style="color:var(--accent);">4.9</div>
+            <div class="stat-label">Avg rating</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:2rem;">
+          <div class="card">
+            <div style="padding:1.125rem 1.25rem;border-bottom:1px solid var(--col-border);display:flex;justify-content:space-between;align-items:center;">
+              <h4>Recent bookings</h4>
+              <a href="agency-bookings.html" class="text-sm text-accent" style="text-decoration:none;">View all →</a>
+            </div>
+            <div class="card-body">
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Tokyo & Kyoto Cultural</div>
+                  <div class="text-xs text-muted">Sipho N. · Family · 4 pax</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:0.875rem;font-weight:500;">R74,000</div>
+                  <span class="badge badge-green" style="font-size:0.7rem;">Confirmed</span>
+                </div>
+              </div>
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Hokkaido Snow Experience</div>
+                  <div class="text-xs text-muted">Amara D. · Couple · 2 pax</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:0.875rem;font-weight:500;">R42,000</div>
+                  <span class="badge badge-green" style="font-size:0.7rem;">Confirmed</span>
+                </div>
+              </div>
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Cherry Blossom Hiroshima</div>
+                  <div class="text-xs text-muted">Kavya D. · Solo · 1 pax</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:0.875rem;font-weight:500;">R16,400</div>
+                  <span class="badge badge-amber" style="font-size:0.7rem;">Pending</span>
+                </div>
+              </div>
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Japan Rail 14-Day</div>
+                  <div class="text-xs text-muted">Lebo M. · Family · 5 pax</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:0.875rem;font-weight:500;">R144,500</div>
+                  <span class="badge badge-green" style="font-size:0.7rem;">Confirmed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="padding:1.125rem 1.25rem;border-bottom:1px solid var(--col-border);display:flex;justify-content:space-between;align-items:center;">
+              <h4>Top packages</h4>
+              <a href="agency-packages.html" class="text-sm text-accent" style="text-decoration:none;">Manage →</a>
+            </div>
+            <div class="card-body">
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Tokyo & Kyoto Cultural</div>
+                  <div class="text-xs text-muted">128 bookings ·  4.9</div>
+                </div>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Japan Rail 14-Day</div>
+                  <div class="text-xs text-muted">311 bookings ·  4.7</div>
+                </div>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Hokkaido Snow Experience</div>
+                  <div class="text-xs text-muted">67 bookings ·  4.8</div>
+                </div>
+                <span class="badge badge-green">Active</span>
+              </div>
+              <div class="booking-row">
+                <div class="booking-thumb-sm"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.9rem;font-weight:500;">Tokyo Street Food</div>
+                  <div class="text-xs text-muted">89 bookings ·  4.9</div>
+                </div>
+                <span class="badge badge-amber">Draft</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:2rem;">
+          <div style="padding:1.125rem 1.25rem;border-bottom:1px solid var(--col-border);display:flex;justify-content:space-between;align-items:center;">
+            <h4>Recent reviews</h4>
+            <a href="agency-reviews.html" class="text-sm text-accent" style="text-decoration:none;">View all →</a>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div style="display:flex;gap:0.875rem;align-items:flex-start;">
+                <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:500;flex-shrink:0;">SN</div>
+                <div style="flex:1;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <div><span style="font-size:0.9rem;font-weight:500;">Sipho Nkosi</span> <span class="text-xs text-muted">· Tokyo & Kyoto</span></div>
+                    <span class="stars" style="font-size:0.875rem;"></span>
+                  </div>
+                  <p class="text-sm text-muted" style="margin-top:0.25rem;line-height:1.55;">Absolutely incredible trip. Every detail was handled perfectly. Would book again without hesitation.</p>
+                </div>
+              </div>
+              <div style="display:flex;gap:0.875rem;align-items:flex-start;">
+                <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:500;flex-shrink:0;">LM</div>
+                <div style="flex:1;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <div><span style="font-size:0.9rem;font-weight:500;">Lerato M.</span> <span class="text-xs text-muted">· Tokyo & Kyoto</span></div>
+                    <span class="stars" style="font-size:0.875rem;"></span>
+                  </div>
+                  <p class="text-sm text-muted" style="margin-top:0.25rem;line-height:1.55;">We got engaged in Arashiyama. The agency sent a congratulations card to our hotel. Remarkable.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+          <a href="agency-package-form.html" style="text-decoration:none;">
+            <div style="border:2px dashed var(--col-border);border-radius:var(--radius-lg);padding:1.5rem;text-align:center;transition:border-color 0.15s;cursor:pointer;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--col-border)'">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem;"></div>
+              <div style="font-weight:500;font-size:0.9rem;">New package</div>
+              <div class="text-xs text-muted" style="margin-top:0.25rem;">Create a new travel package</div>
+            </div>
+          </a>
+          <a href="agency-group-trips.html" style="text-decoration:none;">
+            <div style="border:2px dashed var(--col-border);border-radius:var(--radius-lg);padding:1.5rem;text-align:center;transition:border-color 0.15s;cursor:pointer;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--col-border)'">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem;"></div>
+              <div style="font-weight:500;font-size:0.9rem;">New group trip</div>
+              <div class="text-xs text-muted" style="margin-top:0.25rem;">Open a group trip for travellers</div>
+            </div>
+          </a>
+          <a href="agency-profile.html" style="text-decoration:none;">
+            <div style="border:2px dashed var(--col-border);border-radius:var(--radius-lg);padding:1.5rem;text-align:center;transition:border-color 0.15s;cursor:pointer;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--col-border)'">
+              <div style="font-size:1.75rem;margin-bottom:0.5rem;"></div>
+              <div style="font-weight:500;font-size:0.9rem;">Edit profile</div>
+              <div class="text-xs text-muted" style="margin-top:0.25rem;">Update agency information</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="index.html" class="footer-logo">Tripistry</a>
+      <span class="text-xs text-faint"> Tripistry — Team Name </span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
