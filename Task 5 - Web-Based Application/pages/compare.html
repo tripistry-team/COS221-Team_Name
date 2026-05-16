@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare Packages - Tripistry</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.compare-table-wrap { overflow-x: auto; }
+.compare-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9rem; }
+.compare-table th, .compare-table td { padding: 0; vertical-align: top; }
+.compare-table .row-label {
+  width: 200px; min-width: 180px;
+  font-size: 0.8125rem; font-weight: 500; color: var(--col-muted);
+  padding: 0.875rem 1rem 0.875rem 0;
+  border-bottom: 1px solid var(--col-border);
+  vertical-align: middle;
+}
+.compare-col { width: 240px; min-width: 220px; }
+.compare-head {
+  border: 1px solid var(--col-border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 1.125rem;
+  background: var(--bg);
+  position: relative;
+}
+.compare-head.featured { border-color: var(--accent); background: var(--accent-light); }
+.compare-cell {
+  border-left: 1px solid var(--col-border);
+  border-right: 1px solid var(--col-border);
+  border-bottom: 1px solid var(--col-border);
+  padding: 0.875rem 1rem;
+  background: var(--bg);
+  vertical-align: middle;
+}
+.compare-cell.featured { border-color: var(--accent); background: rgba(26,92,58,0.03); }
+.compare-foot {
+  border: 1px solid var(--col-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 1rem;
+  background: var(--bg);
+}
+.compare-foot.featured { border-color: var(--accent); background: var(--accent-light); }
+.check-yes { color: var(--accent); font-weight: 500; }
+.check-no { color: var(--col-faint); }
+.best-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: #fff;
+  font-size: 0.75rem; font-weight: 500;
+  padding: 0.25rem 0.875rem; border-radius: 999px;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="browse.html">Browse</a>
+    <a href="destinations.html">Destinations</a>
+    <a href="compare.html" class="active">Compare</a>
+    <a href="group-trips.html">Group Trips</a>
+  </div>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="page-header">
+      <h1 style="font-size:2rem;">Compare packages</h1>
+      <p class="text-muted mt-1">Side-by-side comparison of Japan packages</p>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap;align-items:center;">
+      <span class="text-sm text-muted">Comparing:</span>
+      <span class="badge badge-green">Japan · 10 days</span>
+      <span class="badge">Change destination</span>
+      <div style="margin-left:auto;">
+        <select style="width:auto;font-size:0.875rem;">
+          <option>Solo traveller</option>
+          <option>Couple</option>
+          <option>Family (4)</option>
+          <option>Group (8)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th class="row-label"></th>
+            <th class="compare-col" style="padding:0 0.75rem 1.25rem;">
+              <div class="compare-head">
+                <div style="font-size:0.8rem;color:var(--col-muted);margin-bottom:0.25rem;">Wanderlust Co.</div>
+                <div style="font-weight:500;line-height:1.35;margin-bottom:0.5rem;">Tokyo & Kyoto Cultural Immersion</div>
+                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars" style="font-size:0.875rem;"></span><span class="text-xs text-muted">4.9 (128)</span></div>
+              </div>
+            </th>
+            <th class="compare-col" style="padding:0 0.75rem 1.25rem;">
+              <div class="compare-head featured">
+                <div class="best-badge">Best value</div>
+                <div style="font-size:0.8rem;color:var(--accent);margin-bottom:0.25rem;">Eastern Routes</div>
+                <div style="font-weight:500;line-height:1.35;margin-bottom:0.5rem;">Ancient Temples: Nara & Osaka</div>
+                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars" style="font-size:0.875rem;">☆</span><span class="text-xs text-muted">4.6 (203)</span></div>
+              </div>
+            </th>
+            <th class="compare-col" style="padding:0 0.75rem 1.25rem;">
+              <div class="compare-head">
+                <div style="font-size:0.8rem;color:var(--col-muted);margin-bottom:0.25rem;">Sakura Journeys</div>
+                <div style="font-weight:500;line-height:1.35;margin-bottom:0.5rem;">Cherry Blossom Season in Hiroshima</div>
+                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars" style="font-size:0.875rem;"></span><span class="text-xs text-muted">5.0 (44)</span></div>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">Price per person</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><strong>R18,500</strong></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured"><strong style="color:var(--accent);">R12,800</strong></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><strong>R16,400</strong></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Duration</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">10 days</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured">5 days</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">6 days</div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Cities covered</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">Tokyo, Hakone, Kyoto, Nara</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured">Nara, Osaka, Kyoto</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">Hiroshima, Miyajima</div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Return flights</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> Included</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured"><span class="check-no">— Not included</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> Included</span></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Accommodation</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">4 hotels (9 nights)</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured">3 hotels (4 nights)</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">4 + ryokan (5 nights)</div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Daily breakfast</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> Included</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured"><span class="check-yes"> Included</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> Included</span></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Guided tours</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> Full-day guided</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured"><span class="check-yes"> Half-day guided</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> Full-day guided</span></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Rail pass</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> Shinkansen pass</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured"><span class="check-no">— Not included</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-no">— Not included</span></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Transfers</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> All included</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured"><span class="check-yes"> Airport only</span></div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell"><span class="check-yes"> All included</span></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Group size</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">2-12</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured">1-20</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">2-8 <span class="badge badge-amber" style="font-size:0.7rem;">Limited</span></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Cancellation</td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">Free up to 30 days</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell featured">Free up to 14 days</div></td>
+            <td style="padding:0 0.75rem;"><div class="compare-cell">Free up to 60 days</div></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="row-label"></td>
+            <td style="padding:0 0.75rem 0;">
+              <div class="compare-foot">
+                <a href="package-detail.html" class="btn" style="width:100%;justify-content:center;">View package</a>
+              </div>
+            </td>
+            <td style="padding:0 0.75rem 0;">
+              <div class="compare-foot featured">
+                <a href="package-detail.html" class="btn btn-primary" style="width:100%;justify-content:center;">Book now</a>
+              </div>
+            </td>
+            <td style="padding:0 0.75rem 0;">
+              <div class="compare-foot">
+                <a href="package-detail.html" class="btn" style="width:100%;justify-content:center;">View package</a>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div style="margin-top:3rem;">
+      <h3 style="margin-bottom:1rem;">Add another package to compare</h3>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <input type="text" placeholder="Search for a package…" style="flex:1;min-width:240px;">
+        <button class="btn btn-primary">Add to comparison</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="index.html" class="footer-logo">Tripistry</a>
+      <span class="text-xs text-faint">Tripistry — Team Name</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
