@@ -1,0 +1,33 @@
+name: Tripistry CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - feature/**
+
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Validate PHP Files
+        run: |
+          find . -name "*.php" -exec php -l {} \;
+
+      - name: Display Success Message
+        run: echo "CI completed successfully"
