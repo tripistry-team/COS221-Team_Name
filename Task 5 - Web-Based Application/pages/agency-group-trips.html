@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Trips - Agency - Tripistry</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.agency-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;padding-top:2rem;}
+.agency-sidebar{position:sticky;top:calc(var(--nav-h)+1rem);border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;}
+.agency-sidebar-header{padding:1.25rem;background:var(--accent);color:#fff;}
+.agency-nav{padding:0.5rem;}
+.agency-nav a{display:flex;align-items:center;gap:0.625rem;font-size:0.9rem;color:var(--col-muted);text-decoration:none;padding:0.5rem 0.625rem;border-radius:var(--radius-sm);transition:all 0.12s;}
+.agency-nav a:hover,.agency-nav a.active{color:var(--col);background:var(--bg-secondary);}
+.agency-nav a.active{font-weight:500;}
+.gt-row{border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:0.875rem;transition:border-color 0.15s;}
+.gt-row:hover{border-color:var(--col-border-strong);}
+.participant-chip{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:0.75rem;font-weight:600;border:2px solid var(--bg);}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:flex-start;justify-content:center;padding:3rem 1rem;overflow-y:auto;}
+.modal-backdrop.show{display:flex;}
+.modal{background:var(--bg);border-radius:var(--radius-lg);border:1px solid var(--col-border);padding:1.75rem;width:100%;max-width:560px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="agency-packages.html">My Packages</a>
+    <a href="agency-group-trips.html" class="active">Group Trips</a>
+    <a href="agency-bookings.html">Bookings</a>
+  </div>
+  <div class="nav-actions">
+    <span class="text-sm text-muted">Wanderlust Co.</span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="agency-layout">
+      <aside class="agency-sidebar">
+        <div class="agency-sidebar-header">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">WC</div>
+            <div><div style="font-weight:500;">Wanderlust Co.</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+          </div>
+        </div>
+        <div class="agency-nav">
+          <a href="agency-dashboard.html">Dashboard</a>
+          <a href="agency-packages.html">My packages</a>
+          <a href="agency-group-trips.html" class="active">Group trips</a>
+          <a href="agency-bookings.html">Bookings</a>
+          <a href="agency-reviews.html">Reviews</a>
+          <div style="border-top:1px solid var(--col-border);margin:0.5rem 0;padding-top:0.5rem;">
+            <a href="agency-profile.html">Agency profile</a>
+            <a href="login.html" style="color:var(--danger);"> Log out</a>
+          </div>
+        </div>
+      </aside>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div><h2>Group trips</h2><p class="text-muted text-sm">3 active · 1 upcoming · 2 completed</p></div>
+          <button class="btn btn-primary" onclick="openModal()">+ New group trip</button>
+        </div>
+
+        <div class="tabs" style="margin-bottom:1.5rem;">
+          <button class="tab active">Active (3)</button>
+          <button class="tab">Upcoming (1)</button>
+          <button class="tab">Completed (2)</button>
+        </div>
+
+        <div class="gt-row">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.875rem;">
+            <div>
+              <div style="font-weight:600;font-size:1.0625rem;margin-bottom:0.25rem;">Tokyo Street Food & Culture — Summer</div>
+              <div class="text-sm text-muted">Tokyo, Japan · Jul 14-24, 2026 · Join deadline: Jun 30</div>
+            </div>
+            <div style="display:flex;gap:0.375rem;">
+              <span class="badge badge-amber">Filling fast</span>
+              <span class="badge badge-green">Active</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:0.875rem;">
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">9/12</div>
+              <div class="text-xs text-muted">Participants</div>
+            </div>
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">3</div>
+              <div class="text-xs text-muted">Spots left</div>
+            </div>
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">R112,500</div>
+              <div class="text-xs text-muted">Revenue so far</div>
+            </div>
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">10 days</div>
+              <div class="text-xs text-muted">Duration</div>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem;">
+            <div class="text-xs text-muted" style="margin-bottom:0.375rem;">75% full</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:75%;"></div></div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="openParticipants()">View participants (9)</button>
+            <button class="btn btn-sm">Edit trip</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger);">Cancel trip</button>
+          </div>
+        </div>
+
+        <div class="gt-row">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.875rem;">
+            <div>
+              <div style="font-weight:600;font-size:1.0625rem;margin-bottom:0.25rem;">Kyoto, Nara & Osaka Heritage Trail</div>
+              <div class="text-sm text-muted">Kyoto, Japan · Oct 4-10, 2026 · Join deadline: Sep 20</div>
+            </div>
+            <div style="display:flex;gap:0.375rem;">
+              <span class="badge badge-green">Active</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:0.875rem;">
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">7/12</div>
+              <div class="text-xs text-muted">Participants</div>
+            </div>
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">5</div>
+              <div class="text-xs text-muted">Spots left</div>
+            </div>
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">R93,800</div>
+              <div class="text-xs text-muted">Revenue so far</div>
+            </div>
+            <div style="background:var(--bg-secondary);padding:0.75rem;border-radius:var(--radius-md);text-align:center;">
+              <div style="font-size:1.25rem;font-weight:700;">7 days</div>
+              <div class="text-xs text-muted">Duration</div>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem;">
+            <div class="text-xs text-muted" style="margin-bottom:0.375rem;">58% full</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:58%;"></div></div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button class="btn btn-sm" onclick="openParticipants()">View participants (7)</button>
+            <button class="btn btn-sm">Edit trip</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger);">Cancel trip</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="modal-backdrop" id="new-trip-modal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h3>Create group trip</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.875rem;">
+      <div class="form-group"><label>Trip name *</label><input type="text" placeholder="e.g. Tokyo Summer Adventure"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div class="form-group"><label>Country</label><select><option>Japan</option><option>South Africa</option><option>Greece</option><option>Indonesia</option></select></div>
+        <div class="form-group"><label>City</label><input type="text" placeholder="Tokyo"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div class="form-group"><label>Start date</label><input type="date"></div>
+        <div class="form-group"><label>End date</label><input type="date"></div>
+      </div>
+      <div class="form-group"><label>Join deadline</label><input type="date"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;">
+        <div class="form-group"><label>Min participants</label><input type="number" placeholder="4" min="1"></div>
+        <div class="form-group"><label>Max participants</label><input type="number" placeholder="12" min="1"></div>
+        <div class="form-group"><label>Price per person (R)</label><input type="number" placeholder="12500"></div>
+      </div>
+      <div class="form-group"><label>Trip description</label><textarea placeholder="What will participants experience?"></textarea></div>
+      <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:0.5rem;">
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="createTrip()">Create trip</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="participants-modal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h3>Participants (9)</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeParticipants()">✕</button>
+    </div>
+    <table>
+      <thead><tr><th>Traveller</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr><td><div style="font-weight:500;font-size:0.9rem;">Sipho Nkosi</div><div class="text-xs text-muted">sipho@email.com</div></td><td class="text-sm text-muted">12 May 2026</td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);">Remove</button></td></tr>
+        <tr><td><div style="font-weight:500;font-size:0.9rem;">Lerato M.</div><div class="text-xs text-muted">lerato@email.com</div></td><td class="text-sm text-muted">14 May 2026</td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);">Remove</button></td></tr>
+        <tr><td><div style="font-weight:500;font-size:0.9rem;">Kavya D.</div><div class="text-xs text-muted">kavya@email.com</div></td><td class="text-sm text-muted">15 May 2026</td><td><span class="badge badge-amber">Pending</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);">Remove</button></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:1.25rem;text-align:right;">
+      <button class="btn" onclick="closeParticipants()">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="index.html" class="footer-logo">Tripistry</a>
+      <span class="text-xs text-faint">Tripistry — Team Name</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function openModal(){document.getElementById('new-trip-modal').classList.add('show');}
+function closeModal(){document.getElementById('new-trip-modal').classList.remove('show');}
+function openParticipants(){document.getElementById('participants-modal').classList.add('show');}
+function closeParticipants(){document.getElementById('participants-modal').classList.remove('show');}
+function createTrip(){closeModal();alert('Group trip created!');}
+document.querySelectorAll('.modal-backdrop').forEach(m=>{m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});});
+</script>
+</body>
+</html>
