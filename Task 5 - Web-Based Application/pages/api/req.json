@@ -1,3 +1,42 @@
 {
-    "Note": "This is a file containing the formats of the requests to be made to the API."
+    "Note": "This is a file containing the formats of the requests to be made to the API.",
+
+    "Register an Agency":
+    {
+        "type": "RegisterAgency",
+        "name": "<name>",
+        "email": "<email in valid format>",
+        "description": "<description>"
+    },
+
+    "Register a Traveller":
+    {
+        "type": "RegisterTraveller",
+        "f_name": "<first name>",
+        "mid_init": "<middle initial>",
+        "s_name": "<surname>",
+        "email": "<email in valid format>",
+        "country": "<country of residence>"
+    }, 
+
+    "Register a User":
+    {
+        "type": "RegisterUser",
+        "username": "<username>",
+        "email": "<email of existing agency or traveller or empty string if admin>",
+        "password": "<password>",
+        "user_type": "<agency_staff, traveller or admin>"
+    },
+
+    "Login": 
+    {
+        "type": "Login",
+        "username": "<username>",
+        "password": "<password>"
+    }, 
+
+    "Logout":
+    {
+        "type": "Logout"
+    }
 }

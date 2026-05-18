@@ -114,7 +114,7 @@ class API {
         $email = trim($data["email"]);
         $user_type = trim($data["user_type"]);
 
-        if (!$username || !$password || !$email || !$user_type)
+        if (!$username || !$password || !$user_type)
             return $this->error("Post parameters are empty");
 
         if (!preg_match("/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()]).{8,}$/", $password))
