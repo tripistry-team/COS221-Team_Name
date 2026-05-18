@@ -1,5 +1,8 @@
 <?php
 
+namespace api;
+use mysqli;
+
 class Database {
     private static $instance = null;
     private $conn;
