@@ -5,12 +5,12 @@ class Database {
     private $conn;
 
     private function __construct() {
-        $host = "127.0.0.1"; 
-        $user = "root";
+        $host = ""; 
+        $user = "";
         $password = ""; 
-        $dbname = "flights_local";
+        $dbname = "";
 
-        $this->conn = new mysqli($host, $user, $password, $dbname, 3307);
+        $this->conn = new mysqli($host, $user, $password, $dbname);
 
         if ($this->conn->connect_error) {
             http_response_code(500);
