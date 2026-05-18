@@ -38,5 +38,11 @@
     "Logout":
     {
         "type": "Logout"
+    }, 
+
+    "Get Feature for Browsing": 
+    {
+        "type": "GetFeature",
+        "feature": "<destination, flight, attraction, accommodation, restaurant, activity>"
     }
 }
