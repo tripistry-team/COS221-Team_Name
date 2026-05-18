@@ -4,7 +4,7 @@
     "Register an Agency":
     {
         "type": "RegisterAgency",
-        "name": "<name>",
+        "name": "<company name>",
         "email": "<email in valid format>",
         "description": "<description>"
     },
