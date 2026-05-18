@@ -240,6 +240,10 @@ class API {
         ];
     }
 
+    public function insertEndpointHere($data) {
+
+    }
+
     private function error($msg, $type = "request") {
         if ($type === "db") http_response_code(500);
         else if ($type === "cred") http_response_code(401);
