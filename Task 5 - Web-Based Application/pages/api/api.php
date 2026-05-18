@@ -45,6 +45,10 @@ else if ($data["type"] === "Logout") {
     echo json_encode($api->logout());
 } 
 
+else if ($data["type"] === "GetFeature") {
+    echo json_encode($api->getFeature($data));
+} 
+
 else if ($data["type"] === "InsertEndpointHere") {
     echo json_encode($api->insertEndpointHere($data));
 } 

@@ -240,6 +240,40 @@ class API {
         ];
     }
 
+    public function getFeature($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            $this->error("Not authenticated", "cred"); 
+
+        if (!isset($data["feature"])) 
+            return $this->error("Post parameters are missing");
+
+        $feature = $data["feature"];
+        if (!$feature)
+            return $this->error("Post parameters are empty");
+
+        if ($feature !== "destination" && $feature !== "flight" && $feature !== "attraction"
+            && $feature !== "accommodation" && $feature !== "restaurant" && $feature !== "activity")
+                return $this->error("Invalid feature");
+
+        $sql = "SELECT * FROM {$feature}";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db"); 
+        if (!$stmt->execute()) 
+            return $this->error("Query failed", "db"); 
+
+        $result = $stmt->get_result(); $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => $data
+        ];
+    }
+
     public function insertEndpointHere($data) {
 
     }
