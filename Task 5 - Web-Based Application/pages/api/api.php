@@ -25,8 +25,16 @@ $conn = $db->getConnection();
 
 $api = new API($conn);
 
-if ($data["type"] === "Register") {
-    echo json_encode($api->register($data));
+if ($data["type"] === "RegisterAgency") {
+    echo json_encode($api->registerAgency($data));
+} 
+
+else if ($data["type"] === "RegisterTraveller") {
+    echo json_encode($api->registerTraveller($data));
+} 
+
+else if ($data["type"] === "RegisterUser") {
+    echo json_encode($api->registerUser($data));
 } 
 
 else if ($data["type"] === "Login") {

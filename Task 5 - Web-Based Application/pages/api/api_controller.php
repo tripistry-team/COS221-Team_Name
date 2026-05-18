@@ -12,51 +12,168 @@ class API {
         $this->conn = $conn;
     }
 
-    public function register($data) {
+    public function registerAgency($data) {
+        if (!isset($data["name"], $data["email"], $data["description"]))
+            return $this->error("Post parameters are missing");
+
+        $name = trim($data["name"]);
+        $email = trim($data["email"]);
+        $description = trim($data["description"]);
+
+        if (!$username || !$email || !$description)
+            return $this->error("Post parameters are empty");
+
+        if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i", $email))
+            return $this->error("Invalid email");
+
+        $sql = "SELECT email FROM agency WHERE email = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("s", $email);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0)
+            return $this->error("Email is already in use");
+
+        //===
+
+        $sql = "INSERT INTO users (Company_Name, Email, Description) VALUES (?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("sss", $name, $email, $description);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $agency_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "agency_id" => $agency_id
+        ];
+    }
+
+    public function registerTraveller($data) {
+        if (!isset($data["f_name"], $data["mid_init"], $data["s_name"], $data["email"], $data["country"]))
+            return $this->error("Post parameters are missing");
+
+        $fname = trim($data["f_name"]);
+        $minit = trim($data["mid_init"]);
+        $sname = trim($data["s_name"]);
+        $email = trim($data["email"]);
+        $country = trim($data["country"]);
+
+        if (!$fname || !$minit || !$sname || !$email || !$country)
+            return $this->error("Post parameters are empty");
+
+        if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i", $email))
+            return $this->error("Invalid email");
+
+        $sql = "SELECT email FROM traveller WHERE email = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("s", $email);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0)
+            return $this->error("Email is already in use");
+
+        //===
+
+        $sql = "INSERT INTO users (First_Name, Mid_Initial, Surname, Email, Country_Of_Residence) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("sssss", $fname, $minit, $sname, $email, $country);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $traveller_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "traveller_id" => $traveller_id
+        ];
+    }
+
+    public function registerUser($data) {
         if (!isset($data["username"], $data["password"], $data["email"], $data["user_type"]))
             return $this->error("Post parameters are missing");
 
         $username = trim($data["username"]);
         $password = $data["password"];
         $email = trim($data["email"]);
-        $user_type = $data["user_type"];
+        $user_type = trim($data["user_type"]);
 
         if (!$username || !$password || !$email || !$user_type)
             return $this->error("Post parameters are empty");
-        if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i", $email))
-            return $this->error("Invalid email");
+
         if (!preg_match("/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()]).{8,}$/", $password))
             return $this->error("Weak password");
-        if ($user_type != "Passenger" && $user_type != "ATC")
-            return $this->error("Invalid user type");
 
-        $sql = "SELECT id FROM users WHERE email = ?";
+        $sql = "SELECT username FROM user WHERE username = ?";
         $stmt = $this->conn->prepare($sql);
-        if (!$stmt) return $this->error("Connection failed", "db");
-        $stmt->bind_param("s", $email);
-        if (!$stmt->execute()) return $this->error("Insert failed", "db");
-
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0)
-            return $this->error("Email is already in use");
-
-        $sql = "SELECT id FROM users WHERE username = ?";
-        $stmt = $this->conn->prepare($sql);
-        if (!$stmt) return $this->error("Connection failed", "db");
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
         $stmt->bind_param("s", $username);
-        if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
 
         $result = $stmt->get_result();
         if ($result->num_rows > 0)
             return $this->error("Username is already in use");
 
+        //===
+
+        if ($user_type === "traveller") 
+            $sql = "SELECT Traveller_ID FROM traveller WHERE email = ?";
+
+        else if ($user_type === "agency_staff") 
+            $sql = "SELECT Agency_ID FROM agency WHERE email = ?";
+
+        else if ($user_type !== "admin")
+            return $this->error("Invalid user type");
+
+        $id = null;
+        if (isset($sql)) {
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) 
+                return $this->error("Connection failed", "db");
+            $stmt->bind_param("s", $email);
+            if (!$stmt->execute()) 
+                return $this->error("Insert failed", "db");
+
+            $result = $stmt->get_result();
+            if ($result->num_rows == 0)
+                return $this->error("Register traveller or agency first");
+
+            $row = $result->fetch_assoc();
+            $id = ($user_type === "traveller") ? $row["Traveller_ID"] : $row["Agency_ID"];
+        }
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-        $sql = "INSERT INTO users (username, email, password, type) VALUES (?, ?, ?, ?)";
+        //===
+
+        if ($user_type === "traveller") 
+            $sql = "INSERT INTO users (Username, Password, User_Type, Traveller_ID) VALUES (?, ?, ?, ?)";
+        else 
+            $sql = "INSERT INTO users (Username, Password, User_Type, Agency_ID) VALUES (?, ?, ?, ?)";
+
         $stmt = $this->conn->prepare($sql);
-        if (!$stmt) return $this->error("Connection failed", "db");
-        $stmt->bind_param("ssss", $username, $email, $hashedPassword, $user_type);
-        if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("sssi", $username, $hashedPassword, $user_type, $id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
 
         $user_id = $this->conn->insert_id;
 
@@ -68,52 +185,47 @@ class API {
     }
 
     public function login($data) {
-        if ((!isset($data["email"]) && !isset($data["username"])) || !isset($data["password"]))
+        if (!isset($data["username"]) || !isset($data["password"]))
             return $this->error("Post parameters are missing");
 
-        if (isset($data["email"])) {
-            $type = "email";
-            $user = trim($data["email"]);
-        } 
-        
-        else {
-            $type = "username";
-            $user = trim($data["username"]);
-        }
-        
+        $user = trim($data["username"]);
         $password = $data["password"];
 
         if (!$user || !$password)
             return $this->error("Post parameters are empty");
 
-        if ($type === "email")
-            $sql = "SELECT id, username, password, email, type FROM users WHERE email = ?";
-        else
-            $sql = "SELECT id, username, password, email, type FROM users WHERE username = ?";
+        $sql = "SELECT * FROM users WHERE username = ?";
         $stmt = $this->conn->prepare($sql);
-        if (!$stmt) return $this->error("Connection failed", "db");
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
         $stmt->bind_param("s", $user);
-        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        if (!$stmt->execute()) 
+            return $this->error("Login failed", "db");
 
         $result = $stmt->get_result();
         if ($result->num_rows == 0)
-            return $this->error("Invalid {$type}", "cred");
+            return $this->error("Invalid username", "cred");
 
         $row = $result->fetch_assoc();
         if (!password_verify($password, $row["password"]))
             return $this->error("Invalid password", "cred");
 
-        $_SESSION['user_id'] = $row["id"];
-        $_SESSION['user_type'] = $row["type"];
+        $id = $row["id"];
+        $type = $row["user_type"];
+        $type_id = ($type === "traveller") ? $row["traveller_id"] : $row["agency_id"];
+
+        $_SESSION['user_id'] = $id;
+        $_SESSION['user_type'] = $type;
+        $_SESSION['type_id'] = $type_id;
 
         return [
             "status" => "success",
             "timestamp" => time(),
             "data" => [
-                "user_id" => $row["id"],
+                "user_id" => $id,
+                "type_id" => $type_id,
                 "username" => $row["username"],
-                "email" => $row["email"],
-                "type" => $row["type"]
+                "user_type" => $type
             ]
         ];
     }
