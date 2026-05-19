@@ -76,7 +76,7 @@
     "Side Note": "These are just some users I added to my local db.",
     "users": [
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Aurora",
             "email": "aurora@agency.com",
             "password": "Aurora1!",
@@ -84,7 +84,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Eclipse",
             "email": "eclipse@agency.com",
             "password": "Eclipse1!",
@@ -92,7 +92,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Comet",
             "email": "comet@agency.com",
             "password": "Comet123!",
@@ -100,7 +100,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Meteor",
             "email": "meteor@agency.com",
             "password": "Meteor1!",
@@ -108,7 +108,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Tides",
             "email": "tides@agency.com",
             "password": "Tides123!",
@@ -116,7 +116,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Sunshine",
             "email": "sunshine@trvlr.com",
             "password": "Sunshine1!",
@@ -124,7 +124,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Rainbow",
             "email": "rainbow@trvlr.com",
             "password": "Rainbow1!",
@@ -132,7 +132,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Moonlight",
             "email": "moonlight@trvlr.com",
             "password": "Moonlight1!",
@@ -140,7 +140,7 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Starlight",
             "email": "starlight@trvlr.com",
             "password": "Starlight1!",
@@ -148,11 +148,96 @@
         },
 
         {
-            "type": "Register",
+            "type": "RegisterUser",
             "username": "Twilight",
             "email": "twilight@trvlr.com",
             "password": "Twilight1!",
             "user_type": "traveller"
+        }
+    ],
+
+    "Agencies": [
+        {
+            "type": "RegisterAgency",
+            "name": "Aurora Agency",
+            "email": "aurora@agency.com",
+            "descripton": "Aurora Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Eclipse Agency",
+            "email": "eclipse@agency.com",
+            "descripton": "Eclipse Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Comet Agency",
+            "email": "comet@agency.com",
+            "descripton": "Comet Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Meteor Agency",
+            "email": "meteor@agency.com",
+            "descripton": "Meteor Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Tides Agency",
+            "email": "tides@agency.com",
+            "descripton": "Tides Agency Description"
+        }
+    ],
+
+    "Travellers": [
+        
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Sunshine",
+            "mid_init": "O",
+            "s_name": "Rain",
+            "email": "sunshine@trvlr.com",
+            "country": "South Africa"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Rainbow",
+            "mid_init": "N",
+            "s_name": "Unicorns",
+            "email": "rainbow@trvlr.com",
+            "country": "China"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Moonlight",
+            "mid_init": "M",
+            "s_name": "Mist",
+            "email": "moonlight@trvlr.com",
+            "country": "South Korea"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Starlight",
+            "mid_init": "T",
+            "s_name": "Shine",
+            "email": "starlight@trvlr.com",
+            "country": "USA"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Twilight",
+            "mid_init": "B",
+            "s_name": "Twinkling",
+            "email": "twilight@trvlr.com",
+            "country": "South Africa"
         }
     ]
 }
