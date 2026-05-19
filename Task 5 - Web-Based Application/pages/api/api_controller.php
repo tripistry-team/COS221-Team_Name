@@ -20,7 +20,7 @@ class API {
         $email = trim($data["email"]);
         $description = trim($data["description"]);
 
-        if (!$username || !$email || !$description)
+        if (!$name || !$email || !$description)
             return $this->error("Post parameters are empty");
 
         if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i", $email))
@@ -40,7 +40,7 @@ class API {
 
         //===
 
-        $sql = "INSERT INTO users (Company_Name, Email, Description) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO agency (Company_Name, Email, Description) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -87,7 +87,7 @@ class API {
 
         //===
 
-        $sql = "INSERT INTO users (First_Name, Mid_Initial, Surname, Email, Country_Of_Residence) 
+        $sql = "INSERT INTO traveller (First_Name, Mid_Initial, Surname, Email, Country_Of_Residence) 
                 VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
@@ -275,6 +275,9 @@ class API {
     }
 
     public function getPackages($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            $this->error("Not authenticated", "cred"); 
+
         $sql = "
             SELECT
                 p.Package_ID,
@@ -389,6 +392,9 @@ class API {
     }
 
     public function getPackageDetails($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            $this->error("Not authenticated", "cred"); 
+
         if (!isset($data["package_id"]))
             return $this->error("Post parameters are missing");
 
@@ -396,7 +402,7 @@ class API {
         if ($pid <= 0)
             return $this->error("Invalid package ID");
 
-        // Package + Agency info
+        // Package
         $sql = "
             SELECT
                 p.Package_ID, p.Name, p.Description,
@@ -437,7 +443,7 @@ class API {
             $options[] = $row;
         }
 
-        // Experiences (all subtypes joined)
+        // Experiences 
         $sql = "
             SELECT
                 e.Experience_ID, e.Name, e.Category,
@@ -505,7 +511,7 @@ class API {
             $flights[] = $row;
         }
 
-        // Reviews/Feedback
+        // Reviews
         $sql = "
             SELECT
                 f.Feedback_ID, f.Rating, f.Comment,
@@ -551,6 +557,9 @@ class API {
     }
 
     public function getDestinations() {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            $this->error("Not authenticated", "cred"); 
+
         $sql = "
             SELECT DISTINCT d.Destination_ID, d.Country, d.City
             FROM DESTINATION d
