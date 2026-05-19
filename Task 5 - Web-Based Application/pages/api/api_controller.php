@@ -26,7 +26,7 @@ class API {
         if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i", $email))
             return $this->error("Invalid email");
 
-        $sql = "SELECT email FROM agency WHERE email = ?";
+        $sql = "SELECT Email FROM AGENCY WHERE Email = ?";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -40,7 +40,7 @@ class API {
 
         //===
 
-        $sql = "INSERT INTO agency (Company_Name, Email, Description) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO AGENCY (Company_Name, Email, Description) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -73,7 +73,7 @@ class API {
         if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i", $email))
             return $this->error("Invalid email");
 
-        $sql = "SELECT email FROM traveller WHERE email = ?";
+        $sql = "SELECT Email FROM TRAVELLER WHERE Email = ?";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -87,7 +87,7 @@ class API {
 
         //===
 
-        $sql = "INSERT INTO traveller (First_Name, Mid_Initial, Surname, Email, Country_Of_Residence) 
+        $sql = "INSERT INTO TRAVELLER (First_Name, Mid_Initial, Surname, Email, Country_Of_Residence) 
                 VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
@@ -120,7 +120,7 @@ class API {
         if (!preg_match("/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()]).{8,}$/", $password))
             return $this->error("Weak password");
 
-        $sql = "SELECT username FROM user WHERE username = ?";
+        $sql = "SELECT Username FROM USER WHERE Username = ?";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -135,10 +135,10 @@ class API {
         //===
 
         if ($user_type === "traveller") 
-            $sql = "SELECT Traveller_ID FROM traveller WHERE email = ?";
+            $sql = "SELECT Traveller_ID FROM TRAVELLER WHERE Email = ?";
 
         else if ($user_type === "agency_staff") 
-            $sql = "SELECT Agency_ID FROM agency WHERE email = ?";
+            $sql = "SELECT Agency_ID FROM AGENCY WHERE Email = ?";
 
         else if ($user_type !== "admin")
             return $this->error("Invalid user type");
@@ -164,9 +164,9 @@ class API {
         //===
 
         if ($user_type === "traveller") 
-            $sql = "INSERT INTO users (Username, Password, User_Type, Traveller_ID) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO USER (Username, Password, User_Type, Traveller_ID) VALUES (?, ?, ?, ?)";
         else 
-            $sql = "INSERT INTO users (Username, Password, User_Type, Agency_ID) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO USER (Username, Password, User_Type, Agency_ID) VALUES (?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
@@ -194,7 +194,7 @@ class API {
         if (!$user || !$password)
             return $this->error("Post parameters are empty");
 
-        $sql = "SELECT * FROM users WHERE username = ?";
+        $sql = "SELECT * FROM USER WHERE Username = ?";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
