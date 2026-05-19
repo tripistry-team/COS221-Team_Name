@@ -208,12 +208,12 @@ class API {
             return $this->error("Invalid username", "cred");
 
         $row = $result->fetch_assoc();
-        if (!password_verify($password, $row["password"]))
+        if (!password_verify($password, $row["Password"]))
             return $this->error("Invalid password", "cred");
 
-        $id = $row["id"];
-        $type = $row["user_type"];
-        $type_id = ($type === "traveller") ? $row["traveller_id"] : $row["agency_id"];
+        $id = $row["User_ID"];
+        $type = $row["User_Type"];
+        $type_id = ($type === "traveller") ? $row["Traveller_ID"] : $row["Agency_ID"];
 
         $_SESSION['user_id'] = $id;
         $_SESSION['user_type'] = $type;
@@ -225,7 +225,7 @@ class API {
             "data" => [
                 "user_id" => $id,
                 "type_id" => $type_id,
-                "username" => $row["username"],
+                "username" => $row["Username"],
                 "user_type" => $type
             ]
         ];
