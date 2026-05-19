@@ -161,35 +161,35 @@
             "type": "RegisterAgency",
             "name": "Aurora Agency",
             "email": "aurora@agency.com",
-            "descripton": "Aurora Agency Description"
+            "description": "Aurora Agency Description"
         },
 
         {
             "type": "RegisterAgency",
             "name": "Eclipse Agency",
             "email": "eclipse@agency.com",
-            "descripton": "Eclipse Agency Description"
+            "description": "Eclipse Agency Description"
         },
 
         {
             "type": "RegisterAgency",
             "name": "Comet Agency",
             "email": "comet@agency.com",
-            "descripton": "Comet Agency Description"
+            "description": "Comet Agency Description"
         },
 
         {
             "type": "RegisterAgency",
             "name": "Meteor Agency",
             "email": "meteor@agency.com",
-            "descripton": "Meteor Agency Description"
+            "description": "Meteor Agency Description"
         },
 
         {
             "type": "RegisterAgency",
             "name": "Tides Agency",
             "email": "tides@agency.com",
-            "descripton": "Tides Agency Description"
+            "description": "Tides Agency Description"
         }
     ],
 
