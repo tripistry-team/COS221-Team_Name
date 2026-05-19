@@ -51,7 +51,20 @@ else if ($data["type"] === "GetFeature") {
 
 else if ($data["type"] === "InsertEndpointHere") {
     echo json_encode($api->insertEndpointHere($data));
-} 
+}
+
+//Rayhaan
+else if ($data["type"] === "GetPackages") {
+    echo json_encode($api->getPackages($data));
+}
+
+else if ($data["type"] === "GetPackageDetail") {
+    echo json_encode($api->getPackageDetail($data));
+}
+
+else if ($data["type"] === "GetDestinations") {
+    echo json_encode($api->getDestinations());
+}
 
 else {
     http_response_code(400);
