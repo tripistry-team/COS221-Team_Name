@@ -32,6 +32,7 @@
     {
         "type": "Login",
         "username": "<username>",
+        "email": "<email of existing agency or traveller or empty string if admin>",
         "password": "<password>"
     }, 
 
@@ -70,5 +71,88 @@
     "Get Destinations":
     {
         "type": "GetDestinations"
-    }
+    },
+
+    "Side Note": "These are just some users I added to my local db.",
+    "users": [
+        {
+            "type": "Register",
+            "username": "Aurora",
+            "email": "aurora@agency.com",
+            "password": "Aurora1!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "Register",
+            "username": "Eclipse",
+            "email": "eclipse@agency.com",
+            "password": "Eclipse1!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "Register",
+            "username": "Comet",
+            "email": "comet@agency.com",
+            "password": "Comet123!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "Register",
+            "username": "Meteor",
+            "email": "meteor@agency.com",
+            "password": "Meteor1!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "Register",
+            "username": "Tides",
+            "email": "tides@agency.com",
+            "password": "Tides123!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "Register",
+            "username": "Sunshine",
+            "email": "sunshine@trvlr.com",
+            "password": "Sunshine1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "Register",
+            "username": "Rainbow",
+            "email": "rainbow@trvlr.com",
+            "password": "Rainbow1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "Register",
+            "username": "Moonlight",
+            "email": "moonlight@trvlr.com",
+            "password": "Moonlight1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "Register",
+            "username": "Starlight",
+            "email": "starlight@trvlr.com",
+            "password": "Starlight1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "Register",
+            "username": "Twilight",
+            "email": "twilight@trvlr.com",
+            "password": "Twilight1!",
+            "user_type": "traveller"
+        }
+    ]
 }
