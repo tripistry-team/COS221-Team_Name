@@ -49,6 +49,18 @@ else if ($data["type"] === "GetFeature") {
     echo json_encode($api->getFeature($data));
 } 
 
+else if ($data["type"] === "GetPackages") {
+    echo json_encode($api->getPackages($data));
+}
+
+else if ($data["type"] === "GetPackageDetail") {
+    echo json_encode($api->getPackageDetail($data));
+}
+
+else if ($data["type"] === "GetDestinations") {
+    echo json_encode($api->getDestinations());
+}
+
 else if ($data["type"] === "InsertEndpointHere") {
     echo json_encode($api->insertEndpointHere($data));
 } 
