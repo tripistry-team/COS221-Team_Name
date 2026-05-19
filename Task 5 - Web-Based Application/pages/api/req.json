@@ -43,6 +43,32 @@
     "Get Feature for Browsing": 
     {
         "type": "GetFeature",
-        "feature": "<destination, flight, attraction, accommodation, restaurant, activity>"
+        "feature": "<destination, flight, attraction, accommodation, restaurant, or activity>"
+    },
+    
+    "Get Packages":{
+        "Note": "Only type is required.",
+        "Format": 
+        {
+            "type": "GetPackages",
+            "destination": "<country or city>", 
+            "min_price": -1.0,
+            "max_price": -1.0,
+            "duration": -1,
+            "package_type": "<solo, couple, group or family>",
+            "min_rating": -1.0,
+            "sort": "<price_asc, price_desc, rating_desc, duration_asc, or name_asc>"
+        }
+    },
+
+    "Get Package Details":
+    {
+        "type": "GetPackageDetails",
+        "package_id": -1
+    },
+
+    "Get Destinations":
+    {
+        "type": "GetDestinations"
     }
 }

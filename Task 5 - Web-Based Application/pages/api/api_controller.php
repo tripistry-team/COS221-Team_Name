@@ -388,7 +388,7 @@ class API {
         ];
     }
 
-    public function getPackageDetail($data) {
+    public function getPackageDetails($data) {
         if (!isset($data["package_id"]))
             return $this->error("Post parameters are missing");
 
