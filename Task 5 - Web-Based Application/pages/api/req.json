@@ -197,9 +197,9 @@
         
         {
             "type": "RegisterTraveller",
-            "f_name": "Sunshine",
+            "f_name": "Rain",
             "mid_init": "O",
-            "s_name": "Rain",
+            "s_name": "Sunshine",
             "email": "sunshine@trvlr.com",
             "country": "South Africa"
         },
