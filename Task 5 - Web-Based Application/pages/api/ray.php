@@ -308,3 +308,90 @@ public function getDestinations() {
         "data"      => $destinations
     ];
 }
+
+public function comparePackages($data) {
+        if (!isset($data["package_ids"]) || !is_array($data["package_ids"]) || count($data["package_ids"]) < 2)
+            return $this->error("Provide at least 2 package_ids as an array");
+ 
+        $ids = array_map("intval", $data["package_ids"]);
+        $ids = array_filter($ids, fn($id) => $id > 0);
+        if (count($ids) < 2) return $this->error("Invalid package IDs");
+ 
+        $placeholders = implode(",", array_fill(0, count($ids), "?"));
+        $types = str_repeat("i", count($ids));
+ 
+        $stmt = $this->conn->prepare("
+            SELECT
+                p.Package_ID, p.Name, p.Description,
+                p.Base_Price, p.Duration, p.Package_Status,
+                a.Company_Name,
+                ROUND(AVG(f.Rating), 1)       AS Avg_Rating,
+                COUNT(DISTINCT f.Feedback_ID) AS Review_Count,
+                MIN(po.Final_Price)           AS Min_Price,
+                MAX(po.Final_Price)           AS Max_Price
+            FROM PACKAGE p
+            JOIN AGENCY a ON p.Agency_ID = a.Agency_ID
+            LEFT JOIN PACKAGE_OPTION po ON p.Package_ID = po.Package_ID
+            LEFT JOIN FEEDBACK f ON f.Package_ID = p.Package_ID
+            WHERE p.Package_ID IN ($placeholders)
+            GROUP BY p.Package_ID, p.Name, p.Description, p.Base_Price,
+                     p.Duration, p.Package_Status, a.Company_Name
+        ");
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param($types, ...$ids);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+ 
+        $res = $stmt->get_result();
+        $packages = [];
+        while ($row = $res->fetch_assoc()) $packages[] = $row;
+ 
+        return [
+            "status"    => "success",
+            "timestamp" => time(),
+            "data"      => $packages
+        ];
+    }
+
+public function getGroupTrips($data) {
+        $sql = "
+            SELECT gt.Group_Trip_ID, gt.Trip_Name, gt.Start_Date, gt.End_Date,
+                   gt.Join_Deadline, gt.Participants_Min, gt.Participants_Max,
+                   gt.Participants_Current, gt.Trip_Status,
+                   a.Agency_ID, a.Company_Name,
+                   p.Package_ID, p.Name AS Package_Name, p.Base_Price
+            FROM GROUP_TRIP gt
+            JOIN AGENCY a ON gt.Agency_ID = a.Agency_ID
+            LEFT JOIN PACKAGE p ON p.Agency_ID = a.Agency_ID
+            WHERE 1=1
+        ";
+ 
+        $params = [];
+        $types  = "";
+ 
+        if (!empty($data["status"])) {
+            $allowed = ["planned","open","full","in_progress","completed","cancelled"];
+            if (!in_array($data["status"], $allowed)) return $this->error("Invalid trip status");
+            $sql .= " AND gt.Trip_Status = ?";
+            $params[] = $data["status"];
+            $types .= "s";
+        }
+ 
+        if (!empty($data["agency_id"]) && is_numeric($data["agency_id"])) {
+            $sql .= " AND gt.Agency_ID = ?";
+            $params[] = (int)$data["agency_id"];
+            $types .= "i";
+        }
+ 
+        $sql .= " GROUP BY gt.Group_Trip_ID ORDER BY gt.Start_Date ASC";
+ 
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        if (!empty($params)) $stmt->bind_param($types, ...$params);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+ 
+        $res = $stmt->get_result();
+        $trips = [];
+        while ($row = $res->fetch_assoc()) $trips[] = $row;
+ 
+        return ["status" => "success", "timestamp" => time(), "count" => count($trips), "data" => $trips];
+}    

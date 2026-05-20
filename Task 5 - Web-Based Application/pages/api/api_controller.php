@@ -356,7 +356,7 @@ class API {
         $allowed_sorts = [
             "price_asc" => "p.Base_Price ASC",
             "price_desc" => "p.Base_Price DESC",
-            "rating_desc" => "Avg_Rating DESC",
+            "rating_desc" => "Avg_Rating DESC",//add rating ascending 
             "duration_asc" => "p.Duration ASC",
             "name_asc" => "p.Name ASC"
         ];
