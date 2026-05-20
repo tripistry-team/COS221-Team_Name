@@ -32,7 +32,6 @@
     {
         "type": "Login",
         "username": "<username>",
-        "email": "<email of existing agency or traveller or empty string if admin>",
         "password": "<password>"
     }, 
 
