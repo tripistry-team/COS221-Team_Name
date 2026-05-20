@@ -243,7 +243,7 @@ class API {
 
     public function getFeature($data) {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            $this->error("Not authenticated", "cred"); 
+            return $this->error("Not authenticated", "cred"); 
 
         if (!isset($data["feature"])) 
             return $this->error("Post parameters are missing");
@@ -277,7 +277,7 @@ class API {
 
     public function getPackages($data) {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            $this->error("Not authenticated", "cred"); 
+            return $this->error("Not authenticated", "cred"); 
 
         $sql = "
             SELECT
@@ -397,7 +397,7 @@ class API {
 
     public function getPackageDetails($data) {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            $this->error("Not authenticated", "cred"); 
+            return $this->error("Not authenticated", "cred"); 
 
         if (!isset($data["package_id"]))
             return $this->error("Post parameters are missing");
@@ -562,7 +562,7 @@ class API {
 
     public function getDestinations() {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            $this->error("Not authenticated", "cred"); 
+            return $this->error("Not authenticated", "cred"); 
 
         $sql = "
             SELECT DISTINCT d.Destination_ID, d.Country, d.City
