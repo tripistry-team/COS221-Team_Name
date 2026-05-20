@@ -57,7 +57,7 @@
             "duration": -1,
             "package_type": "<solo, couple, group or family>",
             "min_rating": -1.0,
-            "sort": "<price_asc, price_desc, rating_desc, duration_asc, or name_asc>"
+            "sort": "<price_asc, price_desc, rating_asc, rating_desc, duration_asc, duration_desc, name_asc, or name_desc>"
         }
     },
 

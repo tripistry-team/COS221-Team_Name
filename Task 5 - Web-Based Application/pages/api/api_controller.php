@@ -348,21 +348,24 @@ class API {
             $types .= "s";
         }
 
+        $sql .= " GROUP BY p.Package_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status,
+            a.Company_Name, d.Country, d.City";
+
         if (isset($data["min_rating"]) && is_numeric($data["min_rating"])) {
-            $sql .= " AND (SELECT AVG(f2.Rating) FROM FEEDBACK f2 WHERE f2.Package_ID = p.Package_ID) >= ?";
+            $sql .= " HAVING AVG(f.Rating) >= ?";
             $params[] = (float)$data["min_rating"];
             $types   .= "d";
         }
 
-        $sql .= " GROUP BY p.Package_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status,
-            a.Company_Name, d.Country, d.City";
-
         $allowed_sorts = [
             "price_asc" => "p.Base_Price ASC",
             "price_desc" => "p.Base_Price DESC",
+            "rating_asc" => "Avg_Rating ASC",
             "rating_desc" => "Avg_Rating DESC",
             "duration_asc" => "p.Duration ASC",
-            "name_asc" => "p.Name ASC"
+            "duration_desc" => "p.Duration DESC",
+            "name_asc" => "p.Name ASC",
+            "name_desc" => "p.Name DESC"
         ];
         $sort = $data["sort"] ?? "name_asc";
         $sql .= " ORDER BY " . ($allowed_sorts[$sort] ?? "p.Name ASC");
