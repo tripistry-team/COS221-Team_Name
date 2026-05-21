@@ -53,17 +53,44 @@ else if ($data["type"] === "GetPackages") {
     echo json_encode($api->getPackages($data));
 }
 
-else if ($data["type"] === "GetPackageDetail") {
-    echo json_encode($api->getPackageDetail($data));
+else if ($data["type"] === "GetPackageDetails") {
+    echo json_encode($api->getPackageDetails($data));
 }
 
-else if ($data["type"] === "GetDestinations") {
-    echo json_encode($api->getDestinations());
+else if ($data["type"] === "AddExperience") {
+    echo json_encode($api->addExperience($data));
+}
+
+else if ($data["type"] === "AddAccommodation") {
+    echo json_encode($api->addAccommodation($data));
+}
+
+else if ($data["type"] === "AddRestaurant") {
+    echo json_encode($api->addRestaurant($data));
+}
+
+else if ($data["type"] === "AddActivity") {
+    echo json_encode($api->addActivity($data));
+}
+
+else if ($data["type"] === "AddAttraction") {
+    echo json_encode($api->addAttraction($data));
 }
 
 else if ($data["type"] === "InsertEndpointHere") {
     echo json_encode($api->insertEndpointHere($data));
-}
+} 
+
+else if ($data["type"] === "AddContact") {
+    echo json_encode($api->addContact($data));
+} 
+else if ($data["type"] === "AddFeedback") {
+    echo json_encode($api->addContact($data));
+} 
+else if ($data["type"] === "AddResponse") {
+    echo json_encode($api->addContact($data));
+} 
+
 else {
     http_response_code(400);
     echo json_encode([
