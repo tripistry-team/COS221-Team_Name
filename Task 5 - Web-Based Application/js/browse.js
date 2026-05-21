@@ -1,4 +1,4 @@
-const API_URL = 'api/api.php';
+const API_URL = 'api/api.php'; //(this file is not final!!!)
 
 const PAGE_SIZE = 6;
 

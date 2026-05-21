@@ -39,7 +39,7 @@ function getPackageId() {
   const params = new URLSearchParams(window.location.search);
   return parseInt(params.get('id'));
 }
-async function loadPackageDetail() {
+async function loadPackageDetail() { //INCOMPLETE
   const pid = getPackageId();
   if (!pid) {
     document.querySelector('main').innerHTML = `
@@ -70,3 +70,5 @@ async function loadPackageDetail() {
   document.title = `${pkg.Name} - Tripistry`;
 
 }
+
+//more functions...
