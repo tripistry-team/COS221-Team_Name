@@ -67,11 +67,6 @@
         "package_id": -1
     },
 
-    "Get Destinations":
-    {
-        "type": "GetDestinations"
-    },
-
     "Add Experience":
     {
         "type": "AddExperience",

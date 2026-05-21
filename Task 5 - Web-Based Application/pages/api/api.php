@@ -57,10 +57,6 @@ else if ($data["type"] === "GetPackageDetails") {
     echo json_encode($api->getPackageDetails($data));
 }
 
-else if ($data["type"] === "GetDestinations") {
-    echo json_encode($api->getDestinations());
-}
-
 else if ($data["type"] === "AddExperience") {
     echo json_encode($api->addExperience($data));
 }

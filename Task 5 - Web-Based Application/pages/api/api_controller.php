@@ -564,39 +564,6 @@ class API {
         ];
     }
 
-    public function getDestinations() {
-        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            return $this->error("Not authenticated", "cred"); 
-
-        $sql = "
-            SELECT DISTINCT d.Destination_ID, d.Country, d.City
-            FROM DESTINATION d
-            JOIN EXPERIENCE e
-                ON e.Destination_ID = d.Destination_ID
-            ORDER BY d.Country ASC, d.City ASC
-        ";
-
-        $stmt = $this->conn->prepare($sql);
-        if (!$stmt)
-            return $this->error("Connection failed", "db");
-
-        if (!$stmt->execute())
-            return $this->error("Query failed", "db");
-        $result = $stmt->get_result();
-        
-        $destinations = [];
-        while ($row = $result->fetch_assoc()) {
-            $destinations[] = $row;
-        }
-
-        return [
-            "status"    => "success",
-            "timestamp" => time(),
-            "count"     => count($destinations),
-            "data"      => $destinations
-        ];
-    }
-
     public function addExperience($data) {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
             return $this->error("Not authenticated", "cred");
