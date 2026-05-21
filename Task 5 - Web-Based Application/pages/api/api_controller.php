@@ -830,6 +830,89 @@ class API {
         
     }
 
+    //FIX THIS
+    public function addContact($data) {
+        $num1 = trim($data["number1"]);
+        $num2 = trim($data["number2"]);
+
+        if (!$num1 && !$num2) {
+            return [
+            "status" => "success",
+            "timestamp" => time()
+        ]; 
+        }
+    }
+
+    public function addFeedback($data) {
+        if (!isset($data["rating"], $data["traveller_ID"], $data["package_ID"], $data["package_Type"], $data["user_Type"]))
+            return $this->error("Post parameters are missing");
+
+         $uType = trim($data["user_Type"]);
+         if ($uType !== "traveller") {
+            return $this->error("Only travellers can leave a rating");
+         }
+
+        $rating = trim($data["rating"]);
+
+        if ($rating < 1 || $rating > 5) {
+            return $this->error("A rating can only be between 1 and 5 stars");
+        }
+
+        $tID = trim($data["traveller_ID"]);
+        $pID = trim($data["package_ID"]);
+        $pType = trim($data["package_Type"]);
+       
+        $comment = trim($data["comment"] ?? "");
+
+
+        $sql = "INSERT INTO FEEDBACK 
+                (Rating, Comment, Traveller_ID, Package_ID, Package_Type) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("issii", $rating, $comment, $tID, $pID, $pType);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $feedback_id = $this->conn->insert_id;
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "experience_id" => $feedback_id
+        ];
+
+    }
+
+    public function addResponse($data) {
+        if (!isset($data["feedback_ID"], $data["response"],  $data["user_Type"]))
+            return $this->error("Post parameters are missing");
+
+         $uType = trim($data["user_Type"]);
+         if ($uType !== "agency_staff") {
+            return $this->error("Only agency staff members can leave a response");
+         }
+
+
+        $response = trim($data["response"]);
+        $fID = trim($data["feedback_ID"]);
+
+        $sql = "UPDATE FEEDBACK SET Response = ? WHERE Feedback_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("si", $response, $fID);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "experience_id" => $feedback_id
+        ];
+
+    }
+
     private function error($msg, $type = "request") {
         if ($type === "db") http_response_code(500);
         else if ($type === "cred") http_response_code(401);
@@ -842,4 +925,6 @@ class API {
             "message" => $msg
         ];
     }
+
+    
 }

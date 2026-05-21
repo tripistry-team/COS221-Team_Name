@@ -81,6 +81,16 @@ else if ($data["type"] === "InsertEndpointHere") {
     echo json_encode($api->insertEndpointHere($data));
 } 
 
+else if ($data["type"] === "AddContact") {
+    echo json_encode($api->addContact($data));
+} 
+else if ($data["type"] === "AddFeedback") {
+    echo json_encode($api->addContact($data));
+} 
+else if ($data["type"] === "AddResponse") {
+    echo json_encode($api->addContact($data));
+} 
+
 else {
     http_response_code(400);
     echo json_encode([

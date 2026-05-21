@@ -61,6 +61,13 @@
         }
     },
 
+    "Add Phone number":
+    {
+        "type": "AddContact",
+        "number1": "<mobile num>",
+        "number2": "<home num>"
+    }, 
+
     "Get Package Details":
     {
         "type": "GetPackageDetails",
@@ -115,6 +122,25 @@
         "attraction_type": "<attraction type>",
         "opening_hours": "<opening hours>",
         "entry_fee": -1.0
+    },
+
+    "Traveller leaves review":
+    {
+        "type": "AddFeedback",
+        "rating": "<rating from 1 to 5>",
+        "comment": "optional comment for the review",
+        "traveller_ID": "<ID of person leaving the review >",
+        "package_ID": "<ID of package being reviewed>",
+        "package_type": "<The package type>",
+        "user_Type": "<'traveller' or 'agency_staff'>"
+    },
+
+    "Agency responds to review":
+    {
+        "type": "AddResponse",
+        "response": "response to the review",
+        "feedback_ID": "<ID of the review >",
+        "user_Type": "<'traveller' or 'agency_staff'>"
     },
 
     "Side Note": "These are just some users I added to my local db.",
