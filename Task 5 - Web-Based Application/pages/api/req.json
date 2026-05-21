@@ -40,6 +40,11 @@
         "type": "Logout"
     }, 
 
+    "Check if user is logged in and get user details":
+    {
+        "type": "CheckAuthorisation"
+    },
+
     "Get Feature for Browsing": 
     {
         "type": "GetFeature",

@@ -215,8 +215,10 @@ class API {
         $type_id = ($type === "traveller") ? $row["Traveller_ID"] : $row["Agency_ID"];
 
         $_SESSION['user_id'] = $id;
-        $_SESSION['user_type'] = $type;
         $_SESSION['type_id'] = $type_id;
+        $_SESSION['username'] = $row["Username"];
+        $_SESSION['user_type'] = $type;
+        
 
         return [
             "status" => "success",
@@ -226,6 +228,28 @@ class API {
                 "type_id" => $type_id,
                 "username" => $row["Username"],
                 "user_type" => $type
+            ]
+        ];
+    }
+
+    public function checkAuthorisation($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) {
+            return [
+                "status" => "success",
+                "timestamp" => time(),
+                "data" => ["logged_in" => false]
+            ];
+        }
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => [
+                "logged_in" => true,
+                "user_id" => $_SESSION['user_id'],
+                "type_id" => $_SESSION['type_id'],
+                "username" => $_SESSION['username'],
+                "user_type" => $_SESSION['user_type']
             ]
         ];
     }

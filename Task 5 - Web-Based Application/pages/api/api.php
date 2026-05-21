@@ -41,6 +41,10 @@ else if ($data["type"] === "Login") {
     echo json_encode($api->login($data));
 } 
 
+else if ($data["type"] === "CheckAuthorisation") {
+    echo json_encode($api->checkAuthorisation($data));
+}
+
 else if ($data["type"] === "Logout") {
     echo json_encode($api->logout());
 } 
