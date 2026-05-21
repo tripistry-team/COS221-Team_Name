@@ -947,6 +947,7 @@ class API {
             return $this->error("Post parameters are missing");
           }
             
+          /// FIX THISSSSSS so that checks if flight exists first
 
          $uType = trim($data["user_type"]);
          if ($uType !== "agency_staff") {
@@ -985,6 +986,10 @@ class API {
             "experience_id" => $flight_id
         ];
 
+    }
+
+    public function addDestination($data) {
+        
     }
 
     private function error($msg, $type = "request") {

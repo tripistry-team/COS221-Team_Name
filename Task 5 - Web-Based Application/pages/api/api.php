@@ -95,6 +95,10 @@ else if ($data["type"] === "AddFlight") {
     echo json_encode($api->addFlight($data));
 } 
 
+else if ($data["type"] === "AddDestination") {
+    echo json_encode($api->addDestination($data));
+} 
+
 else {
     http_response_code(400);
     echo json_encode([

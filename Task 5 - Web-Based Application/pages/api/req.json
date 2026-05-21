@@ -159,6 +159,13 @@
         "user_type": "<'traveller' or 'agency_staff'>"
     },
 
+    "Add Destination":
+    {
+        "type": "AddDestination",
+        "country": "The country of the destination",
+        "city": "Take a wild guess what this one is"
+    },
+
     "Side Note": "These are just some users I added to my local db.",
     "users": [
         {
