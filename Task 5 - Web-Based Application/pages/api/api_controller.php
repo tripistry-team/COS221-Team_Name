@@ -599,11 +599,11 @@ class API {
             return $this->error("Post parameters are missing");
 
         $allowed = ["accommodation", "restaurant", "activity", "attraction"];
-        if (!in_array($feature, $allowed)) 
+        if (!in_array($data["category"], $allowed)) 
             return $this->error("Invalid category");
 
         $allowed = ["available", "unavailable", "seasonal"];
-        if (!in_array($feature, $allowed)) 
+        if (!in_array($data["availability_status"], $allowed)) 
             return $this->error("Invalid availability status");
 
         $name = trim($data["name"]);
@@ -663,7 +663,7 @@ class API {
         $rooms = (int)$data["num_rooms"];
         $ppn = (float)$data["price_per_night"];
        
-        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $sql = "SELECT Category FROM EXPERIENCE WHERE Experience_ID = ?";        
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -673,7 +673,11 @@ class API {
 
         $result = $stmt->get_result();
         if ($result->num_rows == 0)
-            return $this->error("Add experience first");
+            return $this->error("Invalid experience id");
+
+        $row = $result->fetch_assoc();
+        if ($row["Category"] != "accommodation")
+             return $this->error("The specified experience is not of category 'accommodation'");
 
         //===
 
@@ -686,12 +690,9 @@ class API {
         if (!$stmt->execute()) 
             return $this->error("Insert failed", "db");
 
-        $experience_id = $this->conn->insert_id;
-
         return [
             "status" => "success",
-            "timestamp" => time(),
-            "experience_id" => $experience_id
+            "timestamp" => time()
         ];
     }
 
@@ -713,7 +714,7 @@ class API {
         if (!$cuisine || !$opening_hours || !$price_range)
             return $this->error("Post parameters are empty");
        
-        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $sql = "SELECT Category FROM EXPERIENCE WHERE Experience_ID = ?";        
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -723,7 +724,11 @@ class API {
 
         $result = $stmt->get_result();
         if ($result->num_rows == 0)
-            return $this->error("Add experience first");
+            return $this->error("Invalid experience id");
+
+        $row = $result->fetch_assoc();
+        if ($row["Category"] != "restaurant")
+             return $this->error("The specified experience is not of category 'restaurant'");
 
         //===
 
@@ -740,8 +745,7 @@ class API {
 
         return [
             "status" => "success",
-            "timestamp" => time(),
-            "experience_id" => $experience_id
+            "timestamp" => time()
         ];
     }
 
@@ -767,7 +771,7 @@ class API {
         if (!$type || !$price_range || !$duration || !$age)
             return $this->error("Post parameters are empty");
        
-        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $sql = "SELECT Category FROM EXPERIENCE WHERE Experience_ID = ?";        
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -777,7 +781,11 @@ class API {
 
         $result = $stmt->get_result();
         if ($result->num_rows == 0)
-            return $this->error("Add experience first");
+            return $this->error("Invalid experience id");
+
+        $row = $result->fetch_assoc();
+        if ($row["Category"] != "activity")
+             return $this->error("The specified experience is not of category 'activity'");
 
         //===
 
@@ -795,8 +803,7 @@ class API {
 
         return [
             "status" => "success",
-            "timestamp" => time(),
-            "experience_id" => $experience_id
+            "timestamp" => time()
         ];
     }
 
@@ -818,7 +825,7 @@ class API {
         if (!$type || !$opening_hours)
             return $this->error("Post parameters are empty");
        
-        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $sql = "SELECT Category FROM EXPERIENCE WHERE Experience_ID = ?";        
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -828,7 +835,11 @@ class API {
 
         $result = $stmt->get_result();
         if ($result->num_rows == 0)
-            return $this->error("Add experience first");
+            return $this->error("Invalid experience id");
+
+        $row = $result->fetch_assoc();
+        if ($row["Category"] != "attraction")
+             return $this->error("The specified experience is not of category 'attraction'");
 
         //===
 
@@ -845,8 +856,7 @@ class API {
 
         return [
             "status" => "success",
-            "timestamp" => time(),
-            "experience_id" => $experience_id
+            "timestamp" => time()
         ];
     }
 
