@@ -844,10 +844,10 @@ class API {
     }
 
     public function addFeedback($data) {
-        if (!isset($data["rating"], $data["traveller_ID"], $data["package_ID"], $data["package_Type"], $data["user_Type"]))
+        if (!isset($data["rating"], $data["traveller_ID"], $data["package_ID"], $data["package_Type"], $data["user_type"]))
             return $this->error("Post parameters are missing");
 
-         $uType = trim($data["user_Type"]);
+         $uType = trim($data["user_type"]);
          if ($uType !== "traveller") {
             return $this->error("Only travellers can leave a rating");
          }
@@ -885,10 +885,10 @@ class API {
     }
 
     public function addResponse($data) {
-        if (!isset($data["feedback_ID"], $data["response"],  $data["user_Type"]))
+        if (!isset($data["feedback_ID"], $data["response"],  $data["user_type"]))
             return $this->error("Post parameters are missing");
 
-         $uType = trim($data["user_Type"]);
+         $uType = trim($data["user_type"]);
          if ($uType !== "agency_staff") {
             return $this->error("Only agency staff members can leave a response");
          }
@@ -907,8 +907,53 @@ class API {
 
         return [
             "status" => "success",
+            "timestamp" => time()
+        ];
+
+    }
+
+    public function addFlight($data) {
+        if (!isset($data["flight_Number"], $data["airline"], $data["departure_airport"], $data["arrival_airport"], $data["departure_dateTime"],
+          $data["arrival_dateTime"], $data["price"], $data["available_seats"], $data["seat_class"], $data["user_type"])) {
+            return $this->error("Post parameters are missing");
+          }
+            
+
+         $uType = trim($data["user_type"]);
+         if ($uType !== "agency_staff") {
+            return $this->error("You have to be a staff member to add a flight to a package");
+         }
+
+         $class = trim($data["seat_class"]);
+         if ($class !== "economy" && $class !== "premium_economy" && $class !== "business" && $class !== "first_class") {
+            return $this->error("Only travellers can leave a rating");
+         }
+
+        $flightNo = trim($data["flight_Number"]);
+        $airline = trim($data["airline"]);
+        $depPort = trim($data["departure_airport"]);
+        $arrPort = trim($data["arrival_airport"]);
+        $depTime = trim($data["departure_dateTime"]);
+        $arrTime = trim($data["arrival_dateTime"]);
+        $price = trim($data["price"]);
+        $numSeats = trim($data["available_seats"]);
+        
+
+        $sql = "INSERT INTO FLIGHTS 
+                (Flight_Number, Airline, Departure_Airport, Departure_DateTime, Arrival_Airport, Arrival_DateTime, Price, Available_Seats, Seat_Class) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssssssdis", $flightNo, $airline, $depPort, $depTime, $arrPort, $arrTime, $price, $numSeats, $class);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $flight_id = $this->conn->insert_id;
+        return [
+            "status" => "success",
             "timestamp" => time(),
-            "experience_id" => $feedback_id
+            "experience_id" => $flight_id
         ];
 
     }

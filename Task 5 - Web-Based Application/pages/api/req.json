@@ -132,7 +132,7 @@
         "traveller_ID": "<ID of person leaving the review >",
         "package_ID": "<ID of package being reviewed>",
         "package_type": "<The package type>",
-        "user_Type": "<'traveller' or 'agency_staff'>"
+        "user_type": "<'traveller' or 'agency_staff'>"
     },
 
     "Agency responds to review":
@@ -140,7 +140,22 @@
         "type": "AddResponse",
         "response": "response to the review",
         "feedback_ID": "<ID of the review >",
-        "user_Type": "<'traveller' or 'agency_staff'>"
+        "user_type": "<'traveller' or 'agency_staff'>"
+    },
+
+    "Agency adds a flight to their package":
+    {
+        "type": "AddFlight",
+        "flight_number": "<Flight number of the flight (this is NOT the flight_id PK)",
+        "airline": "<Airline of flight >",
+        "departure_airport": "<Airport CODE (3 letters) that the flight departs from>",
+        "arrival_airport": "<Airport CODE (3 letters) that the flight arrives to>",
+        "departure_dateTime": "<DateTime of departure (using the DateTime data type)>",
+        "arrival_dateTime": "<DateTime of arrival (using the DateTime data type)>",
+        "price": "<Price of the flight, I mean really I think its quite obvious what most of these parameters do>",
+        "available_seats": "<Number of seats currently available>",
+        "seat_class": "<'economy', 'premium_economy', 'business' or 'first_class'>",
+        "user_type": "<'traveller' or 'agency_staff'>"
     },
 
     "Side Note": "These are just some users I added to my local db.",

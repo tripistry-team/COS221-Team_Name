@@ -85,10 +85,14 @@ else if ($data["type"] === "AddContact") {
     echo json_encode($api->addContact($data));
 } 
 else if ($data["type"] === "AddFeedback") {
-    echo json_encode($api->addContact($data));
+    echo json_encode($api->addFeedback($data));
 } 
 else if ($data["type"] === "AddResponse") {
-    echo json_encode($api->addContact($data));
+    echo json_encode($api->addResponse($data));
+} 
+
+else if ($data["type"] === "AddFlight") {
+    echo json_encode($api->addFlight($data));
 } 
 
 else {
