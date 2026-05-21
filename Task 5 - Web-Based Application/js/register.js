@@ -129,6 +129,7 @@ function userAPI(apitype, username, email, password, user_type) {
             if (xhr.status === 200) {
                 const data = JSON.parse(xhr.responseText);
                 console.log("API RESPONSE:", data);
+                document.cookie = "username=" + username + "; loggedIn=true; path=/";
         
             } else {
                 const data = JSON.parse(xhr.responseText);
@@ -138,6 +139,7 @@ function userAPI(apitype, username, email, password, user_type) {
     };
 
     xhr.send(JSON.stringify(body));
+    
 
 }
 
