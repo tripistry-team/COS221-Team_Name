@@ -832,15 +832,44 @@ class API {
 
     //FIX THIS
     public function addContact($data) {
+        $user = trim($data["user_id"]);
         $num1 = trim($data["number1"]);
         $num2 = trim($data["number2"]);
 
-        if (!$num1 && !$num2) {
+        if ((!$num1 && !$num2) || (!$user)) {
             return [
             "status" => "success",
             "timestamp" => time()
         ]; 
         }
+
+        $sql = "INSERT INTO USER_CONTACT_INFO 
+                (User_ID, Contact_Info) 
+                VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $user, $num1);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        if ($num2) {
+            $sql2 = "INSERT INTO USER_CONTACT_INFO 
+                (User_ID, Contact_Info) 
+                VALUES (?, ?)";
+            $stmt2 = $this->conn->prepare($sql2);
+            if (!$stmt2) 
+                return $this->error("Connection failed", "db");
+            $stmt2->bind_param("ii", $user, $num2);
+            if (!$stmt2->execute()) 
+                return $this->error("Insert failed", "db");
+        }
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "message" => "Added contact info"
+        ];
     }
 
     public function addFeedback($data) {

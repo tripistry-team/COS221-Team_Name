@@ -61,9 +61,10 @@
         }
     },
 
-    "Add Phone number":
+    "Add Contact deatils (Phone number)":
     {
         "type": "AddContact",
+        "user_id": "<ID of the user who inputs the number>",
         "number1": "<mobile num>",
         "number2": "<home num>"
     }, 
