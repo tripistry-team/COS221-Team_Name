@@ -43,7 +43,7 @@
     "Get Feature for Browsing": 
     {
         "type": "GetFeature",
-        "feature": "<destination, flight, attraction, accommodation, restaurant, or activity>"
+        "feature": "<destination, flight, experience, attraction, accommodation, restaurant, or activity>"
     },
     
     "Get Packages":{
@@ -70,6 +70,56 @@
     "Get Destinations":
     {
         "type": "GetDestinations"
+    },
+
+    "Add Experience":
+    {
+        "type": "AddExperience",
+        "name": "<name>",
+        "description": "<description>",
+        "category": "<accommodation, restaurant, activity or attraction>",
+        "availability_status": "<available, unavailable, seasonal>",
+        "destination_id": -1
+    },
+
+    "Add Accommodation":
+    {
+        "type": "AddAccommodation",
+        "experience_id": -1,
+        "stars": -1,
+        "capacity": -1,
+        "num_rooms": -1,
+        "price_per_night": -1.0
+    },
+
+    "Add Restaurant":
+    {
+        "type": "AddRestaurant",
+        "experience_id": -1,
+        "cuisine": "<cuisine type>",
+        "opening_hours": "<opening hours>",
+        "price_range": "<price range>"
+    },
+
+    "Add Activity":
+    {
+        "type": "AddActivity",
+        "experience_id": -1,
+        "activity_type": "<activity type>",
+        "price_range": "<price range>",
+        "duration": "<duration>",
+        "age_restriction": "<age restriction>",
+        "capacity": -1,
+        "indoor": false
+    },
+
+    "Add Attraction":
+    {
+        "type": "AddAttraction",
+        "experience_id": -1,
+        "attraction_type": "<attraction type>",
+        "opening_hours": "<opening hours>",
+        "entry_fee": -1.0
     },
 
     "Side Note": "These are just some users I added to my local db.",

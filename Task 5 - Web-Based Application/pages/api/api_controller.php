@@ -140,25 +140,24 @@ class API {
         else if ($user_type === "agency_staff") 
             $sql = "SELECT Agency_ID FROM AGENCY WHERE Email = ?";
 
-        else if ($user_type !== "admin")
+        else
             return $this->error("Invalid user type");
 
-        $id = null;
-        if (isset($sql)) {
-            $stmt = $this->conn->prepare($sql);
-            if (!$stmt) 
-                return $this->error("Connection failed", "db");
-            $stmt->bind_param("s", $email);
-            if (!$stmt->execute()) 
-                return $this->error("Insert failed", "db");
+        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("s", $email);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
 
-            $result = $stmt->get_result();
-            if ($result->num_rows == 0)
-                return $this->error("Register traveller or agency first");
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Register traveller or agency first");
 
-            $row = $result->fetch_assoc();
-            $id = ($user_type === "traveller") ? $row["Traveller_ID"] : $row["Agency_ID"];
-        }
+        $row = $result->fetch_assoc();
+        $id = ($user_type === "traveller") ? $row["Traveller_ID"] : $row["Agency_ID"];
+        
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
         //===
@@ -252,11 +251,16 @@ class API {
         if (!$feature)
             return $this->error("Post parameters are empty");
 
-        if ($feature !== "destination" && $feature !== "flight" && $feature !== "attraction"
-            && $feature !== "accommodation" && $feature !== "restaurant" && $feature !== "activity")
-                return $this->error("Invalid feature");
+        $allowed = ["destination", "flight", "experience", "attraction", "accommodation", "restaurant", "activity"];
+        if (!in_array($feature, $allowed)) 
+            return $this->error("Invalid feature");
 
-        $sql = "SELECT * FROM {$feature}";
+        $experience = ["attraction", "accommodation", "restaurant", "activity"];
+        if (in_array($feature, $experience))
+            $sql = "SELECT * FROM EXPERIENCE e JOIN {$feature} f ON e.Experience_ID = f.Experience_ID";
+        else
+            $sql = "SELECT * FROM {$feature}";
+
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db"); 
@@ -593,8 +597,270 @@ class API {
         ];
     }
 
-    public function insertEndpointHere($data) {
+    public function addExperience($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
 
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["name"], $data["description"], $data["category"], $data["availability_status"], $data["destination_id"]))
+            return $this->error("Post parameters are missing");
+
+        $allowed = ["accommodation", "restaurant", "activity", "attraction"];
+        if (!in_array($feature, $allowed)) 
+            return $this->error("Invalid category");
+
+        $allowed = ["available", "unavailable", "seasonal"];
+        if (!in_array($feature, $allowed)) 
+            return $this->error("Invalid availability status");
+
+        $name = trim($data["name"]);
+        $description = trim($data["description"]);
+        $category = $data["category"];
+        $availability_status = $data["availability_status"];
+        $destination_id = (int)$data["destination_id"];
+
+        if (!$name || !$description)
+            return $this->error("Post parameters are empty");
+
+        $sql = "SELECT Destination_ID FROM DESTINATION WHERE Destination_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $destination_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid destination id");
+
+        //===
+
+        $sql = "INSERT INTO EXPERIENCE (Name, Description, Category, Availability_Status, Destination_ID) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssssi", $name, $description, $category, $availability_status, $destination_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $experience_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "experience_id" => $experience_id
+        ];
+    }
+
+    public function addAccommodation($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["experience_id"], $data["stars"], $data["capacity"], $data["num_rooms"], $data["price_per_night"]))
+            return $this->error("Post parameters are missing");
+
+        $id = (int)$data["experience_id"];
+        $stars = (int)$data["stars"];
+        $capacity = (int)$data["capacity"];
+        $rooms = (int)$data["num_rooms"];
+        $ppn = (float)$data["price_per_night"];
+       
+        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Add experience first");
+
+        //===
+
+        $sql = "INSERT INTO ACCOMMODATION (Experience_ID, Star_Rating, Room_Capacity, Number_Of_Rooms, Price_Per_Night) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("iiiid", $id, $stars, $capacity, $rooms, $ppn);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $experience_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "experience_id" => $experience_id
+        ];
+    }
+
+    public function addRestaurant($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["experience_id"], $data["cuisine"], $data["opening_hours"], $data["price_range"]))
+            return $this->error("Post parameters are missing");
+
+        $id = (int)$data["experience_id"];
+        $cuisine = trim($data["cuisine"]);
+        $opening_hours = trim($data["opening_hours"]);
+        $price_range = trim($data["price_range"]);
+
+        if (!$cuisine || !$opening_hours || !$price_range)
+            return $this->error("Post parameters are empty");
+       
+        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Add experience first");
+
+        //===
+
+        $sql = "INSERT INTO RESTAURANT (Experience_ID, Cuisine_Type, Opening_Hours, Price_Range) 
+                VALUES (?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("isss", $id, $cuisine, $opening_hours, $price_range);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $experience_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "experience_id" => $experience_id
+        ];
+    }
+
+    public function addActivity($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["experience_id"], $data["activity_type"], $data["price_range"], $data["duration"], 
+            $data["age_restriction"], $data["capacity"], $data["indoor"]))
+            return $this->error("Post parameters are missing");
+
+        $id = (int)$data["experience_id"];
+        $type = trim($data["activity_type"]);
+        $price_range = trim($data["price_range"]);
+        $duration = trim($data["duration"]);
+        $age = trim($data["age_restriction"]);
+        $capacity = (int)$data["capacity"];
+        $indoor = is_bool($data["indoor"]) ? $data["indoor"] : false;
+
+        if (!$type || !$price_range || !$duration || !$age)
+            return $this->error("Post parameters are empty");
+       
+        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Add experience first");
+
+        //===
+
+        $sql = "INSERT INTO ACTIVITY 
+                (Experience_ID, Activity_Type, Price_Range, Duration, Age_Restriction, Capacity, Indoor_Outdoor) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("issssii", $id, $type, $price_range, $duration, $age, $capacity, $indoor);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $experience_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "experience_id" => $experience_id
+        ];
+    }
+
+    public function addAttraction($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["experience_id"], $data["attraction_type"], $data["opening_hours"], $data["entry_fee"]))
+            return $this->error("Post parameters are missing");
+
+        $id = (int)$data["experience_id"];
+        $type = trim($data["attraction_type"]);
+        $opening_hours = trim($data["opening_hours"]);
+        $fee = (float)$data["entry_fee"];
+
+        if (!$type || !$opening_hours)
+            return $this->error("Post parameters are empty");
+       
+        $sql = "SELECT Experience_ID FROM EXPERIENCE WHERE Experience_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Add experience first");
+
+        //===
+
+        $sql = "INSERT INTO ATTRACTION (Experience_ID, Attraction_Type, Opening_Hours, Entry_Fee) 
+                VALUES (?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("issd", $id, $type, $opening_hours, $fee);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $experience_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "experience_id" => $experience_id
+        ];
+    }
+
+    public function insertEndpointHere($data) {
+        
     }
 
     private function error($msg, $type = "request") {

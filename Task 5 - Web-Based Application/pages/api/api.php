@@ -61,6 +61,26 @@ else if ($data["type"] === "GetDestinations") {
     echo json_encode($api->getDestinations());
 }
 
+else if ($data["type"] === "AddExperience") {
+    echo json_encode($api->addExperience($data));
+}
+
+else if ($data["type"] === "AddAccommodation") {
+    echo json_encode($api->addAccommodation($data));
+}
+
+else if ($data["type"] === "AddRestaurant") {
+    echo json_encode($api->addRestaurant($data));
+}
+
+else if ($data["type"] === "AddActivity") {
+    echo json_encode($api->addActivity($data));
+}
+
+else if ($data["type"] === "AddAttraction") {
+    echo json_encode($api->addAttraction($data));
+}
+
 else if ($data["type"] === "InsertEndpointHere") {
     echo json_encode($api->insertEndpointHere($data));
 } 
