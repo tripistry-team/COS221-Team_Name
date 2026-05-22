@@ -40,6 +40,11 @@
         "type": "Logout"
     }, 
 
+    "Check if user is logged in and get user details":
+    {
+        "type": "CheckAuthorisation"
+    },
+
     "Get Feature for Browsing": 
     {
         "type": "GetFeature",
@@ -61,6 +66,7 @@
         }
     },
 
+<<<<<<< HEAD
     "Add Phone number":
     {
         "type": "AddContact",
@@ -68,6 +74,8 @@
         "number2": "<home num>"
     }, 
 
+=======
+>>>>>>> efe111da81968e1ddbbf1c62e1459ce4cd68deff
     "Get Package Details":
     {
         "type": "GetPackageDetails",
@@ -124,6 +132,7 @@
         "entry_fee": -1.0
     },
 
+<<<<<<< HEAD
     "Traveller leaves review":
     {
         "type": "AddFeedback",
@@ -141,6 +150,53 @@
         "response": "response to the review",
         "feedback_ID": "<ID of the review >",
         "user_Type": "<'traveller' or 'agency_staff'>"
+=======
+    "Add Package": 
+    {
+        "type": "AddPackage",
+        "name": "<name>",
+        "description": "<description>",
+        "base_price": -1.0,
+        "duration": -1,
+        "status": "<draft, active, or archived>",
+        "agency_id": -1
+    },
+
+    "Add Package Option": 
+    {
+        "type": "AddPackageOption",
+        "package_id": -1,
+        "package_type": "<solo, couple, group or family>",
+        "participants_min": -1,
+        "participants_max": -1, 
+        "final_price": -1.0,
+        "description": "<description>"
+    },
+
+    "Add Package Option Experience":
+    {
+        "type": "AddPackageOptionExperience",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "experience_id": -1
+    },
+
+    "Add Package Option Flight":
+    {
+        "type": "AddPackageOptionFlight",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "flight_id": -1,
+        "seats": -1
+    },
+
+    "Add Package Option Service":
+    {
+        "type": "AddPackageOptionService",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "product_service_id": -1
+>>>>>>> efe111da81968e1ddbbf1c62e1459ce4cd68deff
     },
 
     "Side Note": "These are just some users I added to my local db.",
