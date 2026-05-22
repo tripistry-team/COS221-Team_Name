@@ -1,22 +1,8 @@
-const API_URL = 'api.php';
-
-function getUser() {
-  const u = localStorage.getItem('tripistry_user');
-  return u ? JSON.parse(u) : null;
-}
+const API_URL = 'pages/api/api.php';
 
 function escHtml(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function requireAuth() {
-  const user = getUser();
-  if (!user) {
-    window.location.href = 'login.html?redirect=index.html';
-    return false;
-  }
-  return true;
 }
 
 async function callAPI(payload) {
@@ -29,17 +15,23 @@ async function callAPI(payload) {
   return res.json();
 }
 
-function updateNav() {
-  const user = getUser();
-  const actions = document.querySelector('.nav-actions');
-  if (!actions) return;
-  if (user) {
-    actions.innerHTML = `
-      <span class="text-sm" style="color:var(--col-muted);">Hi, ${escHtml(user.username)}</span>
-      <button class="btn btn-ghost btn-sm" id="logout-btn">Log out</button>
-    `;
-    document.getElementById('logout-btn').addEventListener('click', handleLogout);
+async function checkAuth() {
+  const data = await callAPI({type: 'CheckAuthorisation'});
+  if (data.status !== 'success' || !data.data.logged_in) {
+    window.location.href = 'login.html?redirect=index.html';
+    return null;
   }
+  return data.data;
+}
+
+function updateNav(user) {
+  const actions = document.querySelector('.nav-actions');
+  if (!actions || !user) return;
+  actions.innerHTML = `
+    <span class="text-sm" style="color:var(--col-muted);">Hi, ${escHtml(user.username)}</span>
+    <button class="btn btn-ghost btn-sm" id="logout-btn">Log out</button>
+  `;
+  document.getElementById('logout-btn').addEventListener('click', handleLogout);
 }
 
 async function handleLogout() {
@@ -65,7 +57,7 @@ async function loadDestinations() {
   const grid = document.getElementById('dest-grid');
   if (!grid) return;
 
-  const data = await callAPI({type: 'GetDestinations'});
+  const data = await callAPI({type: 'GetFeature', feature: 'destination'});
   if (data.status !== 'success' || !data.data.length) return;
 
   grid.innerHTML = data.data.slice(0, 5).map((d, i) => {
@@ -122,9 +114,14 @@ function initSearch() {
   input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (!requireAuth()) return;
-  updateNav();
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = await checkAuth();
+  if (!user) return;
+
+  // store for use across pages
+  localStorage.setItem('tripistry_user', JSON.stringify(user));
+
+  updateNav(user);
   loadFeaturedPackages();
   loadDestinations();
   initSearch();
