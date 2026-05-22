@@ -81,6 +81,26 @@ else if ($data["type"] === "AddAttraction") {
     echo json_encode($api->addAttraction($data));
 }
 
+else if ($data["type"] === "AddPackage") {
+    echo json_encode($api->addPackage($data));
+}
+
+else if ($data["type"] === "AddPackageOption") {
+    echo json_encode($api->addPackageOption($data));
+}
+
+else if ($data["type"] === "AddPackageOptionExperience") {
+    echo json_encode($api->addPackageOptionExperience($data));
+}
+
+else if ($data["type"] === "AddPackageOptionFlight") {
+    echo json_encode($api->addPackageOptionFlight($data));
+} 
+
+else if ($data["type"] === "AddPackageOptionService") {
+    echo json_encode($api->addPackageOptionService($data));
+} 
+
 else if ($data["type"] === "InsertEndpointHere") {
     echo json_encode($api->insertEndpointHere($data));
 } 

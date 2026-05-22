@@ -122,6 +122,53 @@
         "entry_fee": -1.0
     },
 
+    "Add Package": 
+    {
+        "type": "AddPackage",
+        "name": "<name>",
+        "description": "<description>",
+        "base_price": -1.0,
+        "duration": -1,
+        "status": "<draft, active, or archived>",
+        "agency_id": -1
+    },
+
+    "Add Package Option": 
+    {
+        "type": "AddPackageOption",
+        "package_id": -1,
+        "package_type": "<solo, couple, group or family>",
+        "participants_min": -1,
+        "participants_max": -1, 
+        "final_price": -1.0,
+        "description": "<description>"
+    },
+
+    "Add Package Option Experience":
+    {
+        "type": "AddPackageOptionExperience",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "experience_id": -1
+    },
+
+    "Add Package Option Flight":
+    {
+        "type": "AddPackageOptionFlight",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "flight_id": -1,
+        "seats": -1
+    },
+
+    "Add Package Option Service":
+    {
+        "type": "AddPackageOptionService",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "product_service_id": -1
+    },
+
     "Side Note": "These are just some users I added to my local db.",
     "users": [
         {
