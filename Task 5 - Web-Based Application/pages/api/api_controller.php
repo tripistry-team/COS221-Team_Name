@@ -305,6 +305,7 @@ class API {
         ];
     }
 
+    // Needs to be updated
     public function getPackages($data) {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
             return $this->error("Not authenticated", "cred"); 
@@ -425,6 +426,7 @@ class API {
         ];
     }
 
+    // Needs to be updated
     public function getPackageDetails($data) {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
             return $this->error("Not authenticated", "cred"); 
