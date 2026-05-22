@@ -144,6 +144,18 @@
         "user_type": "<'traveller' or 'agency_staff'>"
     },
 
+    "Get Feedback":
+    {
+        "type": "GetFeedback",
+        "feedback_ID": "<ID of feedback u wish to return>"
+    },
+
+    "Get Contact":
+    {
+        "type": "GetContact",
+        "user_ID": "<ID of user u wish to get contact details>"
+    },
+
     "Agency adds a flight to their package":
     {
         "type": "AddFlight",
@@ -164,6 +176,16 @@
         "type": "AddDestination",
         "country": "The country of the destination",
         "city": "Take a wild guess what this one is"
+    },
+
+    "Agency adds Product Service":
+    {
+        "type": "AddService",
+        "name": "package name",
+        "description": "description of package",
+        "category": "category of package",
+        "price": "price of package",
+        "status": "'available', 'unavailable', 'seasonal'"
     },
 
     "Side Note": "These are just some users I added to my local db.",

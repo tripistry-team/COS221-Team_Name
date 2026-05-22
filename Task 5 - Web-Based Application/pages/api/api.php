@@ -99,6 +99,18 @@ else if ($data["type"] === "AddDestination") {
     echo json_encode($api->addDestination($data));
 } 
 
+else if ($data["type"] === "GetFeedback") {
+    echo json_encode($api->getFeedback($data));
+}        
+
+else if ($data["type"] === "GetContact") {
+    echo json_encode($api->getContact($data));
+} 
+
+else if ($data["type"] === "AddService") {
+    echo json_encode($api->addService($data));
+} 
+
 else {
     http_response_code(400);
     echo json_encode([

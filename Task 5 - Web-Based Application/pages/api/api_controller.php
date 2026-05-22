@@ -908,7 +908,7 @@ class API {
         return [
             "status" => "success",
             "timestamp" => time(),
-            "experience_id" => $feedback_id
+            "feedback_id" => $feedback_id
         ];
 
     }
@@ -946,8 +946,7 @@ class API {
           $data["arrival_dateTime"], $data["price"], $data["available_seats"], $data["seat_class"], $data["user_type"])) {
             return $this->error("Post parameters are missing");
           }
-            
-          /// FIX THISSSSSS so that checks if flight exists first
+
 
          $uType = trim($data["user_type"]);
          if ($uType !== "agency_staff") {
@@ -956,11 +955,29 @@ class API {
 
          $class = trim($data["seat_class"]);
          if ($class !== "economy" && $class !== "premium_economy" && $class !== "business" && $class !== "first_class") {
-            return $this->error("Only travellers can leave a rating");
+            return $this->error("Invalid seat class");
          }
 
         $flightNo = trim($data["flight_Number"]);
         $airline = trim($data["airline"]);
+        $tempSql = "SELECT Flight_ID FROM FLIGHT WHERE Flight_Number = ?";
+        $tempStmt = $this->conn->prepare($tempSql);
+        if (!$tempStmt) 
+            return $this->error("Connection failed", "db");
+        $tempStmt->bind_param("s", $flightNo);
+        // if (!$tempStmt->execute()) 
+        //     return $this->error("Insert failed", "db");
+
+        $result = $tempStmt->get_result();
+        if ($result->num_rows > 0) {
+            return [
+            "status" => "success",
+            "timestamp" => time(),
+            "flight_id" => $result
+            ];
+        }
+
+
         $depPort = trim($data["departure_airport"]);
         $arrPort = trim($data["arrival_airport"]);
         $depTime = trim($data["departure_dateTime"]);
@@ -969,7 +986,7 @@ class API {
         $numSeats = trim($data["available_seats"]);
         
 
-        $sql = "INSERT INTO FLIGHTS 
+        $sql = "INSERT INTO FLIGHT 
                 (Flight_Number, Airline, Departure_Airport, Departure_DateTime, Arrival_Airport, Arrival_DateTime, Price, Available_Seats, Seat_Class) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
@@ -983,13 +1000,128 @@ class API {
         return [
             "status" => "success",
             "timestamp" => time(),
-            "experience_id" => $flight_id
+            "flight_id" => $flight_id
         ];
 
     }
 
     public function addDestination($data) {
+        if (!isset($data["country"], $data["city"])) {
+            return $this->error("Post parameters are missing");
+          }
+
+        $country = trim($data["country"]);
+        $city = trim($data["city"]);
+        $tempSql = "SELECT Destination_ID FROM DESTINATION WHERE Country = ? AND City = ?";
+        $tempStmt = $this->conn->prepare($tempSql);
+        if (!$tempStmt) 
+            return $this->error("Connection failed", "db");
+        $tempStmt->bind_param("ss", $country, $city);
+        // if (!$tempStmt->execute()) 
+        //     return $this->error("Insert failed", "db");
+
+        $result = $tempStmt->get_result();
+        if ($result->num_rows > 0) {
+            return [
+            "status" => "success",
+            "timestamp" => time(),
+            "destination_id" => $result
+            ];
+        }   
+
+        $sql = "INSERT INTO DESTINATION 
+                (Country, City) 
+                VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ss", $country, $city);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $dest_id = $this->conn->insert_id;
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "destination_id" => $dest_id
+        ];
         
+    }
+
+    public function getFeedback($data) {
+        if (!isset($data["feedback_ID"])) {
+            return $this->error("Post parameters are missing");
+          }
+
+        $fID = trim($data["feedback_ID"]);
+
+        $sql = "SELECT * FROM FEEDBACK WHERE Feedback_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $fID);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "result" => $result
+        ];
+
+    }
+
+    public function getContact($data) {
+        if (!isset($data["user_ID"])) {
+            return $this->error("Post parameters are missing");
+          }
+
+        $uID = trim($data["user_ID"]);
+
+        $sql = "SELECT * FROM USER_CONTACT_INFO WHERE User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $uID);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "result" => $result
+        ];
+
+    }
+
+    public function addService($data) {
+        if (!isset($data["name"], $data["description"],  $data["category"], $data["price"], $data["status"]))
+            return $this->error("Post parameters are missing");
+
+        $name = trim($data["name"]);
+        $desc = trim($data["description"]);
+        $category = trim($data["category"]);
+        $price = trim($data["price"]);
+        $status = trim($data["status"]);
+
+        $sql = "INSERT INTO PRODUCT_SERVICE (Name, Description, Category, Price, Availability_Status) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("sssds", $name, $desc, $category, $price, $status);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $service_id = $this->conn->insert_id;
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "service_id" => $service_id
+        ];
     }
 
     private function error($msg, $type = "request") {
