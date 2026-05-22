@@ -109,9 +109,13 @@
     <a href="compare.html">Compare</a>
     <a href="group-trips.html">Group Trips</a>
   </div>
-  <div class="nav-actions">
-    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
-    <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
+  <div class="nav-actions" id="navLoggedOut">
+    <a href="login.html" class="btn btn-ghost btn-sm" id="loginNav">Log in</a>
+    <a href="register.html" class="btn btn-primary btn-sm" id="signupNav">Sign up</a>
+  </div>
+  <div class="nav-actions" id="navLoggedIn">
+    <span class="text-sm text-muted" id="navUsername"></span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
   </div>
 </nav>
 
@@ -319,5 +323,34 @@
   </div>
 </footer>
 
+<script>
+  let navOut = document.getElementById("navLoggedOut");
+  let navIn = document.getElementById("navLoggedIn");
+  let userNav = document.getElementById("navUsername");
+  // let log = document.getElementById("loginNav");
+  // let sign = document.getElementById("signupNav");
+  async function callAPI(payload) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+  const data = await callAPI({type: "CheckAuthorisation"});
+  if (data.logged_in === true) {
+    navOut.style.visibility = "hidden";
+    navIn.style.visibility = "block";
+    userNav.textContent = data.username;
+  } else {
+    navOut.style.visibility = "block";
+    navIn.style.visibility = "hidden";
+  }
+
+
+</script>
+
 </body>
 </html>
+
