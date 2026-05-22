@@ -129,7 +129,13 @@
         "description": "<description>",
         "base_price": -1.0,
         "duration": -1,
-        "status": "<draft, active, or archived>",
+        "status": "<draft, active, or archived>"
+    },
+
+    "Add Package Agency":
+    {
+        "type": "AddPackageAgency",
+        "package_id": -1,
         "agency_id": -1
     },
 
@@ -166,6 +172,31 @@
         "type": "AddPackageOptionService",
         "package_id": -1, 
         "package_type": "<solo, couple, group or family>",
+        "product_service_id": -1
+    },  
+
+    "Add Booking":
+    {
+        "type": "AddBooking",
+        "date": "<date>",
+        "status": "<pending, confirmed, cancelled, completed>",
+        "num_people": -1,
+        "total_price": -1.0,
+        "traveller_id": -1
+    },
+
+    "Add Booking Package Option":
+    {
+        "type": "AddBookingPackageOption",
+        "booking_id": -1,
+        "package_id": -1,
+        "package_type": "<solo, couple, group or family>"
+    },
+
+    "Add Booking Product or Service":
+    {
+        "type": "AddBookingService",
+        "booking_id": -1,
         "product_service_id": -1
     },
 
