@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Account – Tripistry</title>
 <link rel="stylesheet" href="style.css">
-
 <style>
 .dash-layout { display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;padding-top:2rem; }
 .dash-sidebar {
@@ -31,16 +30,44 @@
 }
 .dash-nav a:hover,.dash-nav a.active{color:var(--col);background:var(--bg-secondary);}
 .dash-nav a.active{font-weight:500;}
-.booking-card {
-  border:1px solid var(--col-border);border-radius:var(--radius-lg);
-  padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;
-  margin-bottom:1rem;transition:border-color 0.15s;
-}
-.booking-card:hover{border-color:var(--col-border-strong);}
+.booking-card{border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:1rem;transition:border-color 0.15s,box-shadow 0.2s,transform 0.15s;}
+.booking-card:hover{border-color:var(--col-border-strong);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.06);}
 .booking-thumb {
   width:80px;height:70px;border-radius:var(--radius-md);
   background:var(--bg-tertiary);flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:2rem;
+}
+@keyframes shimmer {
+  0%{background-position:-600px 0}
+  100%{background-position:600px 0}
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--col-border) 50%, var(--bg-tertiary) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: var(--radius-sm);
+}
+.skel-line { height:14px; margin-bottom:0.5rem; }
+.skel-line.wide { width:75%; }
+.skel-line.med { width:50%; }
+.skel-line.short { width:30%; }
+.skel-thumb { height:140px; border-radius:var(--radius-md); margin-bottom:0.875rem; }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-animate {
+  animation: fadeSlideIn 0.25s ease forwards;
+}
+#stats-content { grid-template-columns: repeat(3,1fr); }
+#pkgs-content { grid-template-columns: repeat(3,1fr); }
+.top-pkg-card:hover .top-pkg-rank {
+  transform: scale(1.2);
+  transition: transform 0.2s;
+}
+.top-pkg-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+  transform: translateY(-2px);
 }
 </style>
 </head>
@@ -71,19 +98,105 @@
           <div style="margin-top:0.625rem;"><span class="badge badge-green">Traveller</span></div>
         </div>
         <div class="dash-nav">
-          <a href="#bookings" class="active" onclick="showSection('bookings',this)"> My bookings</a>
-          <a href="#reviews" onclick="showSection('reviews',this)"> My reviews</a>
-          <a href="#profile" onclick="showSection('profile',this)"> Profile</a>
-          <a href="#security" onclick="showSection('security',this)"> Security</a>
+          <a href="#overview" class="active" onclick="showSection('overview',this)">Overview</a>
+          <a href="#bookings" onclick="showSection('bookings',this)">My bookings</a>
+          <a href="#reviews" onclick="showSection('reviews',this)">My reviews</a>
+          <a href="#profile" onclick="showSection('profile',this)">Profile</a>
+          <a href="#security" onclick="showSection('security',this)">Security</a>
           <div style="border-top:1px solid var(--col-border);margin:0.5rem 0;padding-top:0.5rem;">
-            <a href="browse.html" style="color:var(--accent);"> Browse packages</a>
+            <a href="browse.html" style="color:var(--accent);">Browse packages</a>
           </div>
         </div>
       </aside>
 
       <div>
 
-        <div id="section-bookings">
+        <div id="section-overview" class="section-animate">
+          <h2 style="margin-bottom:0.375rem;">Welcome back, Sipho</h2>
+          <p class="text-muted text-sm" style="margin-bottom:1.75rem;">Here's what's trending on Tripistry right now.</p>
+
+          <div style="margin-bottom:1.75rem;">
+            <h3 style="font-size:1rem;margin-bottom:1rem;">Platform at a glance</h3>
+            <div id="stats-skeleton" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+              <div style="background:var(--bg-secondary);border:1px solid var(--col-border);border-radius:var(--radius-md);padding:1rem;text-align:center;"><div class="skeleton skel-line" style="margin:0.25rem auto 0.5rem;height:28px;width:60%;"></div><div class="skeleton skel-line" style="width:70%;margin:0 auto;"></div></div>
+              <div style="background:var(--bg-secondary);border:1px solid var(--col-border);border-radius:var(--radius-md);padding:1rem;text-align:center;"><div class="skeleton skel-line" style="margin:0.25rem auto 0.5rem;height:28px;width:60%;"></div><div class="skeleton skel-line" style="width:70%;margin:0 auto;"></div></div>
+              <div style="background:var(--bg-secondary);border:1px solid var(--col-border);border-radius:var(--radius-md);padding:1rem;text-align:center;"><div class="skeleton skel-line" style="margin:0.25rem auto 0.5rem;height:28px;width:60%;"></div><div class="skeleton skel-line" style="width:70%;margin:0 auto;"></div></div>
+            </div>
+            <div id="stats-content" style="display:none;gap:1rem;">
+              <div style="background:var(--bg-secondary);border:1px solid var(--col-border);border-radius:var(--radius-md);padding:1rem;text-align:center;">
+                <div style="font-size:1.5rem;font-weight:700;color:var(--accent);">140+</div>
+                <div class="text-xs text-muted" style="margin-top:0.2rem;">Verified agencies</div>
+              </div>
+              <div style="background:var(--bg-secondary);border:1px solid var(--col-border);border-radius:var(--radius-md);padding:1rem;text-align:center;">
+                <div style="font-size:1.5rem;font-weight:700;color:var(--accent);">1,247</div>
+                <div class="text-xs text-muted" style="margin-top:0.2rem;">Active packages</div>
+              </div>
+              <div style="background:var(--bg-secondary);border:1px solid var(--col-border);border-radius:var(--radius-md);padding:1rem;text-align:center;">
+                <div style="font-size:1.5rem;font-weight:700;color:var(--accent);">4.7</div>
+                <div class="text-xs text-muted" style="margin-top:0.2rem;">Avg package rating</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.75rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+              <h3 style="font-size:1rem;">Top-rated packages</h3>
+              <a href="browse.html" class="text-sm text-accent" style="text-decoration:none;">Browse all</a>
+            </div>
+            <div id="pkgs-skeleton" class="grid-3">
+              <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1rem;"><div class="skeleton skel-thumb"></div><div class="skeleton skel-line wide"></div><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div>
+              <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1rem;"><div class="skeleton skel-thumb"></div><div class="skeleton skel-line wide"></div><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div>
+              <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1rem;"><div class="skeleton skel-thumb"></div><div class="skeleton skel-line wide"></div><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div>
+            </div>
+            <div id="pkgs-content" style="display:none;gap:1.5rem;">
+              <a href="package-detail.html" class="top-pkg-card" style="border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;text-decoration:none;color:inherit;display:block;transition:box-shadow 0.2s,transform 0.2s;">
+                <div style="height:140px;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;position:relative;">
+                  <div class="top-pkg-rank" style="position:absolute;top:0.75rem;left:0.75rem;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;">1</div>
+                </div>
+                <div style="padding:0.875rem 1rem;">
+                  <div class="text-xs text-muted" style="margin-bottom:0.25rem;">Sakura Journeys</div>
+                  <div style="font-weight:600;font-size:0.9375rem;line-height:1.35;margin-bottom:0.375rem;">Cherry Blossom Season — Hiroshima</div>
+                  <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-xs text-muted">5.0 (44)</span></div>
+                  <div style="font-size:1.1rem;font-weight:700;margin-top:0.5rem;">R16,400 <span style="font-size:0.8rem;font-weight:400;color:var(--col-muted);">/ person</span></div>
+                </div>
+              </a>
+              <a href="package-detail.html" class="top-pkg-card" style="border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;text-decoration:none;color:inherit;display:block;transition:box-shadow 0.2s,transform 0.2s;">
+                <div style="height:140px;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;position:relative;">
+                  <div class="top-pkg-rank" style="position:absolute;top:0.75rem;left:0.75rem;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;">2</div>
+                </div>
+                <div style="padding:0.875rem 1rem;">
+                  <div class="text-xs text-muted" style="margin-bottom:0.25rem;">Wanderlust Co.</div>
+                  <div style="font-weight:600;font-size:0.9375rem;line-height:1.35;margin-bottom:0.375rem;">Tokyo &amp; Kyoto Cultural Immersion</div>
+                  <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-xs text-muted">4.9 (128)</span></div>
+                  <div style="font-size:1.1rem;font-weight:700;margin-top:0.5rem;">R18,500 <span style="font-size:0.8rem;font-weight:400;color:var(--col-muted);">/ person</span></div>
+                </div>
+              </a>
+              <a href="package-detail.html" class="top-pkg-card" style="border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;text-decoration:none;color:inherit;display:block;transition:box-shadow 0.2s,transform 0.2s;">
+                <div style="height:140px;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;position:relative;">
+                  <div class="top-pkg-rank" style="position:absolute;top:0.75rem;left:0.75rem;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;">3</div>
+                </div>
+                <div style="padding:0.875rem 1rem;">
+                  <div class="text-xs text-muted" style="margin-bottom:0.25rem;">Aegean Escapes</div>
+                  <div style="font-weight:600;font-size:0.9375rem;line-height:1.35;margin-bottom:0.375rem;">Greek Islands Sailing Week</div>
+                  <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-xs text-muted">4.8 (94)</span></div>
+                  <div style="font-size:1.1rem;font-weight:700;margin-top:0.5rem;">R22,000 <span style="font-size:0.8rem;font-weight:400;color:var(--col-muted);">/ person</span></div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size:1rem;margin-bottom:1rem;">Most active reviewers</h3>
+            <div class="card card-body">
+              <div style="display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0;border-bottom:1px solid var(--col-border);"><div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;flex-shrink:0;">SN</div><div style="flex:1;"><div style="font-size:0.9rem;font-weight:500;">Sipho Nkosi</div><div class="text-xs text-muted">12 reviews · avg 4.9</div></div><span class="badge badge-green">Top reviewer</span></div>
+              <div style="display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0;border-bottom:1px solid var(--col-border);"><div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;flex-shrink:0;">LM</div><div style="flex:1;"><div style="font-size:0.9rem;font-weight:500;">Lerato M.</div><div class="text-xs text-muted">9 reviews · avg 4.8</div></div><span class="badge">Active</span></div>
+              <div style="display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0;border-bottom:1px solid var(--col-border);"><div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;flex-shrink:0;">KD</div><div style="flex:1;"><div style="font-size:0.9rem;font-weight:500;">Kavya D.</div><div class="text-xs text-muted">7 reviews · avg 4.6</div></div><span class="badge">Active</span></div>
+              <div style="display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0;"><div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;flex-shrink:0;">JK</div><div style="flex:1;"><div style="font-size:0.9rem;font-weight:500;">James K.</div><div class="text-xs text-muted">5 reviews · avg 4.7</div></div><span class="badge">Active</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-bookings" style="display:none;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
             <h2>My bookings</h2>
             <div class="tabs" style="margin-bottom:0;border-bottom:none;">
@@ -93,21 +206,20 @@
               <button class="tab" onclick="filterBookings('cancelled',this)">Cancelled</button>
             </div>
           </div>
-
           <div class="booking-card">
             <div class="booking-thumb"></div>
             <div style="flex:1;">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
                 <div>
-                  <div style="font-weight:500;margin-bottom:0.25rem;">Tokyo & Kyoto Cultural Immersion</div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Tokyo &amp; Kyoto Cultural Immersion</div>
                   <div class="text-sm text-muted">Wanderlust Co. · Family package · 4 travellers</div>
                 </div>
                 <span class="badge badge-green">Confirmed</span>
               </div>
               <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);flex-wrap:wrap;">
-                <span> Departs 14 Jul 2026</span>
-                <span> JNB → NRT</span>
-                <span> R74,000 total</span>
+                <span>Departs 14 Jul 2026</span>
+                <span>JNB to NRT</span>
+                <span>R74,000 total</span>
               </div>
               <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
                 <a href="package-detail.html" class="btn btn-sm">View details</a>
@@ -115,7 +227,6 @@
               </div>
             </div>
           </div>
-
           <div class="booking-card">
             <div class="booking-thumb"></div>
             <div style="flex:1;">
@@ -127,8 +238,8 @@
                 <span class="badge">Completed</span>
               </div>
               <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);flex-wrap:wrap;">
-                <span> April 2026</span>
-                <span> R44,000 total</span>
+                <span>April 2026</span>
+                <span>R44,000 total</span>
               </div>
               <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
                 <a href="package-detail.html" class="btn btn-sm">View details</a>
@@ -136,20 +247,19 @@
               </div>
             </div>
           </div>
-
           <div class="booking-card" style="opacity:0.65;">
             <div class="booking-thumb"></div>
             <div style="flex:1;">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
                 <div>
-                  <div style="font-weight:500;margin-bottom:0.25rem;">Bali Wellness & Culture Retreat</div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Bali Wellness &amp; Culture Retreat</div>
                   <div class="text-sm text-muted">Island Spirits · Solo package · 1 traveller</div>
                 </div>
                 <span class="badge badge-red">Cancelled</span>
               </div>
               <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);">
-                <span> February 2026 (cancelled)</span>
-                <span> Refunded</span>
+                <span>February 2026 (cancelled)</span>
+                <span>Refunded</span>
               </div>
             </div>
           </div>
@@ -175,7 +285,6 @@
             </div>
           </div>
           <div style="border:2px dashed var(--col-border);border-radius:var(--radius-lg);padding:2rem;text-align:center;">
-            <div style="font-size:1.75rem;margin-bottom:0.5rem;"></div>
             <div style="font-weight:500;margin-bottom:0.375rem;">Write a review for a past trip</div>
             <p class="text-sm text-muted" style="margin-bottom:1rem;">Share your experience to help other travellers.</p>
             <a href="browse.html" class="btn btn-primary btn-sm">Browse past bookings</a>
@@ -199,9 +308,7 @@
               <div class="form-group"><label>Mobile number</label><input type="text" placeholder="+27 82 555 0199"></div>
               <div class="form-group"><label>Home number</label><input type="text" placeholder="+27 11 000 0000"></div>
             </div>
-            <div>
-              <button class="btn btn-primary">Save changes</button>
-            </div>
+            <div><button class="btn btn-primary">Save changes</button></div>
           </div>
         </div>
 
@@ -214,6 +321,7 @@
             <div><button class="btn btn-primary">Update password</button></div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -223,23 +331,41 @@
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
       <a href="index.html" class="footer-logo">Tripistry</a>
-      <span class="text-xs text-faint">Tripistry — Team Name</span>
+      <span class="text-xs text-faint">Tripistry - Team Name</span>
     </div>
   </div>
 </footer>
 
 <script>
 function showSection(id, el) {
-  ['bookings','reviews','profile','security'].forEach(s => {
-    document.getElementById('section-'+s).style.display = s===id ? 'block' : 'none';
+  ['overview','bookings','reviews','profile','security'].forEach(s => {
+    const section = document.getElementById('section-'+s);
+    if (s === id) {
+      section.style.display = 'block';
+      section.classList.remove('section-animate');
+      void section.offsetWidth;
+      section.classList.add('section-animate');
+    } else {
+      section.style.display = 'none';
+    }
   });
   document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
-  if(el) el.classList.add('active');
+  if (el) el.classList.add('active');
 }
 function filterBookings(filter, btn) {
-  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
 }
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('stats-skeleton').style.display = 'none';
+    document.getElementById('stats-content').style.display = 'grid';
+  }, 1200);
+  setTimeout(() => {
+    document.getElementById('pkgs-skeleton').style.display = 'none';
+    document.getElementById('pkgs-content').style.display = 'grid';
+  }, 1600);
+});
 </script>
 </body>
 </html>
