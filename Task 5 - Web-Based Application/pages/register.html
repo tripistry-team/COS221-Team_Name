@@ -131,8 +131,10 @@
         <input type="password" placeholder="Repeat your password" autocomplete="new-password" id="cPword" name="cPword">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <label for="num">Contact number <span class="text-faint">(optional)</span></label>
-        <input type="text" placeholder="+27 82 000 0000" id="num" name="num">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <div class="form-group"><label>Mobile number <span class="text-faint">(optional)</span></label><input type="text" placeholder="+27 82 000 0000"></div>
+          <div class="form-group"><label>Home number <span class="text-faint">(optional)</span></label><input type="text" placeholder="+27 11 000 0000"></div>
+        </div>
       </div>
 
       <div style="margin:1.25rem 0;">

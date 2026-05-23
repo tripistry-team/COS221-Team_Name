@@ -2,8 +2,9 @@
   let navIn = document.getElementById("navLoggedIn");
   let userNav = document.getElementById("navUsername");
   console.log("test");
+
   async function callAPI(payload) {
-  const res = await fetch(/api/api.php, {
+  const res = await fetch('/api/api.php', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {'Content-Type': 'application/json'},
@@ -11,7 +12,7 @@
   });
   return res.json();
 }
-  const data = await callAPI({type: "CheckAuthorisation"});
+  const data = callAPI({type: "CheckAuthorisation"});
   if (data.logged_in === true) {
     navOut.style.visibility = "hidden";
     navIn.style.visibility = "block";

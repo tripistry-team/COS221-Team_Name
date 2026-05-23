@@ -34,10 +34,10 @@ function validateForm() {
     //const role = document.getElementById('role-agency').classList.contains('active') ? 'agency' : 'traveller';
     //window.location.href = role === 'agency' ? 'agency-dashboard.html' : 'traveller-dashboard.html';
 
-    if (sessionStorage.getItem(userType) === 'agency') {
+    if (sessionStorage.getItem("userType") === 'agency') {
         agencyAPI("RegisterAgency", agency, email, desc);
     } else {
-        travellerAPI("RegisterTraveller", name, middle, surname, email, country);
+        travellerAPI("RegisterTraveller", name, middle, surname, email, country, username, password);
     }
 
     return false;  
@@ -54,7 +54,7 @@ function travellerAPI(apitype, name, mid, surname, email, country, username, pas
     };
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/api.php/", true); 
+    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/PA5/COS221Practical5/Task 5 - Web-Based Application/pages/api/api.php", true); 
     xhr.setRequestHeader("Content-Type", "application/json");
 
 
@@ -65,8 +65,9 @@ function travellerAPI(apitype, name, mid, surname, email, country, username, pas
                 console.log("API RESPONSE:", data);
         
             } else {
-                const data = JSON.parse(xhr.responseText);
-                console.log("XHR ERROR:", xhr.status);
+          //      const data = JSON.parse(xhr.responseText);
+          console.log(xhr.responseText);
+               // console.log("XHR ERROR:", xhr.status);
             }
         } 
     };
@@ -86,7 +87,7 @@ function agencyAPI(apitype, agency, email, desc, username, password) {
     };
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/api.php/", true); 
+    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/PA5/COS221Practical5/Task 5 - Web-Based Application/pages/api/api.php", true); 
     xhr.setRequestHeader("Content-Type", "application/json");
 
 
@@ -97,8 +98,9 @@ function agencyAPI(apitype, agency, email, desc, username, password) {
                 console.log("API RESPONSE:", data);
         
             } else {
-                const data = JSON.parse(xhr.responseText);
-                console.log("XHR ERROR:", xhr.status);
+              //  const data = JSON.parse(xhr.responseText);
+              console.log(xhr.responseText);
+               // console.log("XHR ERROR:", xhr.status);
             }
         } 
     };
@@ -113,14 +115,14 @@ function agencyAPI(apitype, agency, email, desc, username, password) {
 function userAPI(apitype, username, email, password, user_type) {
     let body = {
         "type": apitype,
-        "username": agency,
+        "username": username,
         "email": email,
-        "password": desc,
+        "password": password,
         "user_type": user_type
     };
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/api.php/", true); 
+    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/PA5/COS221Practical5/Task 5 - Web-Based Application/pages/api/api.php", true); 
     xhr.setRequestHeader("Content-Type", "application/json");
 
 
@@ -129,16 +131,23 @@ function userAPI(apitype, username, email, password, user_type) {
             if (xhr.status === 200) {
                 const data = JSON.parse(xhr.responseText);
                 console.log("API RESPONSE:", data);
-                document.cookie = "username=" + username + "; loggedIn=true; path=/";
+                document.cookie = "username=" + username + "; logged_in=true; path=/";
         
             } else {
-                const data = JSON.parse(xhr.responseText);
-                console.log("XHR ERROR:", xhr.status);
+                // const data = JSON.parse(xhr.responseText);
+                console.log(xhr.responseText);
+               // console.log("XHR ERROR:", xhr.status);
             }
         } 
     };
 
     xhr.send(JSON.stringify(body));
+    if (user_type == "agency_staff") {
+        window.location.href = 'agency-dashboard.html';
+    } else {
+        window.location.href = 'traveller-dashboard.html';
+    }
+    
     
 
 }
@@ -150,10 +159,10 @@ function setRole(role) {
   document.getElementById('agency-fields').style.display = role==='agency' ? 'block' : 'none';
 
   if (role === 'agency') {
-    sessionStorage.setItem(userType, "agency");
+    sessionStorage.setItem("userType", "agency");
 
   } else {
-    sessionStorage.setItem(userType, "traveller");
+    sessionStorage.setItem("userType", "traveller");
   }
 }
 

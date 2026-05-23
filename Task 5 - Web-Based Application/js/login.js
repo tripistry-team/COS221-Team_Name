@@ -27,13 +27,13 @@ function handleLogin() {
 
 function sendToAPI(username, password, remember) {
     let body = {
-        "type": "login",
+        "type": "Login",
         "username": username,
         "password": password
     }
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/api.php/", true); 
+    xhr.open("POST", "https://wheatley.cs.up.ac.za/u25011503/PA5/COS221Practical5/Task 5 - Web-Based Application/pages/api/api.php", true); 
     xhr.setRequestHeader("Content-Type", "application/json");
 
 
@@ -43,16 +43,31 @@ function sendToAPI(username, password, remember) {
                 const data = JSON.parse(xhr.responseText);
                 console.log("API RESPONSE:", data);
                 if (remember === true) {
-                    localStorage.setItem("loggedIn", "true");
+                    
                 }
-                document.cookie = "username=" + username + "; loggedIn=true; path=/";
+                document.cookie = "username=" + username + "; logged_in=true; path=/";
         
             } else {
-                const data = JSON.parse(xhr.responseText);
+              //  const data = JSON.parse(xhr.responseText);
                 console.log("XHR ERROR:", xhr.status);
             }
         } 
     };
 
+    const type = getCookie('user_type');
+
     xhr.send(JSON.stringify(body));
+
+    if (type === 'traveller') {
+        window.location.href = 'traveller-dashboard.html';
+    } else {
+        window.location.href = 'agency-dashboard.html';
+    }
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
 }
