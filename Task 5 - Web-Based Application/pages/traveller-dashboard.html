@@ -38,6 +38,21 @@
   background:var(--bg-tertiary);flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:2rem;
 }
+@keyframes shimmer {
+  0%{background-position:-600px 0}
+  100%{background-position:600px 0}
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--col-border) 50%, var(--bg-tertiary) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: var(--radius-sm);
+}
+.skel-line { height:14px; margin-bottom:0.5rem; }
+.skel-line.wide { width:75%; }
+.skel-line.med { width:50%; }
+.skel-line.short { width:30%; }
+.skel-thumb { height:140px; border-radius:var(--radius-md); margin-bottom:0.875rem; }
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
