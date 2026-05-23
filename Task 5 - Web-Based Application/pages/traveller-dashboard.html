@@ -31,12 +31,8 @@
 }
 .dash-nav a:hover,.dash-nav a.active{color:var(--col);background:var(--bg-secondary);}
 .dash-nav a.active{font-weight:500;}
-.booking-card {
-  border:1px solid var(--col-border);border-radius:var(--radius-lg);
-  padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;
-  margin-bottom:1rem;transition:border-color 0.15s;
-}
-.booking-card:hover{border-color:var(--col-border-strong);}
+.booking-card{border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:1rem;transition:border-color 0.15s,box-shadow 0.2s,transform 0.15s;}
+.booking-card:hover{border-color:var(--col-border-strong);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.06);}
 .booking-thumb {
   width:80px;height:70px;border-radius:var(--radius-md);
   background:var(--bg-tertiary);flex-shrink:0;
