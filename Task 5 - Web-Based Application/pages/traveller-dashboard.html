@@ -42,6 +42,13 @@
   background:var(--bg-tertiary);flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:2rem;
 }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-animate {
+  animation: fadeSlideIn 0.25s ease forwards;
+}
 </style>
 </head>
 <body>
@@ -231,7 +238,15 @@
 <script>
 function showSection(id, el) {
   ['bookings','reviews','profile','security'].forEach(s => {
-    document.getElementById('section-'+s).style.display = s===id ? 'block' : 'none';
+    const el = document.getElementById('section-'+s);
+      if (s === id) {
+        el.style.display = 'block';
+        el.classList.remove('section-animate');
+        void el.offsetWidth; // force reflow
+        el.classList.add('section-animate');
+      } else {
+        el.style.display = 'none';
+      }
   });
   document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
   if(el) el.classList.add('active');
