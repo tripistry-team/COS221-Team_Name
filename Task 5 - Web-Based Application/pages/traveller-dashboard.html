@@ -74,7 +74,8 @@
           <div style="margin-top:0.625rem;"><span class="badge badge-green">Traveller</span></div>
         </div>
         <div class="dash-nav">
-          <a href="#bookings" class="active" onclick="showSection('bookings',this)"> My bookings</a>
+          <a href="#overview" class="active" onclick="showSection('overview',this)"> Overview</a>
+          <a href="#bookings" onclick="showSection('bookings',this)"> My bookings</a>
           <a href="#reviews" onclick="showSection('reviews',this)"> My reviews</a>
           <a href="#profile" onclick="showSection('profile',this)"> Profile</a>
           <a href="#security" onclick="showSection('security',this)"> Security</a>
@@ -233,7 +234,7 @@
 
 <script>
 function showSection(id, el) {
-  ['bookings','reviews','profile','security'].forEach(s => {
+  ['overview','bookings','reviews','profile','security'].forEach(s => {
     const el = document.getElementById('section-'+s);
       if (s === id) {
         el.style.display = 'block';
