@@ -188,6 +188,18 @@
         "status": "'available', 'unavailable', 'seasonal'"
     },
 
+    "Get bookings for a traveller":
+    {
+        "type": "GetBooking",
+        "traveller_ID": "<the ID of the traveller which u wish to return all bookings for>"
+    },
+
+    "Get details about a booking":
+    {
+        "type": "GetBookingDetails",
+        "booking_ID": "<the ID of the booking which u wish to return all details for>"
+    },
+
     "Side Note": "These are just some users I added to my local db.",
     "users": [
         {

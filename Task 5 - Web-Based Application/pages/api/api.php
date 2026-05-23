@@ -111,6 +111,14 @@ else if ($data["type"] === "AddService") {
     echo json_encode($api->addService($data));
 } 
 
+else if ($data["type"] === "GetBookings") {
+    echo json_encode($api->getBookings($data));
+} 
+
+else if ($data["type"] === "GetBookingDetails") {
+    echo json_encode($api->getBookingDetails($data));
+} 
+
 else {
     http_response_code(400);
     echo json_encode([

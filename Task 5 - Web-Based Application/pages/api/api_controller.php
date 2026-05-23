@@ -1124,6 +1124,59 @@ class API {
         ];
     }
 
+    public function getBookings($data) {
+        if (!isset($data["traveller_ID"])) {
+            return $this->error("Post parameters are missing");
+          }
+
+        $tID = trim($data["traveller_ID"]);
+
+        $sql = "SELECT * FROM BOOKING WHERE Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $tID);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "result" => $result
+        ];
+    }
+
+    public function getBookingDetails($data) {
+        if (!isset($data["booking_ID"])) {
+            return $this->error("Post parameters are missing");
+          }
+
+        $bID = trim($data["booking_ID"]);
+
+        $sql = "
+            SELECT b.* FROM BOOKING b JOIN Booking_Product_Service bps ON b.Booking_ID = bps.Booking_ID 
+            JOIN Package_Option p ON b.Package_ID = p.Package_ID WHERE b.Booking_ID = ? ;
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt)
+            return $this->error("Connection failed", "db");
+
+            $stmt->bind_param("i",$bID);
+
+        if (!$stmt->execute())
+            return $this->error("Query failed", "db");
+
+        $result = $stmt->get_result();
+        return [
+            "status"    => "success",
+            "timestamp" => time(),
+            "data"      => $result
+        ];
+    }
+
     private function error($msg, $type = "request") {
         if ($type === "db") http_response_code(500);
         else if ($type === "cred") http_response_code(401);
