@@ -117,8 +117,46 @@ else if ($data["type"] === "AddBookingService") {
     echo json_encode($api->addBookingService($data));
 }
 
-else if ($data["type"] === "InsertEndpointHere") {
-    echo json_encode($api->insertEndpointHere($data));
+else if ($data["type"] === "UpdateStatus") {
+    echo json_encode($api->updateStatus($data));
+}
+
+else if ($data["type"] === "AddContact") {
+    echo json_encode($api->addContact($data));
+} 
+else if ($data["type"] === "AddFeedback") {
+    echo json_encode($api->addFeedback($data));
+} 
+else if ($data["type"] === "AddResponse") {
+    echo json_encode($api->addResponse($data));
+} 
+
+else if ($data["type"] === "AddFlight") {
+    echo json_encode($api->addFlight($data));
+} 
+
+else if ($data["type"] === "AddDestination") {
+    echo json_encode($api->addDestination($data));
+} 
+
+else if ($data["type"] === "GetFeedback") {
+    echo json_encode($api->getFeedback($data));
+}        
+
+else if ($data["type"] === "GetContact") {
+    echo json_encode($api->getContact($data));
+} 
+
+else if ($data["type"] === "AddService") {
+    echo json_encode($api->addService($data));
+} 
+
+else if ($data["type"] === "GetBookings") {
+    echo json_encode($api->getBookings($data));
+} 
+
+else if ($data["type"] === "GetBookingDetails") {
+    echo json_encode($api->getBookingDetails($data));
 } 
 
 else {

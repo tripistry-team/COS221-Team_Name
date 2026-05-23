@@ -200,6 +200,14 @@
         "product_service_id": -1
     },
 
+    "Update Status of Feature":
+    {
+        "type": "UpdateStatus",
+        "feature": "<booking, package, product_service, or experience>",
+        "id": -1,
+        "status": "<one of the status options for each feature>"
+    },
+
     "Side Note": "These are just some users I added to my local db.",
     "users": [
         {
