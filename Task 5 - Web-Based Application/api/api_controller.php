@@ -1487,8 +1487,8 @@ class API {
 
         $rating = (int)$data["rating"];
         $tID = $_SESSION['type_id'];
-        $pID = (int)$data["package_ID"];
-        $pType = trim($data["package_Type"]);
+        $pID = (int)$data["package_id"];
+        $pType = trim($data["package_type"]);
         $comment = trim($data["comment"] ?? "");
 
         if ($rating < 1 || $rating > 5) 
@@ -1538,7 +1538,7 @@ class API {
             return $this->error("Post parameters are missing");
 
         $response = trim($data["response"]);
-        $fID = (int)$data["feedback_ID"];
+        $fID = (int)$data["feedback_id"];
 
         $sql = "UPDATE FEEDBACK SET Response = ? WHERE Feedback_ID = ?";
         $stmt = $this->conn->prepare($sql);
@@ -1562,11 +1562,11 @@ class API {
         if ($_SESSION['user_type'] !== "agency_staff")
             return $this->error("Invalid user type", "fbdn");
 
-        if (!isset($data["flight_Number"], $data["airline"], $data["departure_airport"], $data["arrival_airport"], 
+        if (!isset($data["flight_number"], $data["airline"], $data["departure_airport"], $data["arrival_airport"], 
             $data["departure_dateTime"], $data["arrival_dateTime"], $data["price"], $data["available_seats"], $data["seat_class"])) 
                 return $this->error("Post parameters are missing");
 
-        $flightNo = trim($data["flight_Number"]);
+        $flightNo = trim($data["flight_number"]);
         $airline = trim($data["airline"]);
         $depPort = trim($data["departure_airport"]);
         $arrPort = trim($data["arrival_airport"]);
@@ -1599,7 +1599,7 @@ class API {
         return [
             "status" => "success",
             "timestamp" => time(),
-            $data => ["flight_id" => $flight_id]
+            "data" => ["flight_id" => $flight_id]
         ];
 
     }
@@ -1668,10 +1668,10 @@ class API {
     }
 
     public function getContact($data) {
-        if (!isset($data["user_ID"])) 
+        if (!isset($data["user_id"])) 
             return $this->error("Post parameters are missing");
 
-        $uID = (int)$data["user_ID"];
+        $uID = (int)$data["user_id"];
 
         $sql = "SELECT * FROM USER_CONTACT_INFO WHERE User_ID = ?";
         $stmt = $this->conn->prepare($sql);
