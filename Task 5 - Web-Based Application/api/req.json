@@ -243,13 +243,14 @@
     "Get Feedback":
     {
         "type": "GetFeedback",
-        "feedback_ID": -1
+        "package_id": -1,
+        "package_type":"<solo, couple, group or family>"
     },
 
     "Get Contact":
     {
         "type": "GetContact",
-        "user_ID": -1
+        "user_id": -1
     },
 
     "Agency adds a flight to their package":
@@ -285,7 +286,7 @@
 
     "Get Bookings":
     {
-        "type": "GetBooking",
+        "type": "GetBookings",
         "traveller_id": -1
     },
 
