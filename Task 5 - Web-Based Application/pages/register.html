@@ -66,28 +66,28 @@
         <div style="font-size:0.8125rem;font-weight:500;color:var(--col-muted);margin-bottom:0.5rem;">I am a:</div>
         <div class="role-toggle">
           <button class="role-btn active" id="role-traveller" onclick="setRole('traveller')">Traveller</button>
-          <button class="role-btn" id="role-agency" onclick="setRole('agency')">Travel agency</button>
+          <button class="role-btn" id="role-agency" onclick="setRole('agency')" onclick="">Travel agency</button>
         </div>
       </div>
 
       <div id="traveller-fields">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
           <div class="form-group">
-            <label>First name</label>
-            <input id="reg-first-name" type="text" placeholder="Jane">
+            <label for="fname">First name</label>
+            <input type="text" placeholder="Jane" id="fname" name = "fname">
           </div>
           <div class="form-group">
-            <label>Surname</label>
-            <input id="reg-surname" type="text" placeholder=" Doe">
+            <label for="lname">Surname</label>
+            <input type="text" placeholder=" Doe" id="lname" name = "lname">
           </div>
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
-          <label>Middle initial <span class="text-faint">(optional)</span></label>
-          <input id="reg-mid-init" type="text" placeholder="A" maxlength="1" style="max-width:80px;">
+          <label for="mname">Middle initial <span class="text-faint">(optional)</span></label>
+          <input type="text" placeholder="A" maxlength="1" style="max-width:80px;" id="mname" name = "mname">
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Country of residence</label>
-          <select id="reg-country">
+          <select id = "selCountry">
             <option value="">Select a country</option>
             <option>South Africa</option>
             <option>Botswana</option>
@@ -103,46 +103,48 @@
 
       <div id="agency-fields" style="display:none;">
         <div class="form-group" style="margin-bottom:0.75rem;">
-          <label>Agency / company name</label>
-          <input id="reg-agency-name" type="text" placeholder="Wanderlust Co.">
+          <label for="agencyName">Agency / company name</label>
+          <input type="text" placeholder="Wanderlust Co." id="agencyName" name ="agencyName">
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
-          <label>Agency description <span class="text-faint">(optional)</span></label>
-          <textarea id="reg-agency-description" placeholder="Tell travellers about your agency…" style="min-height:80px;"></textarea>
+          <label for="agencyDesc">Agency description <span class="text-faint">(optional)</span></label>
+          <textarea placeholder="Tell travellers about your agency…" style="min-height:80px;" id="agencyDesc" name="agencyDesc"></textarea>
         </div>
       </div>
 
       <div class="section-divider">Account credentials</div>
 
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <label>Username</label>
-        <input id="reg-username" type="text" placeholder="janedoe" autocomplete="username">
+        <label for="username">Username</label>
+        <input type="text" placeholder="janedoe" autocomplete="username" id="username" name="username">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <label>Email address</label>
-        <input id="reg-email" type="email" placeholder="you@example.com" autocomplete="email">
+        <label for="email">Email address</label>
+        <input type="email" placeholder="you@example.com" autocomplete="email" id="email" name="email">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <label>Password</label>
-        <input id="reg-password" type="password" placeholder="At least 8 characters" autocomplete="new-password">
+        <label for="pword">Password</label>
+        <input type="password" placeholder="At least 8 characters" autocomplete="new-password" id="pword" name="pword">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <label>Confirm password</label>
-        <input id="reg-confirm-password" type="password" placeholder="Repeat your password" autocomplete="new-password">
+        <label for="cPword">Confirm password</label>
+        <input type="password" placeholder="Repeat your password" autocomplete="new-password" id="cPword" name="cPword">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <label>Contact number <span class="text-faint">(optional)</span></label>
-        <input type="text" placeholder="+27 82 000 0000">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <div class="form-group"><label>Mobile number <span class="text-faint">(optional)</span></label><input type="text" placeholder="+27 82 000 0000"></div>
+          <div class="form-group"><label>Home number <span class="text-faint">(optional)</span></label><input type="text" placeholder="+27 11 000 0000"></div>
+        </div>
       </div>
 
       <div style="margin:1.25rem 0;">
         <label style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;cursor:pointer;color:var(--col);line-height:1.5;">
-          <input type="checkbox" style="width:15px;height:15px;accent-color:var(--accent);margin-top:2px;flex-shrink:0;">
+          <input type="checkbox" id="cbxAgree" style="width:15px;height:15px;accent-color:var(--accent);margin-top:2px;flex-shrink:0;">
           I agree to the <a href="#" class="text-accent" style="text-decoration:none;">Terms of Service</a> and <a href="#" class="text-accent" style="text-decoration:none;">Privacy Policy</a>
         </label>
       </div>
 
-      <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="handleRegister()">Create account</button>
+      <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="validateForm()">Create account</button>
 
       <div style="text-align:center;margin-top:1.25rem;">
         <span class="text-sm text-muted">Already have an account? </span>
@@ -152,6 +154,8 @@
   </div>
 </div>
 
-<script src="../js/register.js"></script>
+<script src="../js/register.js">
+
+</script>
 </body>
 </html>

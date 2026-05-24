@@ -81,13 +81,53 @@ else if ($data["type"] === "AddAttraction") {
     echo json_encode($api->addAttraction($data));
 }
 
-else if ($data["type"] === "GetDestinations") {
-    echo json_encode($api->getDestinations());
+else if ($data["type"] === "AddPackage") {
+    echo json_encode($api->addPackage($data));
 }
 
-else if ($data["type"] === "InsertEndpointHere") {
-    echo json_encode($api->insertEndpointHere($data));
+else if ($data["type"] === "AddPackageAgency") {
+    echo json_encode($api->addPackageAgency($data));
+}
+
+else if ($data["type"] === "AddPackageOption") {
+    echo json_encode($api->addPackageOption($data));
+}
+
+else if ($data["type"] === "AddPackageOptionExperience") {
+    echo json_encode($api->addPackageOptionExperience($data));
+}
+
+else if ($data["type"] === "AddPackageOptionFlight") {
+    echo json_encode($api->addPackageOptionFlight($data));
 } 
+
+else if ($data["type"] === "AddPackageOptionService") {
+    echo json_encode($api->addPackageOptionService($data));
+} 
+
+else if ($data["type"] === "AddBooking") {
+    echo json_encode($api->addBooking($data));
+}
+
+else if ($data["type"] === "AddBookingPackageOption") {
+    echo json_encode($api->addBookingPackageOption($data));
+}
+
+else if ($data["type"] === "AddBookingService") {
+    echo json_encode($api->addBookingService($data));
+}
+
+else if ($data["type"] === "AddGroupTrip") {
+    echo json_encode($api->addGroupTrip($data));
+}
+
+else if ($data["type"] === "AssignGroupTrip") {
+    echo json_encode($api->assignGroupTrip($data));
+}
+
+else if ($data["type"] === "UpdateStatus") {
+    echo json_encode($api->updateStatus($data));
+}
 
 else if ($data["type"] === "AddContact") {
     echo json_encode($api->addContact($data));
@@ -125,10 +165,6 @@ else if ($data["type"] === "GetBookings") {
 
 else if ($data["type"] === "GetBookingDetails") {
     echo json_encode($api->getBookingDetails($data));
-    echo json_encode($api->addContact($data));
-} 
-else if ($data["type"] === "AddResponse") {
-    echo json_encode($api->addContact($data));
 } 
 
 else {

@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Package - Tripistry</title>
 <link rel="stylesheet" href="style.css">
-
 <style>
 .agency-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;padding-top:2rem;}
 .agency-sidebar{position:sticky;top:calc(var(--nav-h)+1rem);border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;}
@@ -48,14 +47,14 @@
           </div>
         </div>
         <div class="agency-nav">
-          <a href="agency-dashboard.html">Dashboard</a>
-          <a href="agency-packages.html" class="active">My packages</a>
-          <a href="agency-group-trips.html">Group trips</a>
-          <a href="agency-bookings.html">Bookings</a>
-          <a href="agency-reviews.html">Reviews</a>
+          <a href="agency-dashboard.html"> Dashboard</a>
+          <a href="agency-packages.html" class="active"> My packages</a>
+          <a href="agency-group-trips.html"> Group trips</a>
+          <a href="agency-bookings.html"> Bookings</a>
+          <a href="agency-reviews.html"> Reviews</a>
           <div style="border-top:1px solid var(--col-border);margin:0.5rem 0;padding-top:0.5rem;">
-            <a href="agency-profile.html">Agency profile</a>
-            <a href="login.html" style="color:var(--danger);"> Log out</a>
+            <a href="agency-profile.html"> Agency profile</a>
+            <a href="login.html" style="color:var(--danger);">← Log out</a>
           </div>
         </div>
       </aside>
@@ -72,9 +71,8 @@
           </div>
         </div>
 
-        <!-- Basic Info -->
         <div class="form-section">
-          <div class="form-section-title">Basic information</div>
+          <div class="form-section-title"> Basic information</div>
           <div style="display:flex;flex-direction:column;gap:1rem;">
             <div class="form-group">
               <label>Package name *</label>
@@ -104,9 +102,8 @@
           </div>
         </div>
 
-        <!-- Destination -->
         <div class="form-section">
-          <div class="form-section-title">Destination</div>
+          <div class="form-section-title"> Destination</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
             <div class="form-group">
               <label>Country *</label>
@@ -132,9 +129,8 @@
           </div>
         </div>
 
-        <!-- Package Options -->
         <div class="form-section">
-          <div class="form-section-title">Package options (pricing per type)</div>
+          <div class="form-section-title"> Package options (pricing per type)</div>
           <p class="text-sm text-muted" style="margin-bottom:1rem;">Set prices for each traveller type. Leave blank to exclude that type.</p>
           <div id="options-list">
             <div class="option-row">
@@ -142,7 +138,7 @@
               <div class="form-group"><label>Price per person (R)</label><input type="number" placeholder="18500"></div>
               <div class="form-group"><label>Min participants</label><input type="number" placeholder="1" min="1"></div>
               <div class="form-group"><label>Max participants</label><input type="number" placeholder="1" min="1"></div>
-              <div style="padding-bottom:2px;"><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeOption(this)" title="Remove">✕</button></div>
+              <div style="padding-bottom:2px;"><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeOption(this)" title="Remove">X</button></div>
             </div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="addOption()" style="margin-top:0.5rem;">+ Add option type</button>
@@ -150,25 +146,45 @@
 
         <!-- Flights -->
         <div class="form-section">
-          <div class="form-section-title">Flights</div>
+          <div class="form-section-title"> Flights</div>
           <div id="flights-list">
-            <div class="item-row">
-              <div class="item-row-icon"></div>
-              <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.5rem;">
-                <div class="form-group"><label>Flight number</label><input type="text" placeholder="SA286"></div>
-                <div class="form-group"><label>Airline</label><input type="text" placeholder="South African Airways"></div>
-                <div class="form-group"><label>From</label><input type="text" placeholder="JNB"></div>
-                <div class="form-group"><label>To</label><input type="text" placeholder="NRT"></div>
+            <div class="item-row" style="align-items:flex-start;">
+              <div class="item-row-icon" style="margin-top:0.25rem;"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+                  <div class="form-group"><label>Flight number</label><input type="text" placeholder="SA286"></div>
+                  <div class="form-group"><label>Airline</label><input type="text" placeholder="South African Airways"></div>
+                  <div class="form-group"><label>Seat class</label>
+                    <select>
+                      <option value="">Select class</option>
+                      <option>Economy</option>
+                      <option>Premium Economy</option>
+                      <option>Business</option>
+                      <option>First</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                  <div class="form-group"><label>Departure airport</label><input type="text" placeholder="JNB - O.R. Tambo"></div>
+                  <div class="form-group"><label>Departure date & time</label><input type="datetime-local"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                  <div class="form-group"><label>Arrival airport</label><input type="text" placeholder="NRT - Narita"></div>
+                  <div class="form-group"><label>Arrival date & time</label><input type="datetime-local"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                  <div class="form-group"><label>Price per seat (R)</label><input type="number" placeholder="8500" min="0"></div>
+                  <div class="form-group"><label>Available seats</label><input type="number" placeholder="180" min="1"></div>
+                </div>
               </div>
-              <button class="btn btn-ghost btn-sm" style="color:var(--danger);align-self:flex-end;" onclick="removeRow(this)">✕</button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--danger);margin-top:0.25rem;" onclick="removeRow(this)">X</button>
             </div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="addFlight()" style="margin-top:0.5rem;">+ Add flight</button>
         </div>
 
-        <!-- Experiences -->
         <div class="form-section">
-          <div class="form-section-title">Experiences & Accommodation</div>
+          <div class="form-section-title"> Experiences & Accommodation</div>
           <p class="text-sm text-muted" style="margin-bottom:1rem;">Add accommodations, restaurants, activities, and attractions included in this package.</p>
           <div id="experiences-list">
             <div class="item-row">
@@ -183,7 +199,7 @@
                   </select>
                 </div>
                 <div class="form-group"><label>Name</label><input type="text" placeholder="Shinjuku Granbell Hotel"></div>
-                <div class="form-group"><label>Category / notes</label><input type="text" placeholder="4· Central Tokyo"></div>
+                <div class="form-group"><label>Category / notes</label><input type="text" placeholder="4 stars · Central Tokyo"></div>
               </div>
               <button class="btn btn-ghost btn-sm" style="color:var(--danger);align-self:flex-end;" onclick="removeRow(this)">X</button>
             </div>
@@ -191,19 +207,27 @@
           <button class="btn btn-ghost btn-sm" onclick="addExperience()" style="margin-top:0.5rem;">+ Add experience</button>
         </div>
 
-        <!-- Product Services -->
         <div class="form-section">
           <div class="form-section-title"> Add-on services</div>
           <p class="text-sm text-muted" style="margin-bottom:1rem;">Optional extras travellers can add to their booking.</p>
           <div id="services-list">
-            <div class="item-row">
-              <div class="item-row-icon"></div>
-              <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 120px;gap:0.5rem;">
-                <div class="form-group"><label>Service name</label><input type="text" placeholder="Airport lounge access"></div>
-                <div class="form-group"><label>Category</label><input type="text" placeholder="Airport"></div>
-                <div class="form-group"><label>Price (R)</label><input type="number" placeholder="450"></div>
+            <div class="item-row" style="align-items:flex-start;">
+              <div class="item-row-icon" style="margin-top:0.25rem;"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="display:grid;grid-template-columns:1fr 1fr 120px 140px;gap:0.5rem;">
+                  <div class="form-group"><label>Service name</label><input type="text" placeholder="Airport lounge access"></div>
+                  <div class="form-group"><label>Category</label><input type="text" placeholder="Airport"></div>
+                  <div class="form-group"><label>Price (R)</label><input type="number" placeholder="450" min="0"></div>
+                  <div class="form-group"><label>Availability</label>
+                    <select>
+                      <option value="available">Available</option>
+                      <option value="unavailable">Unavailable</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group"><label>Description</label><input type="text" placeholder="Brief description of the service…"></div>
               </div>
-              <button class="btn btn-ghost btn-sm" style="color:var(--danger);align-self:flex-end;" onclick="removeRow(this)">X</button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--danger);margin-top:0.25rem;" onclick="removeRow(this)">X</button>
             </div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="addService()" style="margin-top:0.5rem;">+ Add service</button>
@@ -223,7 +247,97 @@
 
 <div id="toast" style="display:none;position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--col);color:#fff;padding:0.75rem 1.5rem;border-radius:var(--radius-md);font-size:0.9rem;z-index:999;"></div>
 
-<script src="../js/agency-package-form.js"></script>
+<script>
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+function saveDraft() {
+  const name = document.getElementById('pkg-name').value || 'Untitled';
+  toast('Draft saved: ' + name);
+}
+function publishPkg() {
+  const name = document.getElementById('pkg-name').value;
+  if (!name) { toast('Please enter a package name first.'); return; }
+  if (confirm('Publish "' + name + '"? It will be visible to travellers.')) {
+    toast('Package published!');
+    setTimeout(() => window.location.href = 'agency-packages.html', 1500);
+  }
+}
+function addOption() {
+  const html = `<div class="option-row">
+    <div class="form-group"><label>Type</label><select><option>solo</option><option>couple</option><option>group</option><option>family</option></select></div>
+    <div class="form-group"><label>Price per person (R)</label><input type="number" placeholder="0"></div>
+    <div class="form-group"><label>Min participants</label><input type="number" placeholder="1" min="1"></div>
+    <div class="form-group"><label>Max participants</label><input type="number" placeholder="1" min="1"></div>
+    <div style="padding-bottom:2px;"><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeOption(this)">X</button></div>
+  </div>`;
+  document.getElementById('options-list').insertAdjacentHTML('beforeend', html);
+}
+function removeOption(btn) { btn.closest('.option-row').remove(); }
+function removeRow(btn) { btn.closest('.item-row').remove(); }
+function addFlight() {
+  const html = `<div class="item-row" style="align-items:flex-start;">
+    <div class="item-row-icon" style="margin-top:0.25rem;"></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:0.5rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+        <div class="form-group"><label>Flight number</label><input type="text" placeholder="SA286"></div>
+        <div class="form-group"><label>Airline</label><input type="text" placeholder="South African Airways"></div>
+        <div class="form-group"><label>Seat class</label>
+          <select><option value="">Select class</option><option>Economy</option><option>Premium Economy</option><option>Business</option><option>First</option></select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+        <div class="form-group"><label>Departure airport</label><input type="text" placeholder="JNB - O.R. Tambo"></div>
+        <div class="form-group"><label>Departure date & time</label><input type="datetime-local"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+        <div class="form-group"><label>Arrival airport</label><input type="text" placeholder="NRT - Narita"></div>
+        <div class="form-group"><label>Arrival date & time</label><input type="datetime-local"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+        <div class="form-group"><label>Price per seat (R)</label><input type="number" placeholder="8500" min="0"></div>
+        <div class="form-group"><label>Available seats</label><input type="number" placeholder="180" min="1"></div>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="color:var(--danger);margin-top:0.25rem;" onclick="removeRow(this)">X</button>
+  </div>`;
+  document.getElementById('flights-list').insertAdjacentHTML('beforeend', html);
+}
+function addExperience() {
+  const html = `<div class="item-row">
+    <div class="item-row-icon"></div>
+    <div style="flex:1;display:grid;grid-template-columns:140px 1fr 1fr;gap:0.5rem;">
+      <div class="form-group"><label>Type</label>
+        <select><option value="accommodation"> Accommodation</option><option value="restaurant"> Restaurant</option><option value="activity"> Activity</option><option value="attraction"> Attraction</option></select>
+      </div>
+      <div class="form-group"><label>Name</label><input type="text" placeholder="Name"></div>
+      <div class="form-group"><label>Category / notes</label><input type="text" placeholder="Notes"></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="color:var(--danger);align-self:flex-end;" onclick="removeRow(this)">X</button>
+  </div>`;
+  document.getElementById('experiences-list').insertAdjacentHTML('beforeend', html);
+}
+function addService() {
+  const html = `<div class="item-row" style="align-items:flex-start;">
+    <div class="item-row-icon" style="margin-top:0.25rem;"></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:0.5rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 120px 140px;gap:0.5rem;">
+        <div class="form-group"><label>Service name</label><input type="text" placeholder="Service name"></div>
+        <div class="form-group"><label>Category</label><input type="text" placeholder="Category"></div>
+        <div class="form-group"><label>Price (R)</label><input type="number" placeholder="0" min="0"></div>
+        <div class="form-group"><label>Availability</label>
+          <select><option value="available">Available</option><option value="unavailable">Unavailable</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label>Description</label><input type="text" placeholder="Brief description of the service…"></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="color:var(--danger);margin-top:0.25rem;" onclick="removeRow(this)">X</button>
+  </div>`;
+  document.getElementById('services-list').insertAdjacentHTML('beforeend', html);
+}
+</script>
 </body>
 </html>
 

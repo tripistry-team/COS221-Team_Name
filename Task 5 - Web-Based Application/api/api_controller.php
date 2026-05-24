@@ -58,7 +58,7 @@ class API {
     }
 
     public function registerTraveller($data) {
-        if (!isset($data["f_name"], $data["mid_init"], $data["s_name"], $data["email"], $data["country"]))
+        if (!isset($data["f_name"], $data["s_name"], $data["email"], $data["country"]))
             return $this->error("Post parameters are missing");
 
         $fname = trim($data["f_name"]);
@@ -267,9 +267,6 @@ class API {
     }
 
     public function getFeature($data) {
-        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            return $this->error("Not authenticated", "cred"); 
-
         if (!isset($data["feature"])) 
             return $this->error("Post parameters are missing");
 
@@ -306,9 +303,6 @@ class API {
     }
 
     public function getPackages($data) {
-        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            return $this->error("Not authenticated", "cred"); 
-
         $sql = "
             SELECT
                 p.Package_ID,
@@ -428,9 +422,6 @@ class API {
     }
 
     public function getPackageDetails($data) {
-        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
-            return $this->error("Not authenticated", "cred"); 
-
         if (!isset($data["package_id"]))
             return $this->error("Post parameters are missing");
 
@@ -438,7 +429,7 @@ class API {
         if ($pid <= 0)
             return $this->error("Invalid package ID");
 
-        //(agency is M:N AGENCY_DESIGNS_PACKAGE)
+        // Package
         $sql = "
             SELECT
                 p.Package_ID, p.Name, p.Description,
@@ -457,7 +448,7 @@ class API {
             return $this->error("Package not found");
         $package = $result->fetch_assoc();
 
-        // Agencies — one package can be owned by multiple agencies
+        // Agencies
         $sql = "
             SELECT a.Agency_ID, a.Company_Name, a.Email AS Agency_Email, a.Description AS Agency_Description
             FROM AGENCY_DESIGNS_PACKAGE adp
@@ -475,7 +466,7 @@ class API {
         while ($row = $result->fetch_assoc()) {
             $agencies[] = $row;
         }
-        $package["agencies"] = $agencies;//list of agencies for the package
+        $package["agencies"] = $agencies;
 
         // Package Options
         $sql = "
@@ -883,8 +874,7 @@ class API {
         if ($_SESSION['user_type'] !== "agency_staff")
             return $this->error("Invalid user type", "fbdn");
 
-        if (!isset($data["name"], $data["description"], $data["base_price"], $data["duration"], 
-            $data["status"], $data["agency_id"]))
+        if (!isset($data["name"], $data["description"], $data["base_price"], $data["duration"], $data["status"]))
                 return $this->error("Post parameters are missing");
 
         $allowed = ["draft", "active", "archived"];
@@ -896,10 +886,42 @@ class API {
         $price = (float)$data["base_price"];
         $duration = (int)$data["duration"];
         $status = $data["status"];
-        $agency_id = (int)$data["agency_id"];
 
         if (!$name || !$description)
             return $this->error("Post parameters are empty");
+
+        //===
+
+        $sql = "INSERT INTO PACKAGE (Name, Description, Base_Price, Duration, Package_Status) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssdis", $name, $description, $price, $duration, $status);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $package_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => ["package_id" => $package_id]
+        ];
+    }
+
+    public function addPackageAgency($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["agency_id"], $data["package_id"]))
+                return $this->error("Post parameters are missing");
+
+        $agency_id = (int)$data["agency_id"];
+        $package_id = (int)$data["package_id"];
 
         $sql = "SELECT Agency_ID FROM AGENCY WHERE Agency_ID = ?";        
         $stmt = $this->conn->prepare($sql);
@@ -913,23 +935,31 @@ class API {
         if ($result->num_rows == 0)
             return $this->error("Invalid agency id");
 
-        //===
-
-        $sql = "INSERT INTO PACKAGE (Name, Description, Base_Price, Duration, Package_Status, Agency_ID) 
-                VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "SELECT Package_ID FROM PACKAGE WHERE Package_ID = ?";        
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
-        $stmt->bind_param("ssdisi", $name, $description, $price, $duration, $status, $agency_id);
+        $stmt->bind_param("i", $package_id);
         if (!$stmt->execute()) 
             return $this->error("Insert failed", "db");
 
-        $package_id = $this->conn->insert_id;
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid package id");
+
+        //===
+
+        $sql = "INSERT IGNORE INTO AGENCY_DESIGNS_PACKAGE (Agency_ID, Package_ID) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $agency_id, $package_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
 
         return [
             "status" => "success",
-            "timestamp" => time(),
-            "data" => ["package_id" => $package_id]
+            "timestamp" => time()
         ];
     }
 
@@ -1058,7 +1088,7 @@ class API {
 
         $package_id = (int)$data["package_id"];
         $type = $data["package_type"];
-        $flight_id = (int)$data["experience_id"];
+        $flight_id = (int)$data["flight_id"];
         $seats = (int)$data["seats"];
 
         if (!$type)
@@ -1098,7 +1128,7 @@ class API {
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
-        $stmt->bind_param("isii", $package_id, $type, $flight_id, $seats_allocated);
+        $stmt->bind_param("isii", $package_id, $type, $flight_id, $seats);
         if (!$stmt->execute()) 
             return $this->error("Insert failed", "db");
 
@@ -1166,8 +1196,763 @@ class API {
         ];
     }
 
-    public function insertEndpointHere($data) {
+    public function addBooking($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["date"], $data["status"], $data["num_people"], $data["total_price"], $data["traveller_id"]))
+                return $this->error("Post parameters are missing");
+
+        $allowed = ["pending", "confirmed", "cancelled", "completed"];
+        if (!in_array($data["status"], $allowed)) 
+            return $this->error("Invalid booking status");
+
+        $date = $data["date"];
+        $status = $data["status"];
+        $num_people = (int)$data["num_people"];
+        $price = (float)$data["total_price"];
+        $traveller_id = (int)$data["traveller_id"];
+
+        if (!$status || !$date)
+            return $this->error("Post parameters are empty");
+
+        $sql = "SELECT Traveller_ID FROM TRAVELLER WHERE Traveller_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $traveller_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid traveller id");
+
+        //===
+
+        $sql = "INSERT INTO Booking (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssidi", $date, $status, $num_people, $price, $traveller_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $booking_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => ["booking_id" => $booking_id]
+        ];
+    }
+
+    public function addBookingPackageOption($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["booking_id"], $data["package_id"], $data["package_type"]))
+                return $this->error("Post parameters are missing");
+
+        $booking_id = (int)$data["booking_id"];
+        $package_id = (int)$data["package_id"];
+        $type = $data["package_type"];
+
+        $sql = "SELECT Package_ID, Package_Type FROM PACKAGE_OPTION WHERE Package_ID = ? AND Package_Type = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("is", $package_id, $type);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid package option");
+
+        $sql = "SELECT Booking_ID FROM BOOKING WHERE Booking_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $booking_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid booking id");
+
+        //===
+
+        $sql = "INSERT INTO BOOKING_PACKAGE_OPTION (Booking_ID, Package_ID, Package_Type) VALUES (?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("iis", $booking_id, $package_id, $type);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+        ];
+    }
+
+    public function addBookingService($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["booking_id"], $data["product_service_id"]))
+                return $this->error("Post parameters are missing");
+
+        $booking_id = (int)$data["booking_id"];
+        $service_id = (int)$data["product_service_id"];
+
+        $sql = "SELECT Product_Service_ID FROM PRODUCT_SERVICE WHERE Product_Service_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $service_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid product or service");
+
+        $sql = "SELECT Booking_ID FROM BOOKING WHERE Booking_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $booking_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid booking id");
+
+        //===
+
+        $sql = "INSERT INTO BOOKING_PRODUCT_SERVICE (Booking_ID, Product_Service_ID) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $booking_id, $service_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+        ];
+    }
+
+    public function addGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["name"], $data["start_date"], $data["end_date"], $data["join_deadline"],
+            $data["min_participants"], $data["max_participants"], $data["agency_id"]))
+                return $this->error("Post parameters are missing");
+
+        $name = trim($data["name"]);
+        $start = trim($data["start_date"]);
+        $end = trim($data["end_date"]);
+        $deadline = trim($data["join_deadline"]);
+        $min = (int)$data["min_participants"];
+        $max = (int)$data["max_participants"];
+        $agency_id = (int)$data["agency_id"];
+
+        if (!$name || !$start || !$end || !$deadline)
+            return $this->error("Post parameters are empty");
+
+        $sql = "SELECT Agency_ID FROM AGENCY WHERE Agency_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $agency_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid agency id");
         
+        //===
+
+        $sql = "INSERT INTO GROUP_TRIP 
+                (Trip_Name, Start_Date, End_Date, Join_Deadline, Participants_Min, Participants_Max, Participants_Current, Trip_Status, Agency_ID) 
+                VALUES (?, ?, ?, ?, ?, ?, 0, 'planned', ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssssiii", $name, $start, $end, $deadline, $min, $max, $agency_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $group_trip_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => ["group_trip_id" => $group_trip_id]
+        ];
+    }
+
+    public function assignGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["group_trip_id"], $data["booking_id"]))
+            return $this->error("Post parameters are missing");
+
+        $group_trip_id = (int)$data["group_trip_id"];
+        $booking_id = (int)$data["booking_id"];
+
+        $sql = "SELECT Group_Trip_ID FROM GROUP_TRIP WHERE Group_Trip_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $group_trip_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid group trip id");
+
+        //===
+
+        $sql = "UPDATE BOOKING SET Group_Trip_ID = ? WHERE Booking_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $group_trip_id, $booking_id);
+        if (!$stmt->execute()) 
+            return $this->error("Update failed", "db");
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+        ]; 
+    }
+
+    public function updateStatus($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["feature"], $data["id"])) 
+            return $this->error("Post parameters are missing");
+
+        $allowed = ["booking", "experience", "package", "product_service", "group_trip"];
+        if (!in_array($data["feature"], $allowed)) 
+            return $this->error("Invalid feature");
+
+        $feature = $data["feature"];
+        $id = (int)$data["id"];
+        $status = $data["status"] ?? "";
+
+        if ($feature === "booking") {
+            $allowed = ["pending", "confirmed", "cancelled", "completed"];
+            if (!in_array($data["status"], $allowed)) 
+                return $this->error("Invalid status");
+
+            $sql = "UPDATE BOOKING SET Booking_Status = ? WHERE Booking_ID = ?";
+        }
+
+        if ($feature === "experience") {
+            $allowed = ["available", "unavailable", "seasonal"];
+            if (!in_array($data["status"], $allowed)) 
+                return $this->error("Invalid status");
+
+            $sql = "UPDATE EXPERIENCE SET Availability_Status = ? WHERE Experience_ID = ?";
+        }
+
+        if ($feature === "package") {
+            $allowed = ["draft", "active", "archived"];
+            if (!in_array($data["status"], $allowed)) 
+                return $this->error("Invalid status");
+
+            $sql = "UPDATE PACKAGE SET Package_Status = ? WHERE Package_ID = ?";
+        }
+
+        if ($feature === "product_service") {
+            $allowed = ["available", "unavailable", "seasonal"];
+            if (!in_array($data["status"], $allowed)) 
+                return $this->error("Invalid status");
+
+            $sql = "UPDATE PRODUCT_SERVICE SET Availability_Status = ? WHERE Product_Service_ID = ?";
+        }
+
+        if ($feature === "group_trip") {
+            if (isset($data["participants"])) {
+                $participants = (int)$data["participants"];
+
+                $sql = "UPDATE GROUP_TRIP SET Participants_Current = ? 
+                        WHERE Group_Trip_ID = ? AND Participants_Max >= ?";
+                $stmt = $this->conn->prepare($sql);
+                if (!$stmt) 
+                    return $this->error("Connection failed", "db");
+                $stmt->bind_param("iii", $participants, $id, $participants);
+                if (!$stmt->execute()) 
+                    return $this->error("Update failed", "db");
+
+                if(!$status) {
+                    return [
+                        "status" => "success",
+                        "timestamp" => time(),
+                    ];
+                }
+            }
+
+            $allowed = ["planned", "open", "full", "in_progress", "completed", "cancelled"];
+            if (!in_array($data["status"], $allowed)) 
+                return $this->error("Invalid status");
+
+            $sql = "UPDATE GROUP_TRIP SET Trip_Status = ? WHERE Group_Trip_ID = ?";
+        }
+
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("si", $status, $id);
+        if (!$stmt->execute()) 
+            return $this->error("Update failed", "db");
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+        ];
+    }
+
+
+    //=====================================================================================
+
+
+    public function addContact($data) {
+        if (!isset($data["user_id"], $data["number1"])) 
+            return $this->error("Post parameters are missing");
+
+        $user = trim($data["user_id"]);
+        $num1 = trim($data["number1"]);
+
+        if (!$user || !$num1) 
+            return $this->error("Post parameters are missing");
+
+        $sql = "SELECT User_ID FROM USER WHERE User_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $user);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid user id");
+
+        //===
+
+        $sql = "INSERT INTO USER_CONTACT_INFO (User_ID, Contact_Info) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $user, $num1);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        if (isset($data["number2"])) {
+            $num2 = trim($data["number2"]);
+
+            $sql = "INSERT INTO USER_CONTACT_INFO (User_ID, Contact_Info) VALUES (?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) 
+                return $this->error("Connection failed", "db");
+            $stmt->bind_param("ii", $user, $num2);
+            if (!$stmt->execute()) 
+                return $this->error("Second Insert failed", "db");
+        }
+
+        return [
+            "status" => "success",
+            "timestamp" => time()
+        ];
+    }
+
+    public function addFeedback($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["rating"], $data["package_id"], $data["package_type"]))
+            return $this->error("Post parameters are missing");
+
+        $rating = (int)$data["rating"];
+        $tID = $_SESSION['type_id'];
+        $pID = (int)$data["package_id"];
+        $pType = trim($data["package_type"]);
+        $comment = trim($data["comment"] ?? "");
+
+        if ($rating < 1 || $rating > 5) 
+            return $this->error("Invalid rating");
+        
+        $sql = "SELECT Package_ID, Package_Type FROM PACKAGE_OPTION WHERE Package_ID = ? AND Package_Type = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("is", $pID, $pType);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid package option");
+        
+        //===
+
+        $sql = "INSERT INTO FEEDBACK (Rating, Comment, Last_Updated, Traveller_ID, Package_ID, Package_Type) 
+                VALUES (?, ?, NOW(), ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("isiis", $rating, $comment, $tID, $pID, $pType);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $feedback_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => ["feedback_id" => $feedback_id]
+        ];
+
+    }
+
+    public function addResponse($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["feedback_id"], $data["response"]))
+            return $this->error("Post parameters are missing");
+
+        $response = trim($data["response"]);
+        $fID = (int)$data["feedback_id"];
+
+        $sql = "UPDATE FEEDBACK SET Response = ? WHERE Feedback_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("si", $response, $fID);
+        if (!$stmt->execute()) 
+            return $this->error("Update failed", "db");
+
+        return [
+            "status" => "success",
+            "timestamp" => time()
+        ];
+
+    }
+
+    public function addFlight($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["flight_number"], $data["airline"], $data["departure_airport"], $data["arrival_airport"], 
+            $data["departure_dateTime"], $data["arrival_dateTime"], $data["price"], $data["available_seats"], $data["seat_class"])) 
+                return $this->error("Post parameters are missing");
+
+        $flightNo = trim($data["flight_number"]);
+        $airline = trim($data["airline"]);
+        $depPort = trim($data["departure_airport"]);
+        $arrPort = trim($data["arrival_airport"]);
+        $depTime = trim($data["departure_dateTime"]);
+        $arrTime = trim($data["arrival_dateTime"]);
+        $price = (float)$data["price"];
+        $numSeats = (int)$data["available_seats"];
+        $class = trim($data["seat_class"]);
+
+        if ($class !== "economy" && $class !== "premium_economy" && $class !== "business" && $class !== "first") 
+            return $this->error("Invalid seat class");
+
+        if (!$flightNo || !$airline || !$depPort || !$arrPort || !$depTime || !$arrTime)
+            return $this->error("Post parameters are empty");
+
+        //===
+
+        $sql = "INSERT INTO FLIGHT 
+                (Flight_Number, Airline, Departure_Airport, Departure_DateTime, Arrival_Airport, Arrival_DateTime, Price, Available_Seats, Seat_Class) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssssssdis", $flightNo, $airline, $depPort, $depTime, $arrPort, $arrTime, $price, $numSeats, $class);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $flight_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => ["flight_id" => $flight_id]
+        ];
+
+    }
+
+    public function addDestination($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["country"], $data["city"])) 
+            return $this->error("Post parameters are missing");
+          
+        $country = trim($data["country"]);
+        $city = trim($data["city"]);
+
+        if (!$country || !$city)
+            return $this->error("Post parameters are empty");
+
+        $sql = "INSERT INTO DESTINATION (Country, City) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ss", $country, $city);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $dest_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "destination_id" => $dest_id
+        ];
+        
+    }
+
+    public function getFeedback($data) {
+        if (!isset($data["package_id"], $data["package_type"])) 
+            return $this->error("Post parameters are missing");
+        
+        $pID = (int)$data["package_id"];
+        $pType = trim($data["package_type"]);
+
+        $sql = "SELECT * FROM FEEDBACK WHERE Package_ID = ? AND Package_Type = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("is", $pID, $pType);
+        if (!$stmt->execute()) 
+            return $this->error("Query failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid package option");
+
+        $row = $result->fetch_assoc();
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => $row
+        ];
+
+    }
+
+    public function getContact($data) {
+        if (!isset($data["user_id"])) 
+            return $this->error("Post parameters are missing");
+
+        $uID = (int)$data["user_id"];
+
+        $sql = "SELECT * FROM USER_CONTACT_INFO WHERE User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $uID);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid user id");
+
+        $row = $result->fetch_assoc();
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => $row
+        ];
+
+    }
+
+    public function addService($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["name"], $data["description"],  $data["category"], $data["price"], $data["status"]))
+            return $this->error("Post parameters are missing");
+
+        $name = trim($data["name"]);
+        $desc = trim($data["description"]);
+        $category = trim($data["category"]);
+        $price = (float)$data["price"];
+        $status = trim($data["status"]);
+
+        if (!$name || !$desc || !$category || !$status)
+            return $this->error("Post parameters are empty");
+
+        $allowed = ["available", "unavailable", "seasonal"];
+        if (!in_array($status, $allowed)) 
+            return $this->error("Invalid status");
+
+        //===
+
+        $sql = "INSERT INTO PRODUCT_SERVICE (Name, Description, Category, Price, Availability_Status) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("sssds", $name, $desc, $category, $price, $status);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $service_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => ["service_id" => $service_id]
+        ];
+    }
+
+    public function getBookings($data) {
+        if (!isset($data["traveller_id"])) 
+            return $this->error("Post parameters are missing");
+
+        $tID = (int)$data["traveller_id"];
+
+        $sql = "SELECT * FROM BOOKING WHERE Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $tID);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid traveller id");
+
+        $bookings = [];
+        while ($row = $result->fetch_assoc()) {
+            $bookings[] = $row;
+        }
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "result" => $bookings
+        ];
+    }
+
+    public function getBookingDetails($data) {
+        if (!isset($data["booking_id"])) 
+            return $this->error("Post parameters are missing");
+
+        $bID = (int)$data["booking_id"];
+
+        // Booking
+        $sql = "SELECT * from BOOKING WHERE Booking_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt)
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $bID);
+        if (!$stmt->execute())
+            return $this->error("Query failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid traveller id");
+
+        $booking = $result->fetch_assoc();
+
+        // Package options
+        $sql = "SELECT * from BOOKING_PACKAGE_OPTION WHERE Booking_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt)
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $bID);
+        if (!$stmt->execute())
+            return $this->error("Query failed", "db");
+
+        $result = $stmt->get_result();
+
+        $package_options = [];
+        while ($row = $result->fetch_assoc()) {
+            $package_options[] = $row;
+        }
+
+        // Product/Services
+        $sql = "SELECT * from BOOKING_PRODUCT_SERVICE WHERE Booking_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt)
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $bID);
+        if (!$stmt->execute())
+            return $this->error("Query failed", "db");
+
+        $result = $stmt->get_result();
+
+        $products_services = [];
+        while ($row = $result->fetch_assoc()) {
+            $products_services[] = $row;
+        }
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => [
+                "booking" => $booking,
+                "package_options" => $package_options,
+                "products_services" => $products_services
+            ]
+        ];
     }
 
     private function error($msg, $type = "request") {
