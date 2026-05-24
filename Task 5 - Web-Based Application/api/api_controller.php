@@ -62,7 +62,7 @@ class API {
             return $this->error("Post parameters are missing");
 
         $fname = trim($data["f_name"]);
-        $minit = trim($data["mid_init"]);
+        $minit = trim($data["mid_init"] ?? "");
         $sname = trim($data["s_name"]);
         $email = trim($data["email"]);
         $country = trim($data["country"]);
