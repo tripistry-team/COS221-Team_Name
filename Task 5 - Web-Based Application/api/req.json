@@ -66,6 +66,24 @@
         }
     },
 
+<<<<<<< HEAD:Task 5 - Web-Based Application/api/req.json
+=======
+
+    "Add Contact deatils (Phone number)":
+    {
+        "type": "AddContact",
+        "user_id": "<ID of the user who inputs the number>"
+
+    },
+
+    "Add Phone number":
+    {
+        "type": "AddContact",
+        "number1": "<mobile num>",
+        "number2": "<home num>"
+    }, 
+
+>>>>>>> 99ac2b1f02bf5027e1e95e8da518b957fa917de5:Task 5 - Web-Based Application/pages/api/req.json
     "Get Package Details":
     {
         "type": "GetPackageDetails",
@@ -122,6 +140,86 @@
         "entry_fee": -1.0
     },
 
+<<<<<<< HEAD:Task 5 - Web-Based Application/api/req.json
+=======
+
+    "Traveller leaves review":
+    {
+        "type": "AddFeedback",
+        "rating": "<rating from 1 to 5>",
+        "comment": "optional comment for the review",
+        "traveller_ID": "<ID of person leaving the review >",
+        "package_ID": "<ID of package being reviewed>",
+        "package_type": "<The package type>",
+        "user_Type": "<'traveller' or 'agency_staff'>"
+    },
+
+    "Agency responds to review":
+    {
+        "type": "AddResponse",
+        "response": "response to the review",
+        "feedback_ID": "<ID of the review >",
+        "user_type": "<'traveller' or 'agency_staff'>"
+    },
+
+    "Get Feedback":
+    {
+        "type": "GetFeedback",
+        "feedback_ID": "<ID of feedback u wish to return>"
+    },
+
+    "Get Contact":
+    {
+        "type": "GetContact",
+        "user_ID": "<ID of user u wish to get contact details>"
+    },
+
+    "Agency adds a flight to their package":
+    {
+        "type": "AddFlight",
+        "flight_number": "<Flight number of the flight (this is NOT the flight_id PK)",
+        "airline": "<Airline of flight >",
+        "departure_airport": "<Airport CODE (3 letters) that the flight departs from>",
+        "arrival_airport": "<Airport CODE (3 letters) that the flight arrives to>",
+        "departure_dateTime": "<DateTime of departure (using the DateTime data type)>",
+        "arrival_dateTime": "<DateTime of arrival (using the DateTime data type)>",
+        "price": "<Price of the flight, I mean really I think its quite obvious what most of these parameters do>",
+        "available_seats": "<Number of seats currently available>",
+        "seat_class": "<'economy', 'premium_economy', 'business' or 'first_class'>",
+        "user_type": "<'traveller' or 'agency_staff'>"
+    },
+
+    "Add Destination":
+    {
+        "type": "AddDestination",
+        "country": "The country of the destination",
+        "city": "Take a wild guess what this one is"
+    },
+
+    "Agency adds Product Service":
+    {
+        "type": "AddService",
+        "name": "package name",
+        "description": "description of package",
+        "category": "category of package",
+        "price": "price of package",
+        "status": "'available', 'unavailable', 'seasonal'"
+    },
+
+    "Get bookings for a traveller":
+    {
+        "type": "GetBooking",
+        "traveller_ID": "<the ID of the traveller which u wish to return all bookings for>"
+    },
+
+    "Get details about a booking":
+    {
+        "type": "GetBookingDetails",
+        "booking_ID": "<the ID of the booking which u wish to return all details for>",
+        "user_Type": "<'traveller' or 'agency_staff'>"
+    },
+
+>>>>>>> 99ac2b1f02bf5027e1e95e8da518b957fa917de5:Task 5 - Web-Based Application/pages/api/req.json
     "Add Package": 
     {
         "type": "AddPackage",
@@ -173,6 +271,7 @@
         "package_id": -1, 
         "package_type": "<solo, couple, group or family>",
         "product_service_id": -1
+<<<<<<< HEAD:Task 5 - Web-Based Application/api/req.json
     },  
 
     "Add Booking":
@@ -318,6 +417,8 @@
     {
         "type": "GetBookingDetails",
         "booking_id": -1
+=======
+>>>>>>> 99ac2b1f02bf5027e1e95e8da518b957fa917de5:Task 5 - Web-Based Application/pages/api/req.json
     },
 
     "Side Note": "These are just some users I added to my local db.",
