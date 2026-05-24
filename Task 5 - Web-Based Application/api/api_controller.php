@@ -274,7 +274,7 @@ class API {
         if (!$feature)
             return $this->error("Post parameters are empty");
 
-        $allowed = ["destination", "flight", "experience", "attraction", "accommodation", "restaurant", "activity"];
+        $allowed = ["destination", "flight", "product_service", "experience", "attraction", "accommodation", "restaurant", "activity"];
         if (!in_array($feature, $allowed)) 
             return $this->error("Invalid feature");
 
