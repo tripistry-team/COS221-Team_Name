@@ -202,27 +202,8 @@
   </div>
 </footer>
 
-<script>
-let activecontinent = 'all';
-function setcontinent(r, btn) {
-  activecontinent = r;
-  document.querySelectorAll('.continent-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  filterDests();
-}
-function filterDests() {
-  const q = document.getElementById('dest-search').value.toLowerCase();
-  const cards = document.querySelectorAll('.dest-card');
-  let visible = 0;
-  cards.forEach(c => {
-    const continentMatch = activecontinent === 'all' || c.dataset.continent === activecontinent;
-    const nameMatch = !q || c.dataset.name.includes(q);
-    const show = continentMatch && nameMatch;
-    c.style.display = show ? 'block' : 'none';
-    if (show) visible++;
-  });
-  document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
-}
+<script src="../js/destinations.js">
+
 </script>
 </body>
 </html>
