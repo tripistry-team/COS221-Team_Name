@@ -17,11 +17,25 @@
 .detail-hero-overlay { position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 55%); }
 .detail-hero-content { position:relative;z-index:1;padding:2rem;color:#fff; }
 .detail-hero-content h1 { font-size:2.25rem;font-weight:700;line-height:1.2; }
-.detail-layout { display:grid;grid-template-columns:1fr 340px;gap:2.5rem;align-items:start; }
+.detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
 .booking-panel {
-  position:sticky; top:calc(var(--nav-h) + 1rem);
-  border:1px solid var(--col-border); border-radius:var(--radius-lg);
-  overflow:hidden;
+  position: sticky;
+  top: calc(var(--nav-h) + 1rem);
+
+  border: 1px solid var(--col-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  background: var(--bg);
+
+  max-height: calc(100vh - var(--nav-h) - 2rem);
+  overflow-y: auto;
 }
 .booking-panel-header { padding:1.25rem;background:var(--bg-secondary);border-bottom:1px solid var(--col-border); }
 .booking-panel-body { padding:1.25rem; }
