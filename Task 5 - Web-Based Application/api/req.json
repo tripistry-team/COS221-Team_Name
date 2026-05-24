@@ -310,8 +310,7 @@
 
     "Get Bookings":
     {
-        "type": "GetBookings",
-        "traveller_id": -1
+        "type": "GetBookings"
     },
 
     "Get details about a booking":
