@@ -40,14 +40,11 @@
         "type": "Logout"
     }, 
 
-<<<<<<< HEAD
-=======
     "Check if user is logged in and get user details":
     {
         "type": "CheckAuthorisation"
     },
 
->>>>>>> c8c7c9034da8f68a993379c4ab84e83391ff25e6
     "Get Feature for Browsing": 
     {
         "type": "GetFeature",
@@ -69,26 +66,6 @@
         }
     },
 
-<<<<<<< HEAD
-    "Add Contact deatils (Phone number)":
-    {
-        "type": "AddContact",
-        "user_id": "<ID of the user who inputs the number>",
-=======
-<<<<<<< HEAD
-    "Add Phone number":
-    {
-        "type": "AddContact",
->>>>>>> c8c7c9034da8f68a993379c4ab84e83391ff25e6
-        "number1": "<mobile num>",
-        "number2": "<home num>"
-    }, 
-
-<<<<<<< HEAD
-=======
-=======
->>>>>>> efe111da81968e1ddbbf1c62e1459ce4cd68deff
->>>>>>> c8c7c9034da8f68a993379c4ab84e83391ff25e6
     "Get Package Details":
     {
         "type": "GetPackageDetails",
@@ -145,91 +122,6 @@
         "entry_fee": -1.0
     },
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> c8c7c9034da8f68a993379c4ab84e83391ff25e6
-    "Traveller leaves review":
-    {
-        "type": "AddFeedback",
-        "rating": "<rating from 1 to 5>",
-        "comment": "optional comment for the review",
-        "traveller_ID": "<ID of person leaving the review >",
-        "package_ID": "<ID of package being reviewed>",
-        "package_type": "<The package type>",
-<<<<<<< HEAD
-        "user_type": "<'traveller' or 'agency_staff'>"
-=======
-        "user_Type": "<'traveller' or 'agency_staff'>"
->>>>>>> c8c7c9034da8f68a993379c4ab84e83391ff25e6
-    },
-
-    "Agency responds to review":
-    {
-        "type": "AddResponse",
-        "response": "response to the review",
-        "feedback_ID": "<ID of the review >",
-<<<<<<< HEAD
-        "user_type": "<'traveller' or 'agency_staff'>"
-    },
-
-    "Get Feedback":
-    {
-        "type": "GetFeedback",
-        "feedback_ID": "<ID of feedback u wish to return>"
-    },
-
-    "Get Contact":
-    {
-        "type": "GetContact",
-        "user_ID": "<ID of user u wish to get contact details>"
-    },
-
-    "Agency adds a flight to their package":
-    {
-        "type": "AddFlight",
-        "flight_number": "<Flight number of the flight (this is NOT the flight_id PK)",
-        "airline": "<Airline of flight >",
-        "departure_airport": "<Airport CODE (3 letters) that the flight departs from>",
-        "arrival_airport": "<Airport CODE (3 letters) that the flight arrives to>",
-        "departure_dateTime": "<DateTime of departure (using the DateTime data type)>",
-        "arrival_dateTime": "<DateTime of arrival (using the DateTime data type)>",
-        "price": "<Price of the flight, I mean really I think its quite obvious what most of these parameters do>",
-        "available_seats": "<Number of seats currently available>",
-        "seat_class": "<'economy', 'premium_economy', 'business' or 'first_class'>",
-        "user_type": "<'traveller' or 'agency_staff'>"
-    },
-
-    "Add Destination":
-    {
-        "type": "AddDestination",
-        "country": "The country of the destination",
-        "city": "Take a wild guess what this one is"
-    },
-
-    "Agency adds Product Service":
-    {
-        "type": "AddService",
-        "name": "package name",
-        "description": "description of package",
-        "category": "category of package",
-        "price": "price of package",
-        "status": "'available', 'unavailable', 'seasonal'"
-    },
-
-    "Get bookings for a traveller":
-    {
-        "type": "GetBooking",
-        "traveller_ID": "<the ID of the traveller which u wish to return all bookings for>"
-    },
-
-    "Get details about a booking":
-    {
-        "type": "GetBookingDetails",
-        "booking_ID": "<the ID of the booking which u wish to return all details for>"
-=======
-        "user_Type": "<'traveller' or 'agency_staff'>"
-=======
     "Add Package": 
     {
         "type": "AddPackage",
@@ -237,7 +129,13 @@
         "description": "<description>",
         "base_price": -1.0,
         "duration": -1,
-        "status": "<draft, active, or archived>",
+        "status": "<draft, active, or archived>"
+    },
+
+    "Add Package Agency":
+    {
+        "type": "AddPackageAgency",
+        "package_id": -1,
         "agency_id": -1
     },
 
@@ -275,8 +173,151 @@
         "package_id": -1, 
         "package_type": "<solo, couple, group or family>",
         "product_service_id": -1
->>>>>>> efe111da81968e1ddbbf1c62e1459ce4cd68deff
->>>>>>> c8c7c9034da8f68a993379c4ab84e83391ff25e6
+    },  
+
+    "Add Booking":
+    {
+        "type": "AddBooking",
+        "date": "<date>",
+        "status": "<pending, confirmed, cancelled, completed>",
+        "num_people": -1,
+        "total_price": -1.0,
+        "traveller_id": -1
+    },
+
+    "Add Booking Package Option":
+    {
+        "type": "AddBookingPackageOption",
+        "booking_id": -1,
+        "package_id": -1,
+        "package_type": "<solo, couple, group or family>"
+    },
+
+    "Add Booking Product or Service":
+    {
+        "type": "AddBookingService",
+        "booking_id": -1,
+        "product_service_id": -1
+    },
+
+    "Add Group Trip":
+    {
+        "type": "AddGroupTrip",
+        "name": "<name>",
+        "start_date": "<start date>",
+        "end_date": "<end date>",
+        "join_deadline": "<join deadline>",
+        "min_participants": -1,
+        "max_participants": -1,
+        "agency_id": -1
+    },
+
+    "Assign Group Trip to Booking":
+    {
+        "type": "AssignGroupTrip",
+        "group_trip_id": -1,
+        "booking_id": -1
+    },
+
+    "Update Status of Feature": 
+    {
+        "Note": "Participants is only valid for group trip feature.",
+        "Format":
+        {
+            "type": "UpdateStatus",
+            "feature": "<booking, group_trip, package, product_service, or experience>",
+            "id": -1,
+            "status": "<one of the status options for each feature>",
+            "participants": -1
+        }
+    },
+
+    "Add Contact Info":
+    {
+        "Note": "The second number is not required.",
+        "Format":
+        {
+            "type": "AddContact",
+            "user_id": -1,
+            "number1": "<mobile number>",
+            "number2": "<home number>"
+        }
+    }, 
+
+    "Add Feedback":
+    {
+        "Note": "The comment is not required.",
+        "Format":
+        {
+            "type": "AddFeedback",
+            "rating": -1,
+            "comment": "<comment>",
+            "package_id": -1,
+            "package_type": "<solo, couple, group or family>"
+        }
+    },
+
+    "Add Response to Feedback":
+    {
+        "type": "AddResponse",
+        "response": "<response>",
+        "feedback_id": -1
+    },
+
+    "Get Feedback":
+    {
+        "type": "GetFeedback",
+        "package_id": -1,
+        "package_type":"<solo, couple, group or family>"
+    },
+
+    "Get Contact":
+    {
+        "type": "GetContact",
+        "user_id": -1
+    },
+
+    "Agency adds a flight to their package":
+    {
+        "type": "AddFlight",
+        "flight_number": "<flight number>",
+        "airline": "<airline>",
+        "departure_airport": "<three-letter airport code>",
+        "arrival_airport": "<three-letter airport code>",
+        "departure_dateTime": "<departure datetime>",
+        "arrival_dateTime": "<arrival datetime>",
+        "price": -1.0,
+        "available_seats": -1,
+        "seat_class": "<economy, premium_economy, business or first>"
+    },
+
+    "Add Destination":
+    {
+        "type": "AddDestination",
+        "country": "<country>",
+        "city": "<city>"
+    },
+
+    "Add Product Service":
+    {
+        "type": "AddService",
+        "name": "<name>",
+        "description": "<description>",
+        "category": "<product or service>",
+        "price": -1.0,
+        "status": "available, unavailable, or seasonal"
+    },
+
+    "Get Bookings":
+    {
+        "type": "GetBookings",
+        "traveller_id": -1
+    },
+
+    "Get details about a booking":
+    {
+        "type": "GetBookingDetails",
+        "booking_id": -1
     },
 
     "Side Note": "These are just some users I added to my local db.",
