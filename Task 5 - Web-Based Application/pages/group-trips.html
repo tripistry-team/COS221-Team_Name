@@ -72,21 +72,21 @@
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.75rem;">
       <h2>Available group trips</h2>
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
-        <select style="width:auto;">
+        <select id="gt-destination-filter" style="width:auto;">
           <option>All destinations</option>
           <option>Japan</option>
           <option>Europe</option>
           <option>Africa</option>
           <option>Southeast Asia</option>
         </select>
-        <select style="width:auto;">
+        <select id="gt-date-filter" style="width:auto;">
           <option>Any date</option>
           <option>June 2026</option>
           <option>July 2026</option>
           <option>August 2026</option>
           <option>September 2026</option>
         </select>
-        <select style="width:auto;">
+        <select id="gt-sort-filter" style="width:auto;">
           <option>Sort: Soonest first</option>
           <option>Sort: Spots remaining</option>
           <option>Sort: Price</option>
@@ -256,5 +256,6 @@
     </div>
   </div>
 </footer>
+<script src="../js/group-trips.js"></script>
 </body>
 </html>

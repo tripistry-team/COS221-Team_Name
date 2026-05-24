@@ -115,23 +115,6 @@
   </div>
 </div>
 
-<script>
-function setRole(role) {
-  document.getElementById('role-traveller').classList.toggle('active', role==='traveller');
-  document.getElementById('role-agency').classList.toggle('active', role==='agency');
-}
-function handleLogin() {
-  const email = document.getElementById('email').value;
-  const pass = document.getElementById('password').value;
-  if (!email || !pass) {
-    document.getElementById('login-error').style.display='block';
-    document.getElementById('login-error').textContent='Please enter your email and password.';
-    return;
-  }
-
-  const role = document.getElementById('role-agency').classList.contains('active') ? 'agency' : 'traveller';
-  window.location.href = role === 'agency' ? 'agency-dashboard.html' : 'traveller-dashboard.html';
-}
-</script>
+<script src="../js/login.js"></script>
 </body>
 </html>

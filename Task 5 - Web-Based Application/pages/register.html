@@ -74,20 +74,20 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
           <div class="form-group">
             <label>First name</label>
-            <input type="text" placeholder="Jane">
+            <input id="reg-first-name" type="text" placeholder="Jane">
           </div>
           <div class="form-group">
             <label>Surname</label>
-            <input type="text" placeholder=" Doe">
+            <input id="reg-surname" type="text" placeholder=" Doe">
           </div>
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Middle initial <span class="text-faint">(optional)</span></label>
-          <input type="text" placeholder="A" maxlength="1" style="max-width:80px;">
+          <input id="reg-mid-init" type="text" placeholder="A" maxlength="1" style="max-width:80px;">
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Country of residence</label>
-          <select>
+          <select id="reg-country">
             <option value="">Select a country</option>
             <option>South Africa</option>
             <option>Botswana</option>
@@ -104,11 +104,11 @@
       <div id="agency-fields" style="display:none;">
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Agency / company name</label>
-          <input type="text" placeholder="Wanderlust Co.">
+          <input id="reg-agency-name" type="text" placeholder="Wanderlust Co.">
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Agency description <span class="text-faint">(optional)</span></label>
-          <textarea placeholder="Tell travellers about your agency…" style="min-height:80px;"></textarea>
+          <textarea id="reg-agency-description" placeholder="Tell travellers about your agency…" style="min-height:80px;"></textarea>
         </div>
       </div>
 
@@ -116,19 +116,19 @@
 
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Username</label>
-        <input type="text" placeholder="janedoe" autocomplete="username">
+        <input id="reg-username" type="text" placeholder="janedoe" autocomplete="username">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Email address</label>
-        <input type="email" placeholder="you@example.com" autocomplete="email">
+        <input id="reg-email" type="email" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Password</label>
-        <input type="password" placeholder="At least 8 characters" autocomplete="new-password">
+        <input id="reg-password" type="password" placeholder="At least 8 characters" autocomplete="new-password">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Confirm password</label>
-        <input type="password" placeholder="Repeat your password" autocomplete="new-password">
+        <input id="reg-confirm-password" type="password" placeholder="Repeat your password" autocomplete="new-password">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Contact number <span class="text-faint">(optional)</span></label>
@@ -152,17 +152,6 @@
   </div>
 </div>
 
-<script>
-function setRole(role) {
-  document.getElementById('role-traveller').classList.toggle('active', role==='traveller');
-  document.getElementById('role-agency').classList.toggle('active', role==='agency');
-  document.getElementById('traveller-fields').style.display = role==='traveller' ? 'block' : 'none';
-  document.getElementById('agency-fields').style.display = role==='agency' ? 'block' : 'none';
-}
-function handleRegister() {
-  const role = document.getElementById('role-agency').classList.contains('active') ? 'agency' : 'traveller';
-  window.location.href = role === 'agency' ? 'agency-dashboard.html' : 'traveller-dashboard.html';
-}
-</script>
+<script src="../js/register.js"></script>
 </body>
 </html>

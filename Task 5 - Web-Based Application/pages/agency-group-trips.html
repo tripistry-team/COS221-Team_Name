@@ -107,8 +107,8 @@
           </div>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
             <button class="btn btn-sm" onclick="openParticipants()">View participants (9)</button>
-            <button class="btn btn-sm">Edit trip</button>
-            <button class="btn btn-sm btn-ghost" style="color:var(--danger);">Cancel trip</button>
+            <button class="btn btn-sm" onclick="return false;">Edit trip</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="return false;">Cancel trip</button>
           </div>
         </div>
 
@@ -146,8 +146,8 @@
           </div>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
             <button class="btn btn-sm" onclick="openParticipants()">View participants (7)</button>
-            <button class="btn btn-sm">Edit trip</button>
-            <button class="btn btn-sm btn-ghost" style="color:var(--danger);">Cancel trip</button>
+            <button class="btn btn-sm" onclick="return false;">Edit trip</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="return false;">Cancel trip</button>
           </div>
         </div>
       </div>
@@ -195,9 +195,9 @@
     <table>
       <thead><tr><th>Traveller</th><th>Joined</th><th>Status</th><th></th></tr></thead>
       <tbody>
-        <tr><td><div style="font-weight:500;font-size:0.9rem;">Sipho Nkosi</div><div class="text-xs text-muted">sipho@email.com</div></td><td class="text-sm text-muted">12 May 2026</td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);">Remove</button></td></tr>
-        <tr><td><div style="font-weight:500;font-size:0.9rem;">Lerato M.</div><div class="text-xs text-muted">lerato@email.com</div></td><td class="text-sm text-muted">14 May 2026</td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);">Remove</button></td></tr>
-        <tr><td><div style="font-weight:500;font-size:0.9rem;">Kavya D.</div><div class="text-xs text-muted">kavya@email.com</div></td><td class="text-sm text-muted">15 May 2026</td><td><span class="badge badge-amber">Pending</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);">Remove</button></td></tr>
+        <tr><td><div style="font-weight:500;font-size:0.9rem;">Sipho Nkosi</div><div class="text-xs text-muted">sipho@email.com</div></td><td class="text-sm text-muted">12 May 2026</td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeParticipant(this)">Remove</button></td></tr>
+        <tr><td><div style="font-weight:500;font-size:0.9rem;">Lerato M.</div><div class="text-xs text-muted">lerato@email.com</div></td><td class="text-sm text-muted">14 May 2026</td><td><span class="badge badge-green">Confirmed</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeParticipant(this)">Remove</button></td></tr>
+        <tr><td><div style="font-weight:500;font-size:0.9rem;">Kavya D.</div><div class="text-xs text-muted">kavya@email.com</div></td><td class="text-sm text-muted">15 May 2026</td><td><span class="badge badge-amber">Pending</span></td><td><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeParticipant(this)">Remove</button></td></tr>
       </tbody>
     </table>
     <div style="margin-top:1.25rem;text-align:right;">
@@ -215,13 +215,7 @@
   </div>
 </footer>
 
-<script>
-function openModal(){document.getElementById('new-trip-modal').classList.add('show');}
-function closeModal(){document.getElementById('new-trip-modal').classList.remove('show');}
-function openParticipants(){document.getElementById('participants-modal').classList.add('show');}
-function closeParticipants(){document.getElementById('participants-modal').classList.remove('show');}
-function createTrip(){closeModal();alert('Group trip created!');}
-document.querySelectorAll('.modal-backdrop').forEach(m=>{m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});});
-</script>
+<script src="../js/agency-group-trips.js"></script>
 </body>
 </html>
+

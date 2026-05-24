@@ -6,6 +6,8 @@
 <title>Browse Packages - Tripistry</title>
 <link rel="stylesheet" href="style.css">
 
+<script src="../js/browse.js"></script>
+
 <style>
 .browse-layout { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; align-items: start; }
 .filter-panel {
@@ -78,7 +80,7 @@
         </div>
         <div style="display:flex;gap:0.5rem;align-items:center;">
           <span class="text-sm text-muted">Sort by:</span>
-          <select style="width:auto;">
+          <select style="width:auto;" id="sort-select">
             <option>Most popular</option>
             <option>Price: low to high</option>
             <option>Price: high to low</option>
@@ -99,14 +101,13 @@
 
         <div class="filter-section">
           <h4>Destination</h4>
-          <input type="text" placeholder="Search destinations…" style="margin-bottom:0.75rem;">
-          <div class="check-item"><input type="checkbox" id="d1" checked><label for="d1">Japan</label><span class="count">48</span></div>
-          <div class="check-item"><input type="checkbox" id="d2"><label for="d2">Greece</label><span class="count">31</span></div>
-          <div class="check-item"><input type="checkbox" id="d3"><label for="d3">South Africa</label><span class="count">27</span></div>
-          <div class="check-item"><input type="checkbox" id="d4"><label for="d4">Indonesia</label><span class="count">39</span></div>
-          <div class="check-item"><input type="checkbox" id="d5"><label for="d5">France</label><span class="count">52</span></div>
-          <div class="check-item"><input type="checkbox" id="d6"><label for="d6">Thailand</label><span class="count">44</span></div>
-          <button class="btn btn-ghost btn-sm" style="margin-top:0.5rem;">Show more</button>
+          <input id="dest-search" type="text" placeholder="Search destinations…" style="margin-bottom:0.75rem;">
+          <div class="check-item"><input type="checkbox" id="d1"><label for="d1">Africa</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d2"><label for="d2">Asia</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d3"><label for="d3">Europe</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d4"><label for="d4">North America</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d5"><label for="d5">South America</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d6"><label for="d6">Oceania</label><span class="count">0</span></div>
         </div>
 
         <div class="filter-section">
@@ -120,29 +121,29 @@
         <div class="filter-section">
           <h4>Duration</h4>
           <div class="check-item"><input type="checkbox" id="dur1"><label for="dur1">Weekend (1-3 days)</label></div>
-          <div class="check-item"><input type="checkbox" id="dur2" checked><label for="dur2">Short (4-7 days)</label></div>
-          <div class="check-item"><input type="checkbox" id="dur3" checked><label for="dur3">Medium (8-14 days)</label></div>
+          <div class="check-item"><input type="checkbox" id="dur2"><label for="dur2">Short (4-7 days)</label></div>
+          <div class="check-item"><input type="checkbox" id="dur3"><label for="dur3">Medium (8-14 days)</label></div>
           <div class="check-item"><input type="checkbox" id="dur4"><label for="dur4">Long (15+ days)</label></div>
         </div>
 
         <div class="filter-section">
           <h4>Package type</h4>
-          <div class="check-item"><input type="checkbox" id="pt1" checked><label for="pt1">Solo</label></div>
-          <div class="check-item"><input type="checkbox" id="pt2" checked><label for="pt2">Couple</label></div>
-          <div class="check-item"><input type="checkbox" id="pt3"><label for="pt3">Family</label></div>
-          <div class="check-item"><input type="checkbox" id="pt4"><label for="pt4">Group</label></div>
+          <div class="check-item"><input class="pkg-type-check" value="solo" type="checkbox" id="pt1"><label for="pt1">Solo</label></div>
+          <div class="check-item"><input class="pkg-type-check" value="couple" type="checkbox" id="pt2"><label for="pt2">Couple</label></div>
+          <div class="check-item"><input class="pkg-type-check" value="family" type="checkbox" id="pt3"><label for="pt3">Family</label></div>
+          <div class="check-item"><input class="pkg-type-check" value="group" type="checkbox" id="pt4"><label for="pt4">Group</label></div>
         </div>
 
         <div class="filter-section">
           <h4>Rating (in stars)</h4>
-          <div class="check-item"><input type="checkbox" id="r1"><label for="r1"><span class="stars"></span> 5 only</label></div>
-          <div class="check-item"><input type="checkbox" id="r2" checked><label for="r2"><span class="stars"></span> 4 & up</label></div>
-          <div class="check-item"><input type="checkbox" id="r3"><label for="r3"><span class="stars"></span> 3 & up</label></div>
+          <div class="check-item"><input class="rating-check" value="5" type="checkbox" id="r1"><label for="r1"><span class="stars"></span> 5 only</label></div>
+          <div class="check-item"><input class="rating-check" value="4" type="checkbox" id="r2"><label for="r2"><span class="stars"></span> 4 & up</label></div>
+          <div class="check-item"><input class="rating-check" value="3" type="checkbox" id="r3"><label for="r3"><span class="stars"></span> 3 & up</label></div>
         </div>
 
         <div class="filter-section">
           <h4>Includes</h4>
-          <div class="check-item"><input type="checkbox" id="inc1" checked><label for="inc1">Flights</label></div>
+          <div class="check-item"><input type="checkbox" id="inc1"><label for="inc1">Flights</label></div>
           <div class="check-item"><input type="checkbox" id="inc2"><label for="inc2">Accommodation</label></div>
           <div class="check-item"><input type="checkbox" id="inc3"><label for="inc3">Transfers</label></div>
           <div class="check-item"><input type="checkbox" id="inc4"><label for="inc4">Tours & activities</label></div>
@@ -153,8 +154,8 @@
       <div>
         <div class="results-header">
           <div>
-            <span class="text-sm text-muted">Showing <strong>312</strong> packages</span>
-            <div class="active-filters" style="margin-top:0.5rem;">
+            <span class="text-sm text-muted">Showing <strong id="results-count">0</strong> packages</span>
+            <div class="active-filters" id="active-filters" style="margin-top:0.5rem;">
               <span class="filter-tag">Japan ✕</span>
               <span class="filter-tag">4-7 days ✕</span>
               <span class="filter-tag">8-14 days ✕</span>
@@ -167,7 +168,7 @@
           </div>
         </div>
 
-        <div class="pkg-list">
+        <div class="pkg-list" id="pkg-list">
           <a href="package-detail.html" class="pkg-card">
             <div class="pkg-thumb"></div>
             <div class="pkg-body">
@@ -254,7 +255,7 @@
           </a>
         </div>
 
-        <div class="pagination">
+        <div class="pagination" id="pagination">
           <a href="#" class="page-btn"></a>
           <a href="#" class="page-btn active">1</a>
           <a href="#" class="page-btn">2</a>
@@ -277,17 +278,5 @@
   </div>
 </footer>
 
-<script>
-const priceRange = document.getElementById('price-range');
-const priceLabel = document.getElementById('price-label');
-priceRange.addEventListener('input', () => {
-  const v = parseInt(priceRange.value).toLocaleString('en-ZA');
-  priceLabel.textContent = `up to R${v}`;
-});
-document.getElementById('clear-filters').addEventListener('click', () => {
-  document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb => cb.checked = false);
-  document.querySelectorAll('.filter-tag').forEach(t => t.remove());
-});
-</script>
 </body>
 </html>

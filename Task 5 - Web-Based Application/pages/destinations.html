@@ -77,113 +77,16 @@
     </div>
 
     <div class="region-tabs">
-      <button class="region-tab active" onclick="setRegion('all',this)">All regions</button>
+      <button class="region-tab active" onclick="setRegion('all',this)">All continents</button>
       <button class="region-tab" onclick="setRegion('africa',this)">Africa</button>
       <button class="region-tab" onclick="setRegion('asia',this)">Asia</button>
       <button class="region-tab" onclick="setRegion('europe',this)">Europe</button>
-      <button class="region-tab" onclick="setRegion('americas',this)">Americas</button>
+      <button class="region-tab" onclick="setRegion('north-america',this)">North America</button>
+      <button class="region-tab" onclick="setRegion('south-america',this)">South America</button>
       <button class="region-tab" onclick="setRegion('oceania',this)">Oceania</button>
-      <button class="region-tab" onclick="setRegion('middleeast',this)">Middle East</button>
     </div>
 
-    <div class="dest-grid" id="dest-grid">
-      <a href="browse.html" class="dest-card" data-region="asia" data-name="tokyo japan">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Japan</div>
-          <div class="dest-name">Tokyo</div>
-          <div class="dest-meta"><span>48 packages</span><span>4.9</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="europe" data-name="santorini greece">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Greece</div>
-          <div class="dest-name">Santorini</div>
-          <div class="dest-meta"><span>31 packages</span><span>4.8</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="africa" data-name="cape town south africa">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">South Africa</div>
-          <div class="dest-name">Cape Town</div>
-          <div class="dest-meta"><span>27 packages</span><span>4.7</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="asia" data-name="bali indonesia">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Indonesia</div>
-          <div class="dest-name">Bali</div>
-          <div class="dest-meta"><span>39 packages</span><span>4.8</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="europe" data-name="paris france">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">France</div>
-          <div class="dest-name">Paris</div>
-          <div class="dest-meta"><span>52 packages</span><span>4.6</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="asia" data-name="bangkok thailand">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Thailand</div>
-          <div class="dest-name">Bangkok</div>
-          <div class="dest-meta"><span>44 packages</span><span>4.7</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="americas" data-name="new york usa">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">United States</div>
-          <div class="dest-name">New York</div>
-          <div class="dest-meta"><span>38 packages</span><span>4.5</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="africa" data-name="marrakech morocco">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Morocco</div>
-          <div class="dest-name">Marrakech</div>
-          <div class="dest-meta"><span>22 packages</span><span>4.6</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="europe" data-name="rome italy">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Italy</div>
-          <div class="dest-name">Rome</div>
-          <div class="dest-meta"><span>45 packages</span><span>4.7</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="oceania" data-name="sydney australia">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Australia</div>
-          <div class="dest-name">Sydney</div>
-          <div class="dest-meta"><span>29 packages</span><span>4.8</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="middleeast" data-name="dubai uae">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">UAE</div>
-          <div class="dest-name">Dubai</div>
-          <div class="dest-meta"><span>33 packages</span><span>4.6</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-region="americas" data-name="machu picchu peru">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Peru</div>
-          <div class="dest-name">Machu Picchu</div>
-          <div class="dest-meta"><span>18 packages</span><span>4.9</span></div>
-        </div>
-      </a>
-    </div>
+    <div class="dest-grid" id="dest-grid"></div>
 
     <div id="no-results" style="display:none;text-align:center;padding:4rem 0;">
       <div style="font-size:2.5rem;margin-bottom:1rem;"></div>
@@ -202,27 +105,6 @@
   </div>
 </footer>
 
-<script>
-let activeRegion = 'all';
-function setRegion(r, btn) {
-  activeRegion = r;
-  document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  filterDests();
-}
-function filterDests() {
-  const q = document.getElementById('dest-search').value.toLowerCase();
-  const cards = document.querySelectorAll('.dest-card');
-  let visible = 0;
-  cards.forEach(c => {
-    const regionMatch = activeRegion === 'all' || c.dataset.region === activeRegion;
-    const nameMatch = !q || c.dataset.name.includes(q);
-    const show = regionMatch && nameMatch;
-    c.style.display = show ? 'block' : 'none';
-    if (show) visible++;
-  });
-  document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
-}
-</script>
+<script src="../js/destinations.js"></script>
 </body>
 </html>

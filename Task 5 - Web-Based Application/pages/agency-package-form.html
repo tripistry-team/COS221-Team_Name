@@ -223,75 +223,7 @@
 
 <div id="toast" style="display:none;position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--col);color:#fff;padding:0.75rem 1.5rem;border-radius:var(--radius-md);font-size:0.9rem;z-index:999;"></div>
 
-<script>
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
-}
-function saveDraft() {
-  const name = document.getElementById('pkg-name').value || 'Untitled';
-  toast('Draft saved: ' + name);
-}
-function publishPkg() {
-  const name = document.getElementById('pkg-name').value;
-  if (!name) { toast('Please enter a package name first.'); return; }
-  if (confirm('Publish "' + name + '"? It will be visible to travellers.')) {
-    toast('Package published!');
-    setTimeout(() => window.location.href = 'agency-packages.html', 1500);
-  }
-}
-function addOption() {
-  const html = `<div class="option-row">
-    <div class="form-group"><label>Type</label><select><option>solo</option><option>couple</option><option>group</option><option>family</option></select></div>
-    <div class="form-group"><label>Price per person (R)</label><input type="number" placeholder="0"></div>
-    <div class="form-group"><label>Min participants</label><input type="number" placeholder="1" min="1"></div>
-    <div class="form-group"><label>Max participants</label><input type="number" placeholder="1" min="1"></div>
-    <div style="padding-bottom:2px;"><button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeOption(this)">✕</button></div>
-  </div>`;
-  document.getElementById('options-list').insertAdjacentHTML('beforeend', html);
-}
-function removeOption(btn) { btn.closest('.option-row').remove(); }
-function removeRow(btn) { btn.closest('.item-row').remove(); }
-function addFlight() {
-  const html = `<div class="item-row">
-    <div class="item-row-icon">✈️</div>
-    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.5rem;">
-      <div class="form-group"><label>Flight number</label><input type="text" placeholder="SA286"></div>
-      <div class="form-group"><label>Airline</label><input type="text" placeholder="Airline"></div>
-      <div class="form-group"><label>From</label><input type="text" placeholder="JNB"></div>
-      <div class="form-group"><label>To</label><input type="text" placeholder="NRT"></div>
-    </div>
-    <button class="btn btn-ghost btn-sm" style="color:var(--danger);align-self:flex-end;" onclick="removeRow(this)">✕</button>
-  </div>`;
-  document.getElementById('flights-list').insertAdjacentHTML('beforeend', html);
-}
-function addExperience() {
-  const html = `<div class="item-row">
-    <div class="item-row-icon">🏛️</div>
-    <div style="flex:1;display:grid;grid-template-columns:140px 1fr 1fr;gap:0.5rem;">
-      <div class="form-group"><label>Type</label>
-        <select><option value="accommodation"> Accommodation</option><option value="restaurant"> Restaurant</option><option value="activity">🎯 Activity</option><option value="attraction">🏛️ Attraction</option></select>
-      </div>
-      <div class="form-group"><label>Name</label><input type="text" placeholder="Name"></div>
-      <div class="form-group"><label>Category / notes</label><input type="text" placeholder="Notes"></div>
-    </div>
-    <button class="btn btn-ghost btn-sm" style="color:var(--danger);align-self:flex-end;" onclick="removeRow(this)">✕</button>
-  </div>`;
-  document.getElementById('experiences-list').insertAdjacentHTML('beforeend', html);
-}
-function addService() {
-  const html = `<div class="item-row">
-    <div class="item-row-icon"></div>
-    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 120px;gap:0.5rem;">
-      <div class="form-group"><label>Service name</label><input type="text" placeholder="Service name"></div>
-      <div class="form-group"><label>Category</label><input type="text" placeholder="Category"></div>
-      <div class="form-group"><label>Price (R)</label><input type="number" placeholder="0"></div>
-    </div>
-    <button class="btn btn-ghost btn-sm" style="color:var(--danger);align-self:flex-end;" onclick="removeRow(this)">✕</button>
-  </div>`;
-  document.getElementById('services-list').insertAdjacentHTML('beforeend', html);
-}
-</script>
+<script src="../js/agency-package-form.js"></script>
 </body>
 </html>
+
