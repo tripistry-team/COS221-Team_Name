@@ -200,12 +200,36 @@
         "product_service_id": -1
     },
 
-    "Update Status of Feature":
+    "Add Group Trip":
     {
-        "type": "UpdateStatus",
-        "feature": "<booking, package, product_service, or experience>",
-        "id": -1,
-        "status": "<one of the status options for each feature>"
+        "type": "AddGroupTrip",
+        "name": "<name>",
+        "start_date": "<start date>",
+        "end_date": "<end date>",
+        "join_deadline": "<join deadline>",
+        "min_participants": -1,
+        "max_participants": -1,
+        "agency_id": -1
+    },
+
+    "Assign Group Trip to Booking":
+    {
+        "type": "AssignGroupTrip",
+        "group_trip_id": -1,
+        "booking_id": -1
+    },
+
+    "Update Status of Feature": 
+    {
+        "Note": "Participants is only valid for group trip feature.",
+        "Format":
+        {
+            "type": "UpdateStatus",
+            "feature": "<booking, group_trip, package, product_service, or experience>",
+            "id": -1,
+            "status": "<one of the status options for each feature>",
+            "participants": -1
+        }
     },
 
     "Add Contact Info":

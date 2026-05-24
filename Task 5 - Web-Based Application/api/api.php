@@ -117,6 +117,14 @@ else if ($data["type"] === "AddBookingService") {
     echo json_encode($api->addBookingService($data));
 }
 
+else if ($data["type"] === "AddGroupTrip") {
+    echo json_encode($api->addGroupTrip($data));
+}
+
+else if ($data["type"] === "AssignGroupTrip") {
+    echo json_encode($api->assignGroupTrip($data));
+}
+
 else if ($data["type"] === "UpdateStatus") {
     echo json_encode($api->updateStatus($data));
 }

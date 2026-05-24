@@ -1358,6 +1358,102 @@ class API {
         ];
     }
 
+    public function addGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["name"], $data["start_date"], $data["end_date"], $data["join_deadline"],
+            $data["min_participants"], $data["max_participants"], $data["agency_id"]))
+                return $this->error("Post parameters are missing");
+
+        $name = trim($data["name"]);
+        $start = trim($data["start_date"]);
+        $end = trim($data["end_date"]);
+        $deadline = trim($data["join_deadline"]);
+        $min = (int)$data["min_participants"];
+        $max = (int)$data["max_participants"];
+        $agency_id = (int)$data["agency_id"];
+
+        if (!$name || !$start || !$end || !$deadline)
+            return $this->error("Post parameters are empty");
+
+        $sql = "SELECT Agency_ID FROM AGENCY WHERE Agency_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $agency_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid agency id");
+        
+        //===
+
+        $sql = "INSERT INTO GROUP_TRIP 
+                (Trip_Name, Start_Date, End_Date, Join_Deadline, Participants_Min, Participants_Max, Participants_Current, Trip_Status, Agency_ID) 
+                VALUES (?, ?, ?, ?, ?, ?, 0, 'planned', ?)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssssiii", $name, $start, $end, $deadline, $min, $max, $agency_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $group_trip_id = $this->conn->insert_id;
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => ["group_trip_id" => $group_trip_id]
+        ];
+    }
+
+    public function assignGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
+
+        if ($_SESSION['user_type'] !== "agency")
+            return $this->error("Invalid user type", "fbdn");
+
+        if (!isset($data["group_trip_id"], $data["booking_id"]))
+            return $this->error("Post parameters are missing");
+
+        $group_trip_id = (int)$data["group_trip_id"];
+        $booking_id = (int)$data["booking_id"];
+
+        $sql = "SELECT Group_Trip_ID FROM GROUP_TRIP WHERE Group_Trip_ID = ?";        
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $group_trip_id);
+        if (!$stmt->execute()) 
+            return $this->error("Insert failed", "db");
+
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0)
+            return $this->error("Invalid group trip id");
+
+        //===
+
+        $sql = "UPDATE BOOKING SET Group_Trip_ID = ? WHERE Booking_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) 
+            return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $group_trip_id, $booking_id);
+        if (!$stmt->execute()) 
+            return $this->error("Update failed", "db");
+
+        return [
+            "status" => "success",
+            "timestamp" => time(),
+        ]; 
+    }
+
     public function updateStatus($data) {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
             return $this->error("Not authenticated", "cred");
@@ -1365,16 +1461,16 @@ class API {
         if ($_SESSION['user_type'] !== "agency_staff")
             return $this->error("Invalid user type", "fbdn");
 
-        if (!isset($data["feature"], $data["id"], $data["status"])) 
+        if (!isset($data["feature"], $data["id"])) 
             return $this->error("Post parameters are missing");
 
-        $allowed = ["booking", "experience", "package", "product_service"];
+        $allowed = ["booking", "experience", "package", "product_service", "group_trip"];
         if (!in_array($data["feature"], $allowed)) 
             return $this->error("Invalid feature");
 
         $feature = $data["feature"];
         $id = (int)$data["id"];
-        $status = trim($data["status"]);
+        $status = $data["status"] ?? "";
 
         if ($feature === "booking") {
             $allowed = ["pending", "confirmed", "cancelled", "completed"];
@@ -1406,6 +1502,34 @@ class API {
                 return $this->error("Invalid status");
 
             $sql = "UPDATE PRODUCT_SERVICE SET Availability_Status = ? WHERE Product_Service_ID = ?";
+        }
+
+        if ($feature === "group_trip") {
+            if (isset($data["participants"])) {
+                $participants = (int)$data["participants"];
+
+                $sql = "UPDATE GROUP_TRIP SET Participants_Current = ? 
+                        WHERE Group_Trip_ID = ? AND Participants_Max >= ?";
+                $stmt = $this->conn->prepare($sql);
+                if (!$stmt) 
+                    return $this->error("Connection failed", "db");
+                $stmt->bind_param("iii", $participants, $id, $participants);
+                if (!$stmt->execute()) 
+                    return $this->error("Update failed", "db");
+
+                if(!$status) {
+                    return [
+                        "status" => "success",
+                        "timestamp" => time(),
+                    ];
+                }
+            }
+
+            $allowed = ["planned", "open", "full", "in_progress", "completed", "cancelled"];
+            if (!in_array($data["status"], $allowed)) 
+                return $this->error("Invalid status");
+
+            $sql = "UPDATE GROUP_TRIP SET Trip_Status = ? WHERE Group_Trip_ID = ?";
         }
 
         $stmt = $this->conn->prepare($sql);
