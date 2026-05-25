@@ -48,7 +48,7 @@
     "Get Feature for Browsing": 
     {
         "type": "GetFeature",
-        "feature": "<destination, flight, experience, attraction, accommodation, restaurant, or activity>"
+        "feature": "<destination, flight, product_service, experience, attraction, accommodation, restaurant, or activity>"
     },
     
     "Get Packages":{
@@ -65,6 +65,21 @@
             "sort": "<price_asc, price_desc, rating_asc, rating_desc, duration_asc, duration_desc, name_asc, or name_desc>"
         }
     },
+
+
+    "Add Contact deatils (Phone number)":
+    {
+        "type": "AddContact",
+        "user_id": "<ID of the user who inputs the number>"
+
+    },
+
+    "Add Phone number":
+    {
+        "type": "AddContact",
+        "number1": "<mobile num>",
+        "number2": "<home num>"
+    }, 
 
     "Get Package Details":
     {
@@ -310,8 +325,7 @@
 
     "Get Bookings":
     {
-        "type": "GetBookings",
-        "traveller_id": -1
+        "type": "GetBookings"
     },
 
     "Get details about a booking":

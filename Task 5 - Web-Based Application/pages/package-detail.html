@@ -3,36 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tokyo & Kyoto Cultural Immersion - Tripistry</title>
+<title>Package Detail - Tripistry</title>
 <link rel="stylesheet" href="style.css">
-
 <style>
 .detail-hero {
   height: 420px;
-  background: linear-gradient(135deg, #3d003d 0%, #800080 100%);
+  background: linear-gradient(135deg, #1a3a2a 0%, #1a5c3a 100%);
   border-radius: var(--radius-xl);
   display: flex; align-items: flex-end;
   position: relative; overflow: hidden;
   margin-bottom: 2rem;
 }
-.detail-hero-bg { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9rem;opacity:0.12; }
 .detail-hero-overlay { position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 55%); }
 .detail-hero-content { position:relative;z-index:1;padding:2rem;color:#fff; }
-.detail-hero-content h1 { font-family:'DM Serif Display',serif;font-size:2.25rem;font-weight:400;line-height:1.2; }
-.detail-layout { display:grid;grid-template-columns:1fr 340px;gap:2.5rem;align-items:start; }
+.detail-hero-content h1 { font-size:2.25rem;font-weight:700;line-height:1.2; }
+.detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 2.5rem;
+  align-items: start;
+}
+
 .booking-panel {
-  position:sticky; top:calc(var(--nav-h) + 1rem);
-  border:1px solid var(--col-border); border-radius:var(--radius-lg);
-  overflow:hidden;
+  position: sticky;
+  top: calc(var(--nav-h) + 1rem);
+
+  border: 1px solid var(--col-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  background: var(--bg);
+
+  max-height: calc(100vh - var(--nav-h) - 2rem);
+  overflow-y: auto;
 }
 .booking-panel-header { padding:1.25rem;background:var(--bg-secondary);border-bottom:1px solid var(--col-border); }
 .booking-panel-body { padding:1.25rem; }
-.option-cards { display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem; }
 .option-card {
   border:1px solid var(--col-border); border-radius:var(--radius-md);
   padding:0.875rem 1rem; cursor:pointer;
   display:flex;justify-content:space-between;align-items:center;
-  transition:border-color 0.15s;
+  transition:border-color 0.15s; margin-bottom:0.5rem;
 }
 .option-card.selected { border-color:var(--accent); background:var(--accent-light); }
 .option-card:hover { border-color:var(--col-border-strong); }
@@ -62,7 +73,34 @@
   font-size:0.875rem; padding:0.5rem 0.75rem;
   background:var(--bg-secondary);border-radius:var(--radius-sm);
 }
-.compare-btn { position:fixed;bottom:1.5rem;right:1.5rem;z-index:50; }
+
+.service-item {
+  display:flex;align-items:center;gap:0.625rem;
+  padding:0.625rem 0.75rem;
+  border:1px solid var(--col-border);border-radius:var(--radius-sm);
+  margin-bottom:0.375rem;cursor:pointer;transition:border-color 0.15s;
+}
+.service-item:hover { border-color:var(--col-border-strong); }
+.service-item input[type=checkbox] { accent-color:var(--accent);width:15px;height:15px;flex-shrink:0; }
+.service-item label { font-size:0.875rem;flex:1;cursor:pointer; }
+.service-item .service-price { font-size:0.875rem;font-weight:500;color:var(--col);flex-shrink:0; }
+/* Star rating input */
+.star-rating { display:flex;gap:0.25rem;margin-bottom:0.75rem; }
+.star-rating input[type=radio] { display:none; }
+.star-rating label {
+  font-size:1.75rem;color:var(--col-border-strong);cursor:pointer;
+  transition:color 0.1s;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input[type=radio]:checked ~ label { color:var(--col-border-strong); }
+.star-rating input[type=radio]:checked + label,
+.star-rating label:hover { color:#e8a200; }
+
+.star-rating { flex-direction:row-reverse;justify-content:flex-end; }
+.star-rating label:hover ~ label { color:#e8a200; }
+
+.review-form { border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1.25rem;margin-top:1.5rem; }
 </style>
 </head>
 <body>
@@ -83,44 +121,56 @@
 
 <main>
   <div class="container" style="padding-top:1.5rem;">
-    <div id="breadcrumb" style="font-size:0.875rem;color:var(--col-muted);margin-bottom:1rem;">
+
+    <!-- Breadcrumb - needs backend integration -->
+    <div style="font-size:0.875rem;color:var(--col-muted);margin-bottom:1rem;">
       <a href="browse.html" style="color:var(--col-muted);text-decoration:none;">Browse</a>
       <span style="margin:0 0.375rem;">></span>
-      <a href="destinations.html#japan" style="color:var(--col-muted);text-decoration:none;">Japan</a>
+      <!-- PHP: echo $package['Destination_Country']; -->
+      <span id="breadcrumb-dest">[Destination]</span>
       <span style="margin:0 0.375rem;">></span>
-      Tokyo & Kyoto Cultural Immersion
+      <!-- PHP: echo $package['Name']; -->
+      <span id="breadcrumb-name">[Package Name]</span>
     </div>
 
+    <!-- Hero - needs backend integration (we dont have image yet so i'm not sure) -->
     <div class="detail-hero">
-      <div class="detail-hero-bg"></div>
       <div class="detail-hero-overlay"></div>
-      <div id="detail-hero-content" class="detail-hero-content">
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;">
-          <span class="badge badge-green">Family</span>
-          <span class="badge" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:#fff;">Couple</span>
-          <span class="badge" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:#fff;">Active</span>
+      <div class="detail-hero-content">
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;" id="hero-badges">
+          <!-- PHP: foreach package_options as opt -->
+          <!-- <span class="badge badge-green">{opt.Package_Type}</span> -->
+          <!-- PHP: endforeach -->
+          <span class="badge" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:#fff;">[Package types load here]</span>
         </div>
-        <h1>Tokyo & Kyoto Cultural Immersion</h1>
-        <div style="display:flex;align-items:center;gap:1.25rem;margin-top:0.75rem;font-size:0.9rem;opacity:0.9;">
-          <span> 10 days</span>
-          <span> Includes flights</span>
-          <span> 4 star hotels</span>
-          <span> Japan</span>
+        <!-- PHP: echo $package['Name']; -->
+        <h1 id="pkg-title">[Package Name]</h1>
+        <div style="display:flex;align-items:center;gap:1.25rem;margin-top:0.75rem;font-size:0.9rem;opacity:0.9;" id="pkg-hero-meta">
+          <!-- PHP: echo $package['Duration'] . ' days'; -->
+          <span id="meta-duration">[Duration] days</span>
+          <span id="meta-destination">[Destination]</span>
         </div>
       </div>
     </div>
 
     <div class="detail-layout">
       <div>
-        <div id="agency-bar" style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <!-- Agency bar - needs backend integration -->
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
           <div style="display:flex;align-items:center;gap:0.5rem;">
-            <div style="width:40px;height:40px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:1.125rem;"></div>
-            <div><div style="font-weight:500;font-size:0.9rem;">Wanderlust Co.</div><div class="text-xs text-muted">Verified agency · 312 packages</div></div>
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:0.875rem;font-weight:600;color:var(--accent);" id="agency-initials">--</div>
+            <div>
+              <!-- PHP: echo $agency['Company_Name']; -->
+              <div style="font-weight:500;font-size:0.9rem;" id="agency-name">[Agency Name]</div>
+              <div class="text-xs text-muted">Verified agency</div>
+            </div>
           </div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
-            <span class="stars" style="font-size:1rem;"></span>
-            <span style="font-weight:500;">4.9</span>
-            <span class="text-muted text-sm">(128 reviews)</span>
+            <span class="stars" id="pkg-stars"></span>
+            <!-- PHP: echo $package['avg_rating']; -->
+            <span style="font-weight:500;" id="pkg-rating">[Rating]</span>
+            <!-- PHP: echo $package['review_count']; -->
+            <span class="text-muted text-sm">(<span id="pkg-review-count">[N]</span> reviews)</span>
           </div>
         </div>
 
@@ -128,203 +178,229 @@
           <button class="tab active" onclick="showTab('overview',this)">Overview</button>
           <button class="tab" onclick="showTab('itinerary',this)">Itinerary</button>
           <button class="tab" onclick="showTab('includes',this)">What's included</button>
-          <button class="tab" data-tab="reviews" onclick="showTab('reviews',this)">Reviews (128)</button>
+          <button class="tab" onclick="showTab('reviews',this)">Reviews</button>
         </div>
 
+        <!-- OVERVIEW TAB - needs backend integration-->
         <div id="tab-overview">
-          <p style="line-height:1.75;color:var(--col-muted);margin-bottom:1.5rem;">
-            Immerse yourself in the captivating contrast of ancient traditions and cutting-edge modernity on this 10-day journey through Japan's two most iconic cities. Begin in the electric energy of Tokyo — explore Shibuya, Shinjuku, Harajuku, and the serene Meiji Shrine. Then glide on the Shinkansen to Kyoto, where bamboo forests, geisha districts, and hundreds of temples await.
-          </p>
-          <p style="line-height:1.75;color:var(--col-muted);margin-bottom:1.5rem;">
-            This package includes return flights from Johannesburg, accommodation in carefully selected 4-star hotels, daily breakfast, guided city tours, a day trip to Nara to see the famous deer park, and a traditional tea ceremony experience.
+          <!-- PHP: echo $package['Description']; -->
+          <p style="line-height:1.75;color:var(--col-muted);margin-bottom:1.5rem;" id="pkg-description">
+            [Package description loads here from database]
           </p>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0;">
             <div style="text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);">
-              <div style="font-size:1.5rem;margin-bottom:0.375rem;"></div>
-              <div style="font-weight:500;font-size:0.9rem;">10 nights</div>
+              <!-- PHP: echo $package['Duration']; -->
+              <div style="font-weight:500;font-size:0.9rem;" id="overview-duration">[Duration] nights</div>
               <div class="text-xs text-muted">Duration</div>
             </div>
             <div style="text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);">
-              <div style="font-size:1.5rem;margin-bottom:0.375rem;"></div>
-              <div style="font-weight:500;font-size:0.9rem;">JNB → NRT</div>
-              <div class="text-xs text-muted">Departure</div>
+              <!-- PHP: echo $package['Destination_City'] . ', ' . $package['Destination_Country']; -->
+              <div style="font-weight:500;font-size:0.9rem;" id="overview-dest">[City, Country]</div>
+              <div class="text-xs text-muted">Destination</div>
             </div>
             <div style="text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);">
-              <div style="font-size:1.5rem;margin-bottom:0.375rem;"></div>
-              <div style="font-weight:500;font-size:0.9rem;">2-12 people</div>
+              <!-- PHP: echo $minParticipants . '-' . $maxParticipants . ' people'; -->
+              <div style="font-weight:500;font-size:0.9rem;" id="overview-size">[Min]-[Max] people</div>
               <div class="text-xs text-muted">Group size</div>
             </div>
           </div>
         </div>
 
+        <!-- ITINERARY TAB - needs backend integration -->
         <div id="tab-itinerary" style="display:none;">
-          <div class="itinerary-day">
-            <h4>Day 1-2 · Arrival in Tokyo</h4>
-            <p>Fly overnight from Johannesburg to Tokyo Narita. Hotel check-in, rest and an introductory evening walk through the Shinjuku district.</p>
-          </div>
-          <div class="itinerary-day">
-            <h4>Day 3 · Tokyo City Tour</h4>
-            <p>Guided full-day tour: Asakusa & Senso-ji Temple, teamLab Planets digital art museum, Akihabara electronics district, Shibuya Crossing at dusk.</p>
-          </div>
-          <div class="itinerary-day">
-            <h4>Day 4 · Day Trip to Nikko</h4>
-            <p>UNESCO World Heritage site. Elaborate shrines, waterfalls, and mountain scenery just 2 hours north of Tokyo.</p>
-          </div>
-          <div class="itinerary-day">
-            <h4>Day 5-6 · Hakone & Mt Fuji views</h4>
-            <p>Overnight in Hakone ryokan. Sunrise views of Mt Fuji, open-air museum, ropeway and crater lake boat ride.</p>
-          </div>
-          <div class="itinerary-day">
-            <h4>Day 7 · Shinkansen to Kyoto</h4>
-            <p>High-speed bullet train to Kyoto. Afternoon at leisure in Gion district — catch a glimpse of a maiko.</p>
-          </div>
-          <div class="itinerary-day">
-            <h4>Day 8-9 · Kyoto & Nara</h4>
-            <p>Fushimi Inari torii gates, Arashiyama bamboo grove, traditional tea ceremony, and a half-day trip to Nara's deer park and Tōdai-ji temple.</p>
-          </div>
-          <div class="itinerary-day" style="border-left-color:var(--col-border);">
-            <h4>Day 10 · Departure</h4>
-            <p>Transfer to Kansai International Airport for the return flight to Johannesburg.</p>
-          </div>
+          <!-- PHP: foreach itinerary_days as day -->
+          <!-- <div class="itinerary-day"> -->
+          <!--   <h4>{day.label}</h4> -->
+          <!--   <p>{day.description}</p> -->
+          <!-- </div> -->
+          <p class="text-muted text-sm">Itinerary loads from database.</p>
         </div>
 
+        <!-- INCLUDES TAB - needs backend integration -->
         <div id="tab-includes" style="display:none;">
           <h4 style="margin-bottom:0.75rem;">Included in this package</h4>
-          <div class="include-grid">
-            <div class="include-item"> Return flights (JNB-NRT-KIX)</div>
-            <div class="include-item"> 9 nights accommodation (4)</div>
-            <div class="include-item"> Daily breakfast</div>
-            <div class="include-item"> Shinkansen bullet train pass</div>
-            <div class="include-item"> Guided city tours (Tokyo & Kyoto)</div>
-            <div class="include-item"> Nikko & Nara day trips</div>
-            <div class="include-item"> Traditional tea ceremony</div>
-            <div class="include-item"> Airport transfers</div>
-            <div class="include-item"> 24/7 on-trip support</div>
-            <div class="include-item"> Travel documentation guide</div>
-          </div>
-          <h4 style="margin:1.5rem 0 0.75rem;">Not included</h4>
-          <div class="include-grid">
-            <div class="include-item" style="background:#fdecea;"> Visa fees</div>
-            <div class="include-item" style="background:#fdecea;"> Travel insurance</div>
-            <div class="include-item" style="background:#fdecea;"> Personal expenses</div>
-            <div class="include-item" style="background:#fdecea;"> Meals not listed</div>
+          <div class="include-grid" id="includes-list">
+            <!-- PHP: foreach experiences as exp -->
+            <!-- <div class="include-item">{exp.Name} ({exp.Category})</div> -->
+            <!-- PHP: endforeach -->
+            <!-- PHP: foreach flights as flt -->
+            <!-- <div class="include-item">Flight: {flt.Airline} {flt.Flight_Number}</div> -->
+            <!-- PHP: endforeach -->
+            <div class="include-item text-muted">[Included items load from database]</div>
           </div>
         </div>
 
+        <!-- REVIEWS TAB -->
         <div id="tab-reviews" style="display:none;">
+          <!-- Rating summary - needs backend integration -->
           <div style="display:flex;align-items:center;gap:2rem;padding:1.5rem;background:var(--bg-secondary);border-radius:var(--radius-md);margin-bottom:1.5rem;">
             <div style="text-align:center;">
-              <div style="font-size:3rem;font-weight:600;line-height:1;">4.9</div>
+              <!-- PHP: echo $package['avg_rating']; -->
+              <div style="font-size:3rem;font-weight:700;line-height:1;" id="avg-rating-display">[Avg]</div>
               <div class="stars" style="font-size:1.125rem;"></div>
-              <div class="text-xs text-muted" style="margin-top:0.25rem;">128 reviews</div>
+              <!-- PHP: echo $package['review_count'] . ' reviews'; -->
+              <div class="text-xs text-muted" style="margin-top:0.25rem;" id="review-count-display">[N] reviews</div>
             </div>
-            <div style="flex:1;">
-              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem;"><span class="text-xs text-muted" style="width:30px;">5</span><div style="flex:1;height:6px;background:var(--col-border);border-radius:999px;overflow:hidden;"><div style="width:84%;height:100%;background:var(--accent);border-radius:999px;"></div></div><span class="text-xs text-muted">107</span></div>
-              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem;"><span class="text-xs text-muted" style="width:30px;">4</span><div style="flex:1;height:6px;background:var(--col-border);border-radius:999px;overflow:hidden;"><div style="width:12%;height:100%;background:var(--accent);border-radius:999px;"></div></div><span class="text-xs text-muted">15</span></div>
-              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem;"><span class="text-xs text-muted" style="width:30px;">3</span><div style="flex:1;height:6px;background:var(--col-border);border-radius:999px;overflow:hidden;"><div style="width:4%;height:100%;background:var(--accent);border-radius:999px;"></div></div><span class="text-xs text-muted">5</span></div>
-              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem;"><span class="text-xs text-muted" style="width:30px;">2</span><div style="flex:1;height:6px;background:var(--col-border);border-radius:999px;overflow:hidden;"><div style="width:1%;height:100%;background:var(--accent);border-radius:999px;"></div></div><span class="text-xs text-muted">1</span></div>
-              <div style="display:flex;align-items:center;gap:0.5rem;"><span class="text-xs text-muted" style="width:30px;">1</span><div style="flex:1;height:6px;background:var(--col-border);border-radius:999px;overflow:hidden;"><div style="width:0%;height:100%;background:var(--accent);border-radius:999px;"></div></div><span class="text-xs text-muted">0</span></div>
-            </div>
-          </div>
-
-          <div class="review-card">
-            <div class="reviewer">
-              <div class="reviewer-avatar">SN</div>
-              <div><div style="font-weight:500;font-size:0.9rem;">Sipho N.</div><div class="text-xs text-muted">Travelled April 2026 · Family package</div></div>
-              <div style="margin-left:auto;"><span class="stars"></span></div>
-            </div>
-            <p class="text-sm" style="color:var(--col-muted);line-height:1.65;">Absolutely incredible trip. Wanderlust Co. handled every detail — the hotels were perfect, the guided tours were knowledgeable, and the itinerary was paced just right for our family. The tea ceremony in Kyoto was the highlight. Would book again without hesitation.</p>
-          </div>
-          <div class="review-card">
-            <div class="reviewer">
-              <div class="reviewer-avatar">LM</div>
-              <div><div style="font-weight:500;font-size:0.9rem;">Lerato M.</div><div class="text-xs text-muted">Travelled February 2026 · Couple package</div></div>
-              <div style="margin-left:auto;"><span class="stars"></span></div>
-            </div>
-            <p class="text-sm" style="color:var(--col-muted);line-height:1.65;">We got engaged at the bamboo grove in Arashiyama. The agency sent us a congratulations card at the hotel that evening. The thoughtfulness of Wanderlust Co. throughout the trip was remarkable. Japan is extraordinary and this package showed us the best of it.</p>
-          </div>
-          <div class="review-card">
-            <div class="reviewer">
-              <div class="reviewer-avatar">KD</div>
-              <div><div style="font-weight:500;font-size:0.9rem;">Kavya D.</div><div class="text-xs text-muted">Travelled January 2026 · Solo package</div></div>
-              <div style="margin-left:auto;"><span class="stars">☆</span></div>
-            </div>
-            <p class="text-sm" style="color:var(--col-muted);line-height:1.65;">Really well organised, especially as a solo traveller. The group tours meant I met other travellers easily. Only minor complaint is the Tokyo hotel was a bit far from the main sights, but the subway system is so good it barely mattered.</p>
-            <div style="margin-top:0.625rem;padding:0.75rem;background:var(--accent-light);border-radius:var(--radius-sm);border-left:2px solid var(--accent);">
-              <div class="text-xs" style="color:var(--accent);font-weight:500;margin-bottom:0.25rem;">Agency response - Wanderlust Co.</div>
-              <p class="text-xs text-muted">Thank you Kavya! We've noted your feedback and will be updating the Tokyo hotel option in future packages to one closer to Shinjuku station. Glad you still had a great experience!</p>
+            <div style="flex:1;" id="rating-bars">
+              <!-- PHP: foreach [5,4,3,2,1] as star -->
+              <!-- <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem;"> -->
+              <!--   <span class="text-xs text-muted" style="width:30px;">{star}</span> -->
+              <!--   <div style="flex:1;height:6px;background:var(--col-border);border-radius:999px;overflow:hidden;"> -->
+              <!--     <div style="width:{pct}%;height:100%;background:var(--accent);border-radius:999px;"></div> -->
+              <!--   </div> -->
+              <!--   <span class="text-xs text-muted">{count}</span> -->
+              <!-- </div> -->
+              <!-- PHP: endforeach -->
+              <p class="text-muted text-sm">Rating breakdown loads from database.</p>
             </div>
           </div>
 
-          <div style="text-align:center;margin-top:1.5rem;">
-            <a href="login.html" class="btn">Write a review</a>
+          <!-- Review list - needs backend integration -->
+          <div id="reviews-list">
+            <!-- PHP: foreach reviews as review -->
+            <!-- <div class="review-card"> -->
+            <!--   <div class="reviewer"> -->
+            <!--     <div class="reviewer-avatar">{initials}</div> -->
+            <!--     <div> -->
+            <!--       <div style="font-weight:500;font-size:0.9rem;">{review.Traveller_Name}</div> -->
+            <!--       <div class="text-xs text-muted">{review.Last_Updated} · {review.Package_Type} package</div> -->
+            <!--     </div> -->
+            <!--     <div style="margin-left:auto;"><span class="stars">{stars}</span></div> -->
+            <!--   </div> -->
+            <!--   <p class="text-sm" style="color:var(--col-muted);line-height:1.65;">{review.Comment}</p> -->
+            <!--   {if review.Response} -->
+            <!--   <div style="margin-top:0.625rem;padding:0.75rem;background:var(--accent-light);border-radius:var(--radius-sm);border-left:2px solid var(--accent);"> -->
+            <!--     <div class="text-xs" style="color:var(--accent);font-weight:500;margin-bottom:0.25rem;">Agency response</div> -->
+            <!--     <p class="text-xs text-muted">{review.Response}</p> -->
+            <!--   </div> -->
+            <!--   {endif} -->
+            <!-- </div> -->
+            <!-- PHP: endforeach -->
+            <p class="text-muted text-sm">Reviews load from database.</p>
+          </div>
+
+          <!-- Write a review form — shown only to logged-in travellers who have completed this booking -->
+          <div class="review-form" id="review-form">
+            <h4 style="margin-bottom:1rem;">Write a review</h4>
+            <!-- Star rating input -->
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Rating *</label>
+              <div class="star-rating">
+                <input type="radio" name="rating" id="s5" value="5"><label for="s5"></label>
+                <input type="radio" name="rating" id="s4" value="4"><label for="s4"></label>
+                <input type="radio" name="rating" id="s3" value="3"><label for="s3"></label>
+                <input type="radio" name="rating" id="s2" value="2"><label for="s2"></label>
+                <input type="radio" name="rating" id="s1" value="1"><label for="s1"></label>
+              </div>
+              <div class="text-xs text-muted" id="rating-label">Select a rating</div>
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Comment <span class="text-faint">(optional)</span></label>
+              <textarea id="review-comment" placeholder="Share your experience..." style="min-height:100px;"></textarea>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+              <button class="btn btn-primary" onclick="submitReview()">Submit review</button>
+              <span class="text-xs text-muted">Only travellers who completed this booking can review.</span>
+            </div>
+            <div id="review-error" class="alert alert-danger" style="display:none;margin-top:0.75rem;"></div>
+            <div id="review-success" class="alert alert-success" style="display:none;margin-top:0.75rem;">Review submitted successfully.</div>
           </div>
         </div>
       </div>
 
+      <!-- BOOKING PANEL -->
       <div>
         <div class="booking-panel">
-          <div id="booking-price" class="booking-panel-header">
-            <div style="font-size:1.625rem;font-weight:600;">R18,500</div>
+          <div class="booking-panel-header">
+            <!-- PHP: echo 'R' . $package['Base_Price']; -->
+            <div style="font-size:1.625rem;font-weight:700;" id="display-price">R[Base Price]</div>
             <div class="text-sm text-muted">per person · select a package type</div>
           </div>
           <div class="booking-panel-body">
+
+            <!-- Package type options - needs backend integration -->
             <div class="form-group" style="margin-bottom:0.875rem;">
-              <label>Package type</label>
-              <div id="booking-options" class="option-cards">
-                <div class="option-card selected" onclick="selectOption(this)">
-                  <div><div class="option-label">Solo</div><div class="option-desc">1 traveller</div></div>
-                  <div class="option-price">R18,500</div>
-                </div>
-                <div class="option-card" onclick="selectOption(this)">
-                  <div><div class="option-label">Couple</div><div class="option-desc">2 travellers</div></div>
-                  <div class="option-price">R16,800</div>
-                </div>
-                <div class="option-card" onclick="selectOption(this)">
-                  <div><div class="option-label">Family</div><div class="option-desc">3-5 travellers</div></div>
-                  <div class="option-price">R15,200</div>
+              <label>Package type *</label>
+              <div id="option-cards">
+                <!-- PHP: foreach package_options as opt -->
+                <!-- <div class="option-card" onclick="selectOption(this, {opt.Final_Price}, {opt.Participants_Min}, {opt.Participants_Max})"> -->
+                <!--   <div> -->
+                <!--     <div class="option-label">{opt.Package_Type}</div> -->
+                <!--     <div class="option-desc">{opt.Participants_Min}-{opt.Participants_Max} travellers</div> -->
+                <!--   </div> -->
+                <!--   <div class="option-price">R{opt.Final_Price}</div> -->
+                <!-- </div> -->
+                <!-- PHP: endforeach -->
+                <div class="option-card selected" onclick="selectOption(this, 0, 1, 1)">
+                  <div><div class="option-label">[Type]</div><div class="option-desc">[Min]-[Max] travellers</div></div>
+                  <div class="option-price">R[Price]</div>
                 </div>
               </div>
             </div>
+
+            <!-- Number of travellers -->
             <div class="form-group" style="margin-bottom:0.875rem;">
-              <label>Number of travellers</label>
-              <select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-            </div>
-            <div class="form-group" style="margin-bottom:1.25rem;">
-              <label>Departure month</label>
-              <select>
-                <option>June 2026</option>
-                <option>July 2026</option>
-                <option>August 2026</option>
-                <option>September 2026</option>
-                <option>October 2026</option>
+              <label>Number of travellers *</label>
+              <select id="num-travellers" onchange="updateTotal()">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
               </select>
             </div>
+
+            <!-- Add-on services - needs backend integration -->
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label>Add-on services <span class="text-faint">(optional)</span></label>
+              <div id="services-list">
+                <!-- PHP: foreach product_services as svc -->
+                <!-- <div class="service-item" onclick="toggleService(this, {svc.Price})"> -->
+                <!--   <input type="checkbox" id="svc-{svc.Product_Service_ID}"> -->
+                <!--   <label for="svc-{svc.Product_Service_ID}"> -->
+                <!--     <div style="font-weight:500;">{svc.Name}</div> -->
+                <!--     <div class="text-xs text-muted">{svc.Description}</div> -->
+                <!--   </label> -->
+                <!--   <span class="service-price">+R{svc.Price}</span> -->
+                <!-- </div> -->
+                <!-- PHP: endforeach -->
+                <p class="text-xs text-muted">Add-on services load from database.</p>
+              </div>
+            </div>
+
+            <!-- Price breakdown -->
             <div style="border-top:1px solid var(--col-border);padding-top:1rem;margin-bottom:1rem;">
               <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.375rem;">
-                <span class="text-muted">R18,500 x 1 traveller</span><span>R18,500</span>
+                <span class="text-muted" id="breakdown-base">R[Price] X [N] traveller(s)</span>
+                <span id="breakdown-base-val">R[Total]</span>
               </div>
+              <div id="services-breakdown"></div>
               <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.375rem;">
-                <span class="text-muted">Service fee</span><span>R480</span>
+                <span class="text-muted">Service fee</span><span id="breakdown-fee">R0</span>
               </div>
-              <div style="display:flex;justify-content:space-between;font-weight:600;margin-top:0.625rem;padding-top:0.625rem;border-top:1px solid var(--col-border);">
-                <span>Total</span><span>R18,980</span>
+              <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:0.625rem;padding-top:0.625rem;border-top:1px solid var(--col-border);">
+                <span>Total</span><span id="breakdown-total">R[Total]</span>
               </div>
+            </div>
+
+            <!-- Book button — links to booking confirmation (PHP will handle session check) -->
+            <button id="book-btn" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="handleBooking()">
+              Book this package
+            </button>
+            <a href="compare.html" class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:0.5rem;">Compare packages</a>
+            <p class="text-xs text-muted" style="text-align:center;margin-top:0.75rem;">No payment now. Confirm first, pay later.</p>
+          </div>
         </div>
 
         <div style="margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);border:1px solid var(--col-border);">
           <div style="font-size:0.875rem;font-weight:500;margin-bottom:0.625rem;">Package highlights</div>
           <div style="display:flex;flex-direction:column;gap:0.375rem;">
-            <div class="text-sm text-muted"> Free cancellation up to 30 days</div>
-            <div class="text-sm text-muted"> 24/7 on-trip support</div>
-            <div class="text-sm text-muted"> Instant booking confirmation</div>
-            <div class="text-sm text-muted"> Verified agency</div>
+            <div class="text-sm text-muted">Free cancellation up to 30 days</div>
+            <div class="text-sm text-muted">24/7 on-trip support</div>
+            <div class="text-sm text-muted">Instant booking confirmation</div>
+            <div class="text-sm text-muted">Verified agency</div>
           </div>
         </div>
-        </div>
-            <button id="book-btn" type="button" class="btn btn-primary" style="width:100%;justify-content:center;">Book this package</button>
-            <a href="compare.html" class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:0.5rem;">Compare packages</a>
-          </div>
       </div>
     </div>
   </div>
@@ -334,12 +410,113 @@
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
       <a href="index.html" class="footer-logo">Tripistry</a>
-      <span class="text-xs text-faint">Tripistry — Team Name</span>
+      <span class="text-xs text-faint">Tripistry - Team Name</span>
     </div>
   </div>
 </footer>
 
-<script src="../js/package-detail.js"></script>
+<script>
+let selectedPrice = 0;
+let selectedServices = {};
+const SERVICE_FEE = 480;
+
+function showTab(id, btn) {
+  ['overview','itinerary','includes','reviews'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===id ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectOption(el, price, min, max) {
+  document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPrice = price;
+  updateTravellerOptions(min, max);
+  updateTotal();
+}
+
+function updateTravellerOptions(min, max) {
+  const sel = document.getElementById('num-travellers');
+  sel.innerHTML = '';
+  for (let i = min; i <= max; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i;
+    sel.appendChild(opt);
+  }
+}
+
+function toggleService(el, price) {
+  const cb = el.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  const id = cb.id;
+  if (cb.checked) {
+    selectedServices[id] = price;
+  } else {
+    delete selectedServices[id];
+  }
+  updateTotal();
+}
+
+function updateTotal() {
+  const n = parseInt(document.getElementById('num-travellers').value) || 1;
+  const base = selectedPrice * n;
+  const servicesTotal = Object.values(selectedServices).reduce((a, b) => a + b, 0);
+  const total = base + servicesTotal + SERVICE_FEE;
+
+  document.getElementById('breakdown-base').textContent = 'R' + selectedPrice.toLocaleString('en-ZA') + ' x ' + n + ' traveller' + (n > 1 ? 's' : '');
+  document.getElementById('breakdown-base-val').textContent = 'R' + base.toLocaleString('en-ZA');
+  document.getElementById('breakdown-fee').textContent = 'R' + SERVICE_FEE.toLocaleString('en-ZA');
+  document.getElementById('breakdown-total').textContent = 'R' + total.toLocaleString('en-ZA');
+
+  let svcHtml = '';
+  for (const [id, price] of Object.entries(selectedServices)) {
+    const label = document.querySelector('#'+id+' + label div')?.textContent || 'Service';
+    svcHtml += `<div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.375rem;"><span class="text-muted">${label}</span><span>+R${price.toLocaleString('en-ZA')}</span></div>`;
+  }
+  document.getElementById('services-breakdown').innerHTML = svcHtml;
+}
+
+function handleBooking() {
+  const selected = document.querySelector('.option-card.selected');
+  if (!selected) {
+    alert('Please select a package type.');
+    return;
+  }
+  // PHP will handle: session check, insert into BOOKING table, redirect
+  // window.location.href = 'confirm-booking.php?package_id=X&type=Y&pax=Z&services=...';
+  alert('Booking submitted. PHP backend will process this.');
+}
+
+document.querySelectorAll('.star-rating input[type=radio]').forEach(input => {
+  input.addEventListener('change', function() {
+    const labels = ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'];
+    document.getElementById('rating-label').textContent = labels[this.value] + ' (' + this.value + '/5)';
+    // Update star colours
+    document.querySelectorAll('.star-rating label').forEach(l => l.style.color = '');
+  });
+});
+
+function submitReview() {
+  const rating = document.querySelector('.star-rating input[type=radio]:checked');
+  const comment = document.getElementById('review-comment').value;
+  const errorEl = document.getElementById('review-error');
+  const successEl = document.getElementById('review-success');
+
+  errorEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  if (!rating) {
+    errorEl.textContent = 'Please select a rating before submitting.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  // PHP will handle: insert into FEEDBACK table with Rating, Comment, Traveller_ID, Package_ID, Package_Type
+  // fetch('submit_review.php', { method:'POST', body: new FormData(...) })
+  successEl.style.display = 'block';
+  document.getElementById('review-form').querySelector('button').disabled = true;
+}
+</script>
 </body>
 </html>
-
