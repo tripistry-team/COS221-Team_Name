@@ -13,6 +13,22 @@ function cap(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function slugify(str) {
+  return String(str || '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function heroImage(imageUrl, packageName) {
+  const fallback = `url('../assets/images/packages/${slugify(packageName)}.jpg'), url('../assets/images/travel-placeholder.svg')`;
+  const u = String(imageUrl || '').trim();
+  if (!u) return fallback;
+  const safe = u.replace(/'/g, "\\'");
+  return `url('${safe}'), ${fallback}`;
+}
+
 //API
 async function callAPI(payload) {
   const res = await fetch(API_URL, {
@@ -109,6 +125,12 @@ async function loadPackageDetail() {
 function renderHero(pkg, options, avg_rating, review_count) {
   const el = document.getElementById('detail-hero-content');
   if (!el) return;
+  const hero = document.querySelector('.detail-hero');
+  if (hero) {
+    hero.style.backgroundImage = heroImage(pkg.Image_url, pkg.Name);
+    hero.style.backgroundSize = 'cover';
+    hero.style.backgroundPosition = 'center';
+  }
 
   const types = options.map(o =>
     `<span class="badge badge-green">${cap(o.Package_Type)}</span>`
@@ -199,7 +221,7 @@ function renderOverview(pkg, options, flights) {
     </p>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.5rem 0;">
       <div style="text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);">
-        <div style="font-weight:500;font-size:0.9rem;">${escHtml(pkg.Duration)}</div>
+        <div style="font-weight:500;font-size:0.9rem;">${escHtml(pkg.Duration)} days</div>
         <div class="text-xs text-muted">Duration</div>
       </div>
       <div style="text-align:center;padding:1rem;background:var(--bg-secondary);border-radius:var(--radius-md);">
@@ -321,7 +343,9 @@ function renderReviews(reviews, avg_rating) {
 
   //Individual review cards
   html += reviews.map(r => {
-    const initials = `${r.First_Name[0]}${r.Surname[0]}`.toUpperCase();
+    const firstName = String(r.First_Name || '').trim();
+    const surname = String(r.Surname || '').trim();
+    const initials = `${(firstName[0] || 'U')}${(surname[0] || 'U')}`.toUpperCase();
     const date     = new Date(r.Last_Updated).toLocaleDateString('en-ZA', { dateStyle: 'medium' });
     const stars    = '&#9733;'.repeat(Number(r.Rating)) + '&#9734;'.repeat(5 - Number(r.Rating));
     return `
@@ -329,7 +353,7 @@ function renderReviews(reviews, avg_rating) {
         <div class="reviewer">
           <div class="reviewer-avatar">${escHtml(initials)}</div>
           <div>
-            <div style="font-weight:500;font-size:0.9rem;">${escHtml(r.First_Name)} ${escHtml(r.Surname[0])}.</div>
+            <div style="font-weight:500;font-size:0.9rem;">${escHtml(firstName || 'Anonymous')} ${escHtml((surname[0] || '').toUpperCase())}${surname ? '.' : ''}</div>
             <div class="text-xs text-muted">${date} &middot; ${cap(r.Package_Type)} package</div>
           </div>
           <div style="margin-left:auto;color:var(--accent);">${stars}</div>
@@ -388,6 +412,9 @@ function renderBookingPanel(pkg, options) {
       </div>
     `).join('');
   }
+  if (body && !options.length) {
+    body.innerHTML = '<p class="text-sm text-muted">No package options available for booking yet.</p>';
+  }
 
   const paxSelect = document.querySelector('.booking-panel-body select');
   if (paxSelect && options.length) {
@@ -405,6 +432,11 @@ function renderBookingPanel(pkg, options) {
   updateBookingSummary();
 
   if (!bookBtn) return;
+  if (!options.length) {
+    bookBtn.disabled = true;
+    bookBtn.textContent = 'Unavailable';
+    return;
+  }
 
   if (currentUser && currentUser.user_type === 'traveller') {
     bookBtn.textContent = 'Book this package';
@@ -462,6 +494,7 @@ async function handleBooking(packageId) {
 
   if (res2.status === 'success') {
     alert(`Booking confirmed! Total: R${total.toLocaleString('en-ZA')}`);
+    window.location.href = 'traveller-dashboard.html#bookings';
   } else {
     alert(`Booking failed while linking package option: ${res2.message}`);
   }

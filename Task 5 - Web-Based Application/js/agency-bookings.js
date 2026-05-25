@@ -38,6 +38,19 @@ function updateNav(user) {
   });
 }
 
+function updateSidebar(profile, user) {
+  const header = document.querySelector('.agency-sidebar-header');
+  if (!header) return;
+  const name = profile?.Company_Name || user?.username || 'Agency';
+  const initial = String(name).charAt(0).toUpperCase();
+  header.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">${escHtml(initial)}</div>
+      <div><div style="font-weight:500;">${escHtml(name)}</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+    </div>
+  `;
+}
+
 function updateHeaderStats(rows) {
   const total = rows.length;
   const confirmed = rows.filter(r => String(r.Booking_Status || '').toLowerCase() === 'confirmed').length;
@@ -107,6 +120,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const user = await checkAuth();
   if (!user) return;
   updateNav(user);
+  const profile = await callAPI({ type: 'GetAgencyProfile' });
+  if (profile.status === 'success') updateSidebar(profile.data, user);
   await loadBookings();
   const statusSelect = document.querySelectorAll('main select')[0];
   if (statusSelect) {

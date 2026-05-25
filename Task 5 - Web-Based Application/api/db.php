@@ -8,17 +8,17 @@ class Database {
     private $conn;
 
     private function __construct() {
-        $host = "127.0.0.1"; 
-        $user = "root"; 
-        $password = "";
-        $dbname = "tripistry"; 
+        $host = getenv("TRIPISTRY_DB_HOST") ?: "127.0.0.1";
+        $user = getenv("TRIPISTRY_DB_USER") ?: "root";
+        $password = getenv("TRIPISTRY_DB_PASSWORD") ?: "";
+        $dbname = getenv("TRIPISTRY_DB_NAME") ?: "team27_tripistry";
 
-        $this->conn = new mysqli($host, $user, $password, $dbname, 3307);
+        $this->conn = new mysqli($host, $user, $password, $dbname);
 
         if ($this->conn->connect_error) {
             http_response_code(500);
             die(json_encode([
-                "status" => "error",
+                "status" => "error", 
                 "timestamp" => time(),
                 "message" => "Database connection failed"
             ]));

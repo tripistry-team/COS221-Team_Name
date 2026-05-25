@@ -1,4 +1,4 @@
-﻿const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 let currentUser = null;
 let allTrips = [];
 let activeStatus = 'active';
@@ -34,6 +34,19 @@ function updateNav(user) {
   document.getElementById('logout-btn').addEventListener('click', async () => {
     await callAPI({type:'Logout'}); window.location.href='login.html';
   });
+}
+
+function updateSidebar(profile, user) {
+  const header = document.querySelector('.agency-sidebar-header');
+  if (!header) return;
+  const name = profile?.Company_Name || user?.username || 'Agency';
+  const initial = String(name).charAt(0).toUpperCase();
+  header.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">${escHtml(initial)}</div>
+      <div><div style="font-weight:500;">${escHtml(name)}</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+    </div>
+  `;
 }
 
 function openModal() { document.getElementById('new-trip-modal')?.classList.add('show'); }
@@ -180,6 +193,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentUser = await checkAuth();
   if (!currentUser) return;
   updateNav(currentUser);
+  const profile = await callAPI({ type: 'GetAgencyProfile' });
+  if (profile.status === 'success') updateSidebar(profile.data, currentUser);
 
   const tabs = document.querySelectorAll('.tabs .tab');
   if (tabs[0]) tabs[0].onclick = () => setTripTab('active', tabs[0]);
