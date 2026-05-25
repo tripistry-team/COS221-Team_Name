@@ -58,7 +58,6 @@ async function handleLogout() {
   window.location.href = 'login.html';
 }
 
-//Package ID from URL
 
 function getPackageId() {
   return parseInt(new URLSearchParams(window.location.search).get('id'));

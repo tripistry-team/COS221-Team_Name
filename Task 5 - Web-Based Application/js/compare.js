@@ -1,4 +1,4 @@
-const API = "api.php";
+const API = "../api/api.php";
 
 // State
 let comparedPackages = []; // array of package objects currently in the table
