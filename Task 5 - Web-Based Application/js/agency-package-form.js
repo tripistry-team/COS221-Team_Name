@@ -36,6 +36,19 @@ function updateNav(user) {
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
 }
 
+function updateSidebar(profile, user) {
+  const header = document.querySelector('.agency-sidebar-header');
+  if (!header) return;
+  const name = profile?.Company_Name || user?.username || 'Agency';
+  const initial = String(name).charAt(0).toUpperCase();
+  header.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">${escHtml(initial)}</div>
+      <div><div style="font-weight:500;">${escHtml(name)}</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+    </div>
+  `;
+}
+
 async function handleLogout() {
   await callAPI({type: 'Logout'});
   window.location.href = 'login.html';
@@ -54,7 +67,6 @@ function collectFormData(status) {
   const sections = document.querySelectorAll('.form-section');
   const basicSection = sections[0] || null;
   const description = basicSection?.querySelector('textarea')?.value.trim();
-  // CHANGED: use the actual first section node, not :first-of-type selector.
   const basicNumberInputs = basicSection ? basicSection.querySelectorAll('input[type=number]') : [];
   const basePrice   = basicNumberInputs[0]?.value;
   const duration    = basicNumberInputs[1]?.value;
@@ -95,7 +107,6 @@ async function submitPackage(formData) {
       return;
     }
 
-    // CHANGED: map package to current agency via AGENCY_DESIGNS_PACKAGE.
     if (!editPackageId) {
       const mapRes = await callAPI({
         type: 'AddPackageAgency',
@@ -108,7 +119,6 @@ async function submitPackage(formData) {
       }
     }
 
-    // add package options
     const optionRows = document.querySelectorAll('#options-list .option-row');
     for (const row of optionRows) {
       const selects = row.querySelectorAll('select');
@@ -125,7 +135,7 @@ async function submitPackage(formData) {
         participants_min,
         participants_max,
         final_price,
-        description: ''
+        description: `${pkg_type} option`
       });
     }
 
@@ -153,6 +163,21 @@ function addOption() {
 
 function removeOption(btn) {
   btn.closest('.option-row').remove();
+}
+
+function addDestination() {
+  const list = document.getElementById('destinations-list');
+  const div  = document.createElement('div');
+  div.className = 'item-row';
+  div.innerHTML = `
+    <div class="item-row-icon"></div>
+              <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.5rem;">
+                <div class="form-group"><label>Continent</label><input type="text" placeholder="Africa"></div>
+                <div class="form-group"><label>Country</label><input type="text" placeholder="South Africa"></div>
+                <div class="form-group"><label>City</label><input type="text" placeholder="Cape Town"></div>
+              </div>
+  `;
+  list.appendChild(div);
 }
 
 function addFlight() {
@@ -218,6 +243,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentUser = await checkAuth();
   if (!currentUser) return;
   updateNav(currentUser);
+  const profile = await callAPI({ type: 'GetAgencyProfile' });
+  if (profile.status === 'success') updateSidebar(profile.data, currentUser);
 
   // check if editing existing package
   const params = new URLSearchParams(window.location.search);

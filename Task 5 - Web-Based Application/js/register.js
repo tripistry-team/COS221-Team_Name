@@ -69,4 +69,3 @@ async function handleRegister() {
   window.location.href = isAgency ? 'agency-dashboard.html' : 'traveller-dashboard.html';
 }
 
-

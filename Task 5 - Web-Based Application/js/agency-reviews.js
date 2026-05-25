@@ -40,6 +40,19 @@ function updateNav(user) {
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
 }
 
+function updateSidebar(profile, user) {
+  const header = document.querySelector('.agency-sidebar-header');
+  if (!header) return;
+  const name = profile?.Company_Name || user?.username || 'Agency';
+  const initial = String(name).charAt(0).toUpperCase();
+  header.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">${escHtml(initial)}</div>
+      <div><div style="font-weight:500;">${escHtml(name)}</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+    </div>
+  `;
+}
+
 async function handleLogout() {
   await callAPI({type: 'Logout'});
   window.location.href = 'login.html';
@@ -51,7 +64,11 @@ async function loadReviews() {
 
   // CHANGED: only fetch current agency packages.
   const data = await callAPI({type: 'GetAgencyPackages'});
-  if (data.status !== 'success' || !data.data.length) return;
+  const reviewSection = document.querySelector('.reviews-list') || content;
+  if (data.status !== 'success' || !data.data.length) {
+    reviewSection.innerHTML = '<p class="text-muted">No reviews yet.</p>';
+    return;
+  }
 
   // load detail for each package to get reviews
   let allReviews = [];
@@ -65,14 +82,13 @@ async function loadReviews() {
   }
 
   if (!allReviews.length) {
-    const reviewSection = document.querySelector('.reviews-list') || content;
     reviewSection.innerHTML = '<p class="text-muted">No reviews yet.</p>';
     return;
   }
-
-  const reviewSection = document.querySelector('.reviews-list') || content;
   reviewSection.innerHTML = allReviews.map(r => {
-    const initials = `${r.First_Name[0]}${r.Surname[0]}`.toUpperCase();
+    const firstName = String(r.First_Name || '').trim();
+    const surname = String(r.Surname || '').trim();
+    const initials = `${(firstName[0] || 'U')}${(surname[0] || 'U')}`.toUpperCase();
     const date = new Date(r.Last_Updated).toLocaleDateString('en-ZA', {dateStyle: 'medium'});
     const stars = '&#9733;'.repeat(Number(r.Rating)) + '&#9734;'.repeat(5 - Number(r.Rating));
 
@@ -81,7 +97,7 @@ async function loadReviews() {
         <div class="reviewer">
           <div class="reviewer-avatar">${escHtml(initials)}</div>
           <div>
-            <div style="font-weight:500;font-size:0.9rem;">${escHtml(r.First_Name)} ${escHtml(r.Surname[0])}.</div>
+            <div style="font-weight:500;font-size:0.9rem;">${escHtml(firstName || 'Anonymous')} ${escHtml((surname[0] || '').toUpperCase())}${surname ? '.' : ''}</div>
             <div class="text-xs text-muted">${date} &middot; ${escHtml(r.Package_Name)} &middot; ${cap(r.Package_Type)} package</div>
           </div>
           <div style="margin-left:auto;color:var(--accent);">${stars}</div>
@@ -140,6 +156,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentUser = await checkAuth();
   if (!currentUser) return;
   updateNav(currentUser);
+  const profile = await callAPI({ type: 'GetAgencyProfile' });
+  if (profile.status === 'success') updateSidebar(profile.data, currentUser);
   loadReviews();
 });
 

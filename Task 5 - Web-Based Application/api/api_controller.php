@@ -209,11 +209,11 @@ class API {
 
         $result = $stmt->get_result();
         if ($result->num_rows == 0)
-            return $this->error("Invalid username", "cred");
+            return $this->error("Incorrect username", "cred");
 
         $row = $result->fetch_assoc();
         if (!password_verify($password, $row["Password"]))
-            return $this->error("Invalid password", "cred");
+           return $this->error("Incorrect password", "cred");
 
         $id = $row["User_ID"];
         $type = $row["User_Type"];
@@ -318,6 +318,7 @@ class API {
                 GROUP_CONCAT(DISTINCT a.Company_Name ORDER BY a.Company_Name SEPARATOR ', ') AS Agencies,
                 d.Country,
                 d.City,
+                MAX(d.Image_url)               AS Image_url,
                 ROUND(AVG(f.Rating), 1)         AS Avg_Rating,
                 COUNT(DISTINCT f.Feedback_ID)   AS Review_Count,
                 MIN(po.Final_Price)             AS Min_Price,
@@ -451,6 +452,29 @@ class API {
         if ($result->num_rows === 0)
             return $this->error("Package not found");
         $package = $result->fetch_assoc();
+
+        // Primary destination image (if available) for hero/banner display
+        $sql = "
+            SELECT d.Image_url
+            FROM PACKAGE_OPTION_EXPERIENCE poe
+            JOIN EXPERIENCE e ON poe.Experience_ID = e.Experience_ID
+            JOIN DESTINATION d ON e.Destination_ID = d.Destination_ID
+            WHERE poe.Package_ID = ? AND d.Image_url IS NOT NULL AND d.Image_url <> ''
+            LIMIT 1
+        ";
+        $stmt = $this->conn->prepare($sql);
+        if ($stmt) {
+            $stmt->bind_param("i", $pid);
+            if ($stmt->execute()) {
+                $imgRes = $stmt->get_result();
+                $imgRow = $imgRes ? $imgRes->fetch_assoc() : null;
+                $package["Image_url"] = $imgRow["Image_url"] ?? null;
+            } else {
+                $package["Image_url"] = null;
+            }
+        } else {
+            $package["Image_url"] = null;
+        }
 
         // Agencies
         $sql = "
@@ -881,6 +905,8 @@ class API {
         if (!isset($data["name"], $data["description"], $data["base_price"], $data["duration"], $data["status"]))
                 return $this->error("Post parameters are missing");
 
+
+
         $allowed = ["draft", "active", "archived"];
         if (!in_array($data["status"], $allowed)) 
             return $this->error("Invalid package status");
@@ -888,26 +914,53 @@ class API {
         $name = trim($data["name"]);
         $description = trim($data["description"]);
         $price = (float)$data["base_price"];
+        if ($price < 1) {
+            return $this->error("Please select a valid price");
+        }
         $duration = (int)$data["duration"];
-        $status = $data["status"];
-        // CHANGED: PACKAGE table requires Agency_ID; use authenticated agency.
-        $agency_id = (int)($_SESSION['type_id'] ?? 0);
 
+        if ($duration < 1) {
+            return $this->error("Your package has to have a duration of at least 1 day");
+        }
+        $status = $data["status"];
         if (!$name || !$description)
             return $this->error("Post parameters are empty");
 
-        //===
+        $agency_id = (int)($_SESSION['type_id'] ?? 0);
 
-        $sql = "INSERT INTO PACKAGE (Agency_ID, Name, Description, Base_Price, Duration, Package_Status) 
-                VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        if (!$stmt) 
-            return $this->error("Connection failed", "db");
-        $stmt->bind_param("issdis", $agency_id, $name, $description, $price, $duration, $status);
-        if (!$stmt->execute()) 
-            return $this->error("Insert failed", "db");
+        $hasAgencyCol = false;
+        $colSql = "SELECT COLUMN_NAME FROM information_schema.COLUMNS
+                   WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'PACKAGE' AND COLUMN_NAME = 'Agency_ID'";
+        $colStmt = $this->conn->prepare($colSql);
+        if ($colStmt && $colStmt->execute()) {
+            $colRes = $colStmt->get_result();
+            $hasAgencyCol = $colRes && $colRes->num_rows > 0;
+        }
+
+        if ($hasAgencyCol) {
+            $sql = "INSERT INTO PACKAGE (Agency_ID, Name, Description, Base_Price, Duration, Package_Status) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) return $this->error("Connection failed", "db");
+            $stmt->bind_param("issdis", $agency_id, $name, $description, $price, $duration, $status);
+            if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        } else {
+            $sql = "INSERT INTO PACKAGE (Name, Description, Base_Price, Duration, Package_Status) 
+                    VALUES (?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) return $this->error("Connection failed", "db");
+            $stmt->bind_param("ssdis", $name, $description, $price, $duration, $status);
+            if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        }
 
         $package_id = $this->conn->insert_id;
+
+        $mapSql = "INSERT IGNORE INTO AGENCY_DESIGNS_PACKAGE (Agency_ID, Package_ID) VALUES (?, ?)";
+        $mapStmt = $this->conn->prepare($mapSql);
+        if ($mapStmt) {
+            $mapStmt->bind_param("ii", $agency_id, $package_id);
+            $mapStmt->execute();
+        }
 
         return [
             "status" => "success",
@@ -988,6 +1041,11 @@ class API {
         $type = $data["package_type"];
         $min = (int)$data["participants_min"];
         $max = (int)$data["participants_max"];
+
+        if ($min > $max) {
+            return $this->error("Please select a valid number of participants");
+        }
+
         $price = (float)$data["final_price"];
         $description = trim($data["description"]);
 
@@ -1209,8 +1267,7 @@ class API {
         if ($_SESSION['user_type'] !== "traveller")
             return $this->error("Invalid user type", "fbdn");
 
-        // CHANGED: Task 5 BOOKING requires package linkage fields.
-        if (!isset($data["date"], $data["status"], $data["num_people"], $data["total_price"], $data["traveller_id"], $data["package_id"], $data["package_type"]))
+        if (!isset($data["date"], $data["status"], $data["num_people"], $data["total_price"], $data["traveller_id"]))
                 return $this->error("Post parameters are missing");
 
         $allowed = ["pending", "confirmed", "cancelled", "completed"];
@@ -1222,10 +1279,10 @@ class API {
         $num_people = (int)$data["num_people"];
         $price = (float)$data["total_price"];
         $traveller_id = (int)$data["traveller_id"];
-        $package_id = (int)$data["package_id"];
-        $package_type = strtolower(trim((string)$data["package_type"]));
+        $package_id = isset($data["package_id"]) ? (int)$data["package_id"] : 0;
+        $package_type = isset($data["package_type"]) ? strtolower(trim((string)$data["package_type"])) : '';
 
-        if (!$status || !$date || $package_id <= 0 || $package_type === '')
+        if (!$status || !$date)
             return $this->error("Post parameters are empty");
 
         $sql = "SELECT Traveller_ID FROM TRAVELLER WHERE Traveller_ID = ?";        
@@ -1242,14 +1299,70 @@ class API {
 
         //===
 
-        $sql = "INSERT INTO BOOKING (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID, Package_ID, Package_Type) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        if (!$stmt) 
-            return $this->error("Connection failed", "db");
-        $stmt->bind_param("ssidiis", $date, $status, $num_people, $price, $traveller_id, $package_id, $package_type);
-        if (!$stmt->execute()) 
-            return $this->error("Insert failed", "db");
+        // CHANGED: support multiple schema variants used in Task 4/5 environments.
+        // Check whether BOOKING has Group_Trip_ID and whether Package_ID/Package_Type exist.
+        $schema = [];
+        $colSql = "SELECT COLUMN_NAME, IS_NULLABLE
+                   FROM INFORMATION_SCHEMA.COLUMNS
+                   WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'BOOKING'
+                     AND COLUMN_NAME IN ('Group_Trip_ID','Package_ID','Package_Type')";
+        $colStmt = $this->conn->prepare($colSql);
+        if ($colStmt && $colStmt->execute()) {
+            $colRes = $colStmt->get_result();
+            while ($row = $colRes->fetch_assoc()) {
+                $schema[$row["COLUMN_NAME"]] = $row["IS_NULLABLE"];
+            }
+        }
+
+        $hasGroupTrip = array_key_exists("Group_Trip_ID", $schema);
+        $hasPackageCols = array_key_exists("Package_ID", $schema) && array_key_exists("Package_Type", $schema);
+        $group_trip_id = isset($data["group_trip_id"]) ? (int)$data["group_trip_id"] : 0;
+
+        if ($hasGroupTrip && $group_trip_id <= 0) {
+            // Fallback for package bookings when Group_Trip_ID is mandatory in BOOKING.
+            $gidSql = "SELECT Group_Trip_ID FROM GROUP_TRIP ORDER BY Group_Trip_ID ASC LIMIT 1";
+            $gidStmt = $this->conn->prepare($gidSql);
+            if ($gidStmt && $gidStmt->execute()) {
+                $gidRes = $gidStmt->get_result();
+                if ($gidRow = $gidRes->fetch_assoc()) {
+                    $group_trip_id = (int)$gidRow["Group_Trip_ID"];
+                }
+            }
+        }
+
+        if ($hasGroupTrip && $group_trip_id <= 0) {
+            return $this->error("No valid group trip available for booking");
+        }
+
+        if ($hasGroupTrip && $hasPackageCols) {
+            $sql = "INSERT INTO BOOKING (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID, Group_Trip_ID, Package_ID, Package_Type) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) return $this->error("Connection failed", "db");
+            $stmt->bind_param("ssidiiis", $date, $status, $num_people, $price, $traveller_id, $group_trip_id, $package_id, $package_type);
+            if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        } else if ($hasGroupTrip) {
+            $sql = "INSERT INTO BOOKING (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID, Group_Trip_ID) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) return $this->error("Connection failed", "db");
+            $stmt->bind_param("ssidii", $date, $status, $num_people, $price, $traveller_id, $group_trip_id);
+            if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        } else if ($hasPackageCols) {
+            $sql = "INSERT INTO BOOKING (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID, Package_ID, Package_Type) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) return $this->error("Connection failed", "db");
+            $stmt->bind_param("ssidiis", $date, $status, $num_people, $price, $traveller_id, $package_id, $package_type);
+            if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        } else {
+            $sql = "INSERT INTO BOOKING (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID) 
+                    VALUES (?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            if (!$stmt) return $this->error("Connection failed", "db");
+            $stmt->bind_param("ssidi", $date, $status, $num_people, $price, $traveller_id);
+            if (!$stmt->execute()) return $this->error("Insert failed", "db");
+        }
 
         $booking_id = $this->conn->insert_id;
 
@@ -1378,7 +1491,7 @@ class API {
 
         if (!isset($data["name"], $data["start_date"], $data["end_date"], $data["join_deadline"],
             $data["min_participants"], $data["max_participants"], $data["agency_id"]))
-                return $this->error("Post parameters are missing");
+                return $this->error("Please fill in all the fields");
 
         $name = trim($data["name"]);
         $start = trim($data["start_date"]);
@@ -1387,6 +1500,10 @@ class API {
         $min = (int)$data["min_participants"];
         $max = (int)$data["max_participants"];
         $agency_id = (int)$data["agency_id"];
+
+        if (($min > $max) || ($max < 0) || ($min <0) || ($start > $end) || ($start < $deadline)) {
+            return $this->error("Please select valid options");
+        }
 
         if (!$name || !$start || !$end || !$deadline)
             return $this->error("Post parameters are empty");
@@ -1403,9 +1520,6 @@ class API {
         if ($result->num_rows == 0)
             return $this->error("Invalid agency id");
         
-        //===
-
-        // CHANGED: create trips as open so they are discoverable on public group trips immediately.
         $sql = "INSERT INTO GROUP_TRIP 
                 (Trip_Name, Start_Date, End_Date, Join_Deadline, Participants_Min, Participants_Max, Participants_Current, Trip_Status, Agency_ID) 
                 VALUES (?, ?, ?, ?, ?, ?, 0, 'open', ?)";
@@ -2020,6 +2134,7 @@ class API {
                            WHEN gt.Trip_Status = 'completed' THEN 'completed'
                            ELSE 'confirmed'
                          END AS Booking_Status,
+                         gt.Trip_Status AS Group_Trip_Status,
                          1 AS Number_Of_People,
                          0 AS Total_Price,
                          gt.Trip_Name AS Name,
@@ -2166,10 +2281,30 @@ class API {
     public function getPublicGroupTrips($data) {
         $sql = "SELECT gt.Group_Trip_ID, gt.Trip_Name, gt.Start_Date, gt.End_Date, gt.Join_Deadline,
                        gt.Participants_Min, gt.Participants_Max, gt.Participants_Current, gt.Trip_Status,
-                       gt.Agency_ID, a.Company_Name
+                       gt.Agency_ID, a.Company_Name,
+                       ap.Min_Price,
+                       MAX(d.Country) AS Country,
+                       MAX(d.Image_url) AS Image_url
                 FROM GROUP_TRIP gt
                 JOIN AGENCY a ON a.Agency_ID = gt.Agency_ID
-                WHERE gt.Trip_Status IN ('open','planned')
+                LEFT JOIN (
+                  SELECT adp.Agency_ID, MIN(po.Final_Price) AS Min_Price
+                  FROM AGENCY_DESIGNS_PACKAGE adp
+                  JOIN PACKAGE_OPTION po ON po.Package_ID = adp.Package_ID
+                  GROUP BY adp.Agency_ID
+                ) ap ON ap.Agency_ID = gt.Agency_ID
+                LEFT JOIN DESTINATION d ON d.Destination_ID = (
+                  SELECT e.Destination_ID
+                  FROM AGENCY_DESIGNS_PACKAGE adp2
+                  JOIN PACKAGE_OPTION_EXPERIENCE poe2 ON poe2.Package_ID = adp2.Package_ID
+                  JOIN EXPERIENCE e ON e.Experience_ID = poe2.Experience_ID
+                  WHERE adp2.Agency_ID = gt.Agency_ID AND e.Destination_ID IS NOT NULL
+                  LIMIT 1
+                )
+                WHERE gt.Trip_Status IN ('open','planned','full','in_progress')
+                GROUP BY gt.Group_Trip_ID, gt.Trip_Name, gt.Start_Date, gt.End_Date, gt.Join_Deadline,
+                         gt.Participants_Min, gt.Participants_Max, gt.Participants_Current, gt.Trip_Status,
+                         gt.Agency_ID, a.Company_Name, ap.Min_Price
                 ORDER BY gt.Start_Date ASC, gt.Group_Trip_ID DESC";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) return $this->error("Connection failed", "db");
@@ -2268,11 +2403,13 @@ class API {
 
         $agency_id = (int)$_SESSION['type_id'];
         $sql = "SELECT b.Booking_ID, b.Booking_Date, b.Booking_Status, b.Number_Of_People, b.Total_Price,
-                       t.First_Name, t.Surname, p.Name AS Package_Name, b.Package_Type
+                       t.First_Name, t.Surname, p.Name AS Package_Name, bpo.Package_Type
                 FROM BOOKING b
-                JOIN PACKAGE p ON p.Package_ID = b.Package_ID
+                JOIN BOOKING_PACKAGE_OPTION bpo ON bpo.Booking_ID = b.Booking_ID
+                JOIN PACKAGE p ON p.Package_ID = bpo.Package_ID
+                JOIN AGENCY_DESIGNS_PACKAGE adp ON adp.Package_ID = p.Package_ID
                 JOIN TRAVELLER t ON t.Traveller_ID = b.Traveller_ID
-                WHERE p.Agency_ID = ?
+                WHERE adp.Agency_ID = ?
                 ORDER BY b.Booking_Date DESC, b.Booking_ID DESC";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) return $this->error("Connection failed", "db");
@@ -2291,14 +2428,16 @@ class API {
             return $this->error("Invalid user type", "fbdn");
         $agency_id = (int)$_SESSION['type_id'];
 
-        $sql = "SELECT p.Package_ID, p.Agency_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status,
+        $sql = "SELECT p.Package_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status,
                        ROUND(AVG(f.Rating), 1) AS Avg_Rating, COUNT(DISTINCT f.Feedback_ID) AS Review_Count,
                        COUNT(DISTINCT b.Booking_ID) AS Total_Bookings
                 FROM PACKAGE p
+                JOIN AGENCY_DESIGNS_PACKAGE adp ON adp.Package_ID = p.Package_ID
                 LEFT JOIN FEEDBACK f ON p.Package_ID = f.Package_ID
-                LEFT JOIN BOOKING b ON p.Package_ID = b.Package_ID
-                WHERE p.Agency_ID = ?
-                GROUP BY p.Package_ID, p.Agency_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status
+                LEFT JOIN BOOKING_PACKAGE_OPTION bpo ON bpo.Package_ID = p.Package_ID
+                LEFT JOIN BOOKING b ON b.Booking_ID = bpo.Booking_ID
+                WHERE adp.Agency_ID = ?
+                GROUP BY p.Package_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status
                 ORDER BY p.Package_ID DESC";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) return $this->error("Connection failed", "db");
@@ -2319,7 +2458,9 @@ class API {
 
         $package_id = (int)$data["package_id"];
         $agency_id = (int)$_SESSION['type_id'];
-        $sql = "DELETE FROM PACKAGE WHERE Package_ID = ? AND Agency_ID = ?";
+        $sql = "DELETE p FROM PACKAGE p
+                JOIN AGENCY_DESIGNS_PACKAGE adp ON adp.Package_ID = p.Package_ID
+                WHERE p.Package_ID = ? AND adp.Agency_ID = ?";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) return $this->error("Connection failed", "db");
         $stmt->bind_param("ii", $package_id, $agency_id);
@@ -2343,8 +2484,10 @@ class API {
         $status = trim($data["status"]);
         $agency_id = (int)$_SESSION['type_id'];
 
-        $sql = "UPDATE PACKAGE SET Name = ?, Description = ?, Base_Price = ?, Duration = ?, Package_Status = ?
-                WHERE Package_ID = ? AND Agency_ID = ?";
+        $sql = "UPDATE PACKAGE p
+                JOIN AGENCY_DESIGNS_PACKAGE adp ON adp.Package_ID = p.Package_ID
+                SET p.Name = ?, p.Description = ?, p.Base_Price = ?, p.Duration = ?, p.Package_Status = ?
+                WHERE p.Package_ID = ? AND adp.Agency_ID = ?";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) return $this->error("Connection failed", "db");
         $stmt->bind_param("ssdssii", $name, $description, $price, $duration, $status, $package_id, $agency_id);
@@ -2361,12 +2504,12 @@ class API {
         $agency_id = (int)$_SESSION['type_id'];
         $user_id = (int)$_SESSION['user_id'];
         $sql = "SELECT a.Company_Name, a.Description, a.Email, u.Username
-                FROM AGENCY a
-                JOIN USER u ON u.Agency_ID = a.Agency_ID
-                WHERE a.Agency_ID = ? AND u.User_ID = ?";
+                FROM USER u
+                LEFT JOIN AGENCY a ON a.Agency_ID = u.Agency_ID
+                WHERE u.User_ID = ? AND u.User_Type = 'agency_staff'";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) return $this->error("Connection failed", "db");
-        $stmt->bind_param("ii", $agency_id, $user_id);
+        $stmt->bind_param("i", $user_id);
         if (!$stmt->execute()) return $this->error("Query failed", "db");
         $result = $stmt->get_result();
         if ($result->num_rows === 0) return $this->error("Profile not found", "db");
@@ -2394,10 +2537,10 @@ class API {
         $stmt->bind_param("sssi", $company_name, $description, $email, $agency_id);
         if (!$stmt->execute()) return $this->error("Query failed", "db");
 
-        $sql = "UPDATE USER SET Username = ? WHERE User_ID = ? AND Agency_ID = ?";
+        $sql = "UPDATE USER SET Username = ? WHERE User_ID = ?";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) return $this->error("Connection failed", "db");
-        $stmt->bind_param("sii", $username, $user_id, $agency_id);
+        $stmt->bind_param("si", $username, $user_id);
         if (!$stmt->execute()) return $this->error("Query failed", "db");
         $_SESSION['username'] = $username;
         return ["status" => "success", "timestamp" => time()];

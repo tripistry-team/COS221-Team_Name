@@ -1,4 +1,4 @@
-﻿const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 
 async function callAPI(payload) {
   const res = await fetch(API_URL, {
@@ -22,6 +22,19 @@ function updateNav(user) {
   document.getElementById('logout-btn').addEventListener('click', async () => {
     await callAPI({type: 'Logout'}); window.location.href = 'login.html';
   });
+}
+
+function updateSidebar(profile, user) {
+  const header = document.querySelector('.agency-sidebar-header');
+  if (!header) return;
+  const name = profile?.Company_Name || user?.username || 'Agency';
+  const initial = String(name).charAt(0).toUpperCase();
+  header.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">${initial}</div>
+      <div><div style="font-weight:500;">${name}</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+    </div>
+  `;
 }
 
 function values() {
@@ -59,6 +72,7 @@ async function saveProfile() {
     alertEl.style.display = 'block';
     setTimeout(() => { alertEl.style.display = 'none'; }, 2500);
   }
+  updateNav({ username: v.username });
 }
 
 async function loadProfile() {
@@ -79,4 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!user) return;
   updateNav(user);
   await loadProfile();
+  const profile = await callAPI({ type: 'GetAgencyProfile' });
+  if (profile.status === 'success') updateSidebar(profile.data, user);
 });
