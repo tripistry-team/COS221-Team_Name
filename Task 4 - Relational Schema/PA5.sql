@@ -45,7 +45,7 @@ CREATE TABLE USER (
     User_ID                 INT             NOT NULL AUTO_INCREMENT,
     Username                VARCHAR(50)     NOT NULL,
     Password                VARCHAR(255)    NOT NULL,
-    User_Type               ENUM('traveller','agency_staff','admin') NOT NULL,
+    User_Type               ENUM('traveller','agency_staff') NOT NULL,
     Traveller_ID            INT             NULL,
     Agency_ID               INT             NULL,
  
@@ -79,14 +79,10 @@ CREATE TABLE PACKAGE (
     Name                    VARCHAR(200)    NOT NULL,
     Description             TEXT            NULL,
     Base_Price              DECIMAL(10,2)   NOT NULL,
-    Duration                VARCHAR(100)    NOT NULL,
+    Duration                INT    NOT NULL,
     Package_Status          ENUM('draft','active','archived') NOT NULL,
-    Agency_ID               INT             NOT NULL,
  
     CONSTRAINT pk_package           PRIMARY KEY (Package_ID),
-    CONSTRAINT fk_pkg_agency
-        FOREIGN KEY (Agency_ID) REFERENCES AGENCY(Agency_ID)
-        ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT chk_pkg_price        CHECK (Base_Price >= 0)
 ) ENGINE=InnoDB;
  
@@ -149,15 +145,14 @@ CREATE TABLE BOOKING (
     Number_Of_People        INT             NOT NULL,
     Total_Price             DECIMAL(10,2)   NOT NULL,
     Traveller_ID            INT             NOT NULL,
-    Package_ID              INT             NOT NULL,
-    Package_Type            ENUM('solo','couple','group','family') NOT NULL,
+    Group_Trip_ID			INT				NOT NULL,
  
     CONSTRAINT pk_booking           PRIMARY KEY (Booking_ID),
     CONSTRAINT fk_bk_traveller
         FOREIGN KEY (Traveller_ID) REFERENCES TRAVELLER(Traveller_ID)
         ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fk_bk_package_option
-        FOREIGN KEY (Package_ID, Package_Type) REFERENCES PACKAGE_OPTION(Package_ID, Package_Type)
+	CONSTRAINT fk_gt_ID
+        FOREIGN KEY (Group_Trip_ID) REFERENCES GROUP_TRIP(Group_Trip_ID)
         ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT chk_bk_price         CHECK (Total_Price >= 0),
     CONSTRAINT chk_bk_people        CHECK (Number_Of_People >= 1)
@@ -214,13 +209,13 @@ CREATE TABLE FLIGHT (
     Flight_ID               INT             NOT NULL AUTO_INCREMENT,
     Flight_Number           VARCHAR(10)     NOT NULL,
     Airline                 VARCHAR(100)    NOT NULL,
-    Departure_Airport       VARCHAR(100)    NOT NULL,
+    Departure_Airport       CHAR(3)    NOT NULL,
     Departure_DateTime      DATETIME        NOT NULL,
-    Arrival_Airport         VARCHAR(100)    NOT NULL,
+    Arrival_Airport         CHAR(3)    NOT NULL,
     Arrival_DateTime        DATETIME        NOT NULL,
     Price                   DECIMAL(10,2)   NOT NULL,
     Available_Seats         INT             NOT NULL,
-    Seat_Class              VARCHAR(50)     NOT NULL,
+    Seat_Class              ENUM('economy','premium_economy','business','first_class') NOT NULL,
  
     CONSTRAINT pk_flight            PRIMARY KEY (Flight_ID),
     CONSTRAINT chk_fl_price         CHECK (Price >= 0),
@@ -238,7 +233,7 @@ CREATE TABLE EXPERIENCE (
     Experience_ID           INT             NOT NULL AUTO_INCREMENT,
     Name                    VARCHAR(200)    NOT NULL,
     Description             TEXT            NULL,
-    Category                VARCHAR(100)    NOT NULL,
+    Category                ENUM('accommodation','restaurant','activity', 'attraction') NOT NULL,
     Availability_Status     ENUM('available','unavailable','seasonal') NOT NULL,
  
     CONSTRAINT pk_experience        PRIMARY KEY (Experience_ID)
@@ -288,7 +283,9 @@ CREATE TABLE RESTAURANT (
 CREATE TABLE DESTINATION (
     Destination_ID          INT             NOT NULL AUTO_INCREMENT,
     Country                 VARCHAR(100)    NOT NULL,
+    Continent               VARCHAR(100)    NOT NULL,
     City                    VARCHAR(100)    NULL,
+    Image_url               VARCHAR(2000)    NULL,
  
     CONSTRAINT pk_destination       PRIMARY KEY (Destination_ID)
 ) ENGINE=InnoDB;
@@ -437,18 +434,12 @@ CREATE TABLE BOOKING_PACKAGE_OPTION (
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- =============================================================
--- EXPERIENCE DESTINATION RELATIONSHIP
--- =============================================================
 ALTER TABLE EXPERIENCE
     ADD COLUMN Destination_ID INT NULL,
     ADD CONSTRAINT fk_exp_destination
         FOREIGN KEY (Destination_ID) REFERENCES DESTINATION(Destination_ID)
         ON UPDATE CASCADE ON DELETE SET NULL;
 
--- =============================================================
--- TRIGGERS FOR USER TABLE VALIDATION
--- =============================================================
 
 DELIMITER $$
 

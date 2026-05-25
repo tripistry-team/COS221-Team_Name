@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "Note": "This is a file containing the formats of the requests to be made to the API.",
 
@@ -503,3 +504,509 @@
         }
     ]
 }
+=======
+{
+    "Note": "This is a file containing the formats of the requests to be made to the API.",
+
+    "Register an Agency":
+    {
+        "type": "RegisterAgency",
+        "name": "<company name>",
+        "email": "<email in valid format>",
+        "description": "<description>"
+    },
+
+    "Register a Traveller":
+    {
+        "type": "RegisterTraveller",
+        "f_name": "<first name>",
+        "mid_init": "<middle initial>",
+        "s_name": "<surname>",
+        "email": "<email in valid format>",
+        "country": "<country of residence>"
+    }, 
+
+    "Register a User":
+    {
+        "type": "RegisterUser",
+        "username": "<username>",
+        "email": "<email of existing agency or traveller or empty string if admin>",
+        "password": "<password>",
+        "user_type": "<agency_staff, traveller or admin>"
+    },
+
+    "Login": 
+    {
+        "type": "Login",
+        "username": "<username>",
+        "password": "<password>"
+    }, 
+
+    "Logout":
+    {
+        "type": "Logout"
+    }, 
+
+    "Check if user is logged in and get user details":
+    {
+        "type": "CheckAuthorisation"
+    },
+
+    "Get Feature for Browsing": 
+    {
+        "type": "GetFeature",
+        "feature": "<destination, flight, product_service, experience, attraction, accommodation, restaurant, or activity>"
+    },
+    
+    "Get Packages":{
+        "Note": "Only type is required.",
+        "Format": 
+        {
+            "type": "GetPackages",
+            "destination": "<country or city>", 
+            "min_price": -1.0,
+            "max_price": -1.0,
+            "duration": -1,
+            "package_type": "<solo, couple, group or family>",
+            "min_rating": -1.0,
+            "sort": "<price_asc, price_desc, rating_asc, rating_desc, duration_asc, duration_desc, name_asc, or name_desc>"
+        }
+    },
+
+
+    "Add Contact deatils (Phone number)":
+    {
+        "type": "AddContact",
+        "user_id": "<ID of the user who inputs the number>"
+
+    },
+
+    "Add Phone number":
+    {
+        "type": "AddContact",
+        "number1": "<mobile num>",
+        "number2": "<home num>"
+    }, 
+
+    "Get Package Details":
+    {
+        "type": "GetPackageDetails",
+        "package_id": -1
+    },
+
+    "Add Experience":
+    {
+        "type": "AddExperience",
+        "name": "<name>",
+        "description": "<description>",
+        "category": "<accommodation, restaurant, activity or attraction>",
+        "availability_status": "<available, unavailable, seasonal>",
+        "destination_id": -1
+    },
+
+    "Add Accommodation":
+    {
+        "type": "AddAccommodation",
+        "experience_id": -1,
+        "stars": -1,
+        "capacity": -1,
+        "num_rooms": -1,
+        "price_per_night": -1.0
+    },
+
+    "Add Restaurant":
+    {
+        "type": "AddRestaurant",
+        "experience_id": -1,
+        "cuisine": "<cuisine type>",
+        "opening_hours": "<opening hours>",
+        "price_range": "<price range>"
+    },
+
+    "Add Activity":
+    {
+        "type": "AddActivity",
+        "experience_id": -1,
+        "activity_type": "<activity type>",
+        "price_range": "<price range>",
+        "duration": "<duration>",
+        "age_restriction": "<age restriction>",
+        "capacity": -1,
+        "indoor": false
+    },
+
+    "Add Attraction":
+    {
+        "type": "AddAttraction",
+        "experience_id": -1,
+        "attraction_type": "<attraction type>",
+        "opening_hours": "<opening hours>",
+        "entry_fee": -1.0
+    },
+
+    "Add Package": 
+    {
+        "type": "AddPackage",
+        "name": "<name>",
+        "description": "<description>",
+        "base_price": -1.0,
+        "duration": -1,
+        "status": "<draft, active, or archived>"
+    },
+
+    "Add Package Agency":
+    {
+        "type": "AddPackageAgency",
+        "package_id": -1,
+        "agency_id": -1
+    },
+
+    "Add Package Option": 
+    {
+        "type": "AddPackageOption",
+        "package_id": -1,
+        "package_type": "<solo, couple, group or family>",
+        "participants_min": -1,
+        "participants_max": -1, 
+        "final_price": -1.0,
+        "description": "<description>"
+    },
+
+    "Add Package Option Experience":
+    {
+        "type": "AddPackageOptionExperience",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "experience_id": -1
+    },
+
+    "Add Package Option Flight":
+    {
+        "type": "AddPackageOptionFlight",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "flight_id": -1,
+        "seats": -1
+    },
+
+    "Add Package Option Service":
+    {
+        "type": "AddPackageOptionService",
+        "package_id": -1, 
+        "package_type": "<solo, couple, group or family>",
+        "product_service_id": -1
+    },  
+
+    "Add Booking":
+    {
+        "type": "AddBooking",
+        "date": "<date>",
+        "status": "<pending, confirmed, cancelled, completed>",
+        "num_people": -1,
+        "total_price": -1.0,
+        "traveller_id": -1
+    },
+
+    "Add Booking Package Option":
+    {
+        "type": "AddBookingPackageOption",
+        "booking_id": -1,
+        "package_id": -1,
+        "package_type": "<solo, couple, group or family>"
+    },
+
+    "Add Booking Product or Service":
+    {
+        "type": "AddBookingService",
+        "booking_id": -1,
+        "product_service_id": -1
+    },
+
+    "Add Group Trip":
+    {
+        "type": "AddGroupTrip",
+        "name": "<name>",
+        "start_date": "<start date>",
+        "end_date": "<end date>",
+        "join_deadline": "<join deadline>",
+        "min_participants": -1,
+        "max_participants": -1,
+        "agency_id": -1
+    },
+
+    "Assign Group Trip to Booking":
+    {
+        "type": "AssignGroupTrip",
+        "group_trip_id": -1,
+        "booking_id": -1
+    },
+
+    "Update Status of Feature": 
+    {
+        "Note": "Participants is only valid for group trip feature.",
+        "Format":
+        {
+            "type": "UpdateStatus",
+            "feature": "<booking, group_trip, package, product_service, or experience>",
+            "id": -1,
+            "status": "<one of the status options for each feature>",
+            "participants": -1
+        }
+    },
+
+    "Add Contact Info":
+    {
+        "Note": "The second number is not required.",
+        "Format":
+        {
+            "type": "AddContact",
+            "user_id": -1,
+            "number1": "<mobile number>",
+            "number2": "<home number>"
+        }
+    }, 
+
+    "Add Feedback":
+    {
+        "Note": "The comment is not required.",
+        "Format":
+        {
+            "type": "AddFeedback",
+            "rating": -1,
+            "comment": "<comment>",
+            "package_id": -1,
+            "package_type": "<solo, couple, group or family>"
+        }
+    },
+
+    "Add Response to Feedback":
+    {
+        "type": "AddResponse",
+        "response": "<response>",
+        "feedback_id": -1
+    },
+
+    "Get Feedback":
+    {
+        "type": "GetFeedback",
+        "package_id": -1,
+        "package_type":"<solo, couple, group or family>"
+    },
+
+    "Get Contact":
+    {
+        "type": "GetContact",
+        "user_id": -1
+    },
+
+    "Agency adds a flight to their package":
+    {
+        "type": "AddFlight",
+        "flight_number": "<flight number>",
+        "airline": "<airline>",
+        "departure_airport": "<three-letter airport code>",
+        "arrival_airport": "<three-letter airport code>",
+        "departure_dateTime": "<departure datetime>",
+        "arrival_dateTime": "<arrival datetime>",
+        "price": -1.0,
+        "available_seats": -1,
+        "seat_class": "<economy, premium_economy, business or first>"
+    },
+
+    "Add Destination":
+    {
+        "type": "AddDestination",
+        "country": "<country>",
+        "city": "<city>"
+    },
+
+    "Add Product Service":
+    {
+        "type": "AddService",
+        "name": "<name>",
+        "description": "<description>",
+        "category": "<product or service>",
+        "price": -1.0,
+        "status": "available, unavailable, or seasonal"
+    },
+
+    "Get Bookings":
+    {
+        "type": "GetBookings"
+    },
+
+    "Get details about a booking":
+    {
+        "type": "GetBookingDetails",
+        "booking_id": -1
+    },
+
+    "Side Note": "These are just some users I added to my local db.",
+    "users": [
+        {
+            "type": "RegisterUser",
+            "username": "Aurora",
+            "email": "aurora@agency.com",
+            "password": "Aurora1!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Eclipse",
+            "email": "eclipse@agency.com",
+            "password": "Eclipse1!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Comet",
+            "email": "comet@agency.com",
+            "password": "Comet123!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Meteor",
+            "email": "meteor@agency.com",
+            "password": "Meteor1!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Tides",
+            "email": "tides@agency.com",
+            "password": "Tides123!",
+            "user_type": "agency_staff"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Sunshine",
+            "email": "sunshine@trvlr.com",
+            "password": "Sunshine1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Rainbow",
+            "email": "rainbow@trvlr.com",
+            "password": "Rainbow1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Moonlight",
+            "email": "moonlight@trvlr.com",
+            "password": "Moonlight1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Starlight",
+            "email": "starlight@trvlr.com",
+            "password": "Starlight1!",
+            "user_type": "traveller"
+        },
+
+        {
+            "type": "RegisterUser",
+            "username": "Twilight",
+            "email": "twilight@trvlr.com",
+            "password": "Twilight1!",
+            "user_type": "traveller"
+        }
+    ],
+
+    "Agencies": [
+        {
+            "type": "RegisterAgency",
+            "name": "Aurora Agency",
+            "email": "aurora@agency.com",
+            "description": "Aurora Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Eclipse Agency",
+            "email": "eclipse@agency.com",
+            "description": "Eclipse Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Comet Agency",
+            "email": "comet@agency.com",
+            "description": "Comet Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Meteor Agency",
+            "email": "meteor@agency.com",
+            "description": "Meteor Agency Description"
+        },
+
+        {
+            "type": "RegisterAgency",
+            "name": "Tides Agency",
+            "email": "tides@agency.com",
+            "description": "Tides Agency Description"
+        }
+    ],
+
+    "Travellers": [
+        
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Rain",
+            "mid_init": "O",
+            "s_name": "Sunshine",
+            "email": "sunshine@trvlr.com",
+            "country": "South Africa"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Rainbow",
+            "mid_init": "N",
+            "s_name": "Unicorns",
+            "email": "rainbow@trvlr.com",
+            "country": "China"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Moonlight",
+            "mid_init": "M",
+            "s_name": "Mist",
+            "email": "moonlight@trvlr.com",
+            "country": "South Korea"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Starlight",
+            "mid_init": "T",
+            "s_name": "Shine",
+            "email": "starlight@trvlr.com",
+            "country": "USA"
+        },
+
+        {
+            "type": "RegisterTraveller",
+            "f_name": "Twilight",
+            "mid_init": "B",
+            "s_name": "Twinkling",
+            "email": "twilight@trvlr.com",
+            "country": "South Africa"
+        }
+    ]
+}
+>>>>>>> 70616848d52818f49cc3219a454e2a519fd2327f
