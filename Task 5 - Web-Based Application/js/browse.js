@@ -153,7 +153,7 @@ function buildPackageCard(pkg) {
 
 function durationDays(text) {
   const m = String(text || '').match(/(\d+)/);
-  return m ? parseInt(m[1], 10) : 9999;//
+  return m ? parseInt(m[1], 10) : 9999;
 }
 
 async function getPackageDetailCached(packageId) {

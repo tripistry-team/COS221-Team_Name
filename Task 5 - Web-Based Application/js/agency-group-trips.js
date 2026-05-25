@@ -1,4 +1,4 @@
-﻿const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 let currentUser = null;
 let allTrips = [];
 let activeStatus = 'active';

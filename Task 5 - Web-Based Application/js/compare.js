@@ -1,216 +1,144 @@
-const API = "../api/api.php";
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
+const COMPARE_KEY = 'tripistry_compare_ids';
 
-// State
-let comparedPackages = []; // array of package objects currently in the table
-let currentType = "solo";  // package_type filter
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-async function fetchPackages(params = {}) {
-  const res = await fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type: "GetPackages", ...params }),
+async function callAPI(payload) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
-  const json = await res.json();
-  if (json.status !== "success") return [];
-  return json.data;
+  return res.json();
 }
 
-function bestValueIndex(packages) {
-  // Lowest Min_Price wins; if tied, higher Avg_Rating wins
-  let best = 0;
-  packages.forEach((p, i) => {
-    const priceA = parseFloat(packages[best].Min_Price) || parseFloat(packages[best].Base_Price) || Infinity;
-    const priceB = parseFloat(p.Min_Price) || parseFloat(p.Base_Price) || Infinity;
-    if (priceB < priceA) best = i;
-    else if (priceB === priceA && (parseFloat(p.Avg_Rating) || 0) > (parseFloat(packages[best].Avg_Rating) || 0)) best = i;
+async function checkAuth() {
+  const res = await callAPI({ type: 'CheckAuthorisation' });
+  return res.status === 'success' && res.data.logged_in ? res.data : null;
+}
+
+function updateNav(user) {
+  const actions = document.querySelector('.nav-actions');
+  if (!actions) return;
+  if (!user) return;
+  actions.innerHTML = `
+    <span class="text-sm text-muted">Hi, ${escHtml(user.username)}</span>
+    ${user.user_type === 'traveller' ? '<a href="traveller-dashboard.html#bookings" class="btn btn-sm">My bookings</a>' : ''}
+    <button class="btn btn-ghost btn-sm" id="logout-btn">Log out</button>
+  `;
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await callAPI({ type: 'Logout' });
+    window.location.href = 'login.html';
   });
-  return best;
 }
 
-function stars(rating) {
-  if (!rating) return "—";
-  const full = Math.round(rating);
-  return "★".repeat(full) + "☆".repeat(5 - full);
-}
-
-function fmt(val) { return val != null ? val : "—"; }
-
-// ── Render ───────────────────────────────────────────────────────────────────
-
-function renderTable() {
-  const pkgs = comparedPackages;
-  if (pkgs.length === 0) {
-    document.getElementById("compare-wrap").innerHTML =
-      `<p class="text-muted" style="padding:2rem 0;">No packages selected. Use the search below to add packages.</p>`;
-    updateSubtitle();
-    return;
+function getCompareIds() {
+  try {
+    return JSON.parse(localStorage.getItem(COMPARE_KEY) || '[]').filter(n => Number.isInteger(n));
+  } catch (_e) {
+    return [];
   }
+}
 
-  const best = bestValueIndex(pkgs);
+function destinationLabel(p) {
+  if (p.City || p.Country) {
+    return p.City ? `${p.City}, ${p.Country || ''}` : (p.Country || '-');
+  }
+  const name = String(p.Name || '').toLowerCase();
+  const known = ['tokyo', 'kyoto', 'cape town', 'santorini', 'bali', 'paris', 'bangkok', 'cusco', 'rome', 'dubai'];
+  const hit = known.find(k => name.includes(k));
+  return hit ? hit.replace(/\b\w/g, c => c.toUpperCase()) : '-';
+}
 
-  // Header cells
-  const headCells = pkgs.map((p, i) => {
-    const featured = i === best;
-    return `
-      <th class="compare-col" style="padding:0 0.75rem 1.25rem;">
-        <div class="compare-head${featured ? " featured" : ""}">
-          ${featured ? `<div class="best-badge">Best value</div>` : ""}
-          <div style="font-size:0.8rem;color:${featured ? "var(--accent)" : "var(--col-muted)"};margin-bottom:0.25rem;">${fmt(p.Company_Name)}</div>
-          <div style="font-weight:500;line-height:1.35;margin-bottom:0.5rem;">${fmt(p.Name)}</div>
-          <div style="display:flex;align-items:center;gap:0.375rem;">
-            <span style="color:#f59e0b;font-size:0.875rem;">${stars(p.Avg_Rating)}</span>
-            <span class="text-xs text-muted">${p.Avg_Rating || "No ratings"} (${p.Review_Count || 0})</span>
-          </div>
-          <button onclick="removePackage(${p.Package_ID})" style="position:absolute;top:0.5rem;right:0.75rem;background:none;border:none;cursor:pointer;font-size:1rem;color:var(--col-faint);">✕</button>
-        </div>
-      </th>`;
-  }).join("");
+function clearCompare() {
+  localStorage.removeItem(COMPARE_KEY);
+  renderCompare([]);
+}
 
-  // Row builder
-  function row(label, cells) {
-    const tds = cells.map((val, i) => {
-      const featured = i === best;
-      return `<td style="padding:0 0.75rem;"><div class="compare-cell${featured ? " featured" : ""}">${val}</div></td>`;
-    }).join("");
-    return `<tr><td class="row-label">${label}</td>${tds}</tr>`;
+function renderCompare(packages) {
+  const container = document.querySelector('main .container');
+  if (!container) return;
+
+  if (!packages.length) {
+    container.innerHTML = `
+      <div class="page-header">
+        <h1 style="font-size:2rem;">Compare packages</h1>
+        <p class="text-muted mt-1">No packages selected yet.</p>
+      </div>
+      <a href="browse.html" class="btn btn-primary">Browse packages</a>
+    `;
+    return;
   }
 
   const rows = [
-    row("Agency",        pkgs.map(p => fmt(p.Company_Name))),
-    row("Destination",   pkgs.map(p => p.City && p.Country ? `${p.City}, ${p.Country}` : "—")),
-    row("Base price",    pkgs.map(p => p.Base_Price != null ? `R${Number(p.Base_Price).toLocaleString()}` : "—")),
-    row("Price range",   pkgs.map(p => {
-      const lo = p.Min_Price != null ? `R${Number(p.Min_Price).toLocaleString()}` : null;
-      const hi = p.Max_Price != null ? `R${Number(p.Max_Price).toLocaleString()}` : null;
-      return lo && hi ? `${lo} – ${hi}` : lo || "—";
-    })),
-    row("Duration",      pkgs.map(p => p.Duration != null ? `${p.Duration} days` : "—")),
-    row("Rating",        pkgs.map(p => p.Avg_Rating ? `${p.Avg_Rating} / 5 (${p.Review_Count} reviews)` : "No ratings yet")),
-    row("Status",        pkgs.map(p => fmt(p.Package_Status))),
-    row("Description",   pkgs.map(p => `<span style="font-size:0.8125rem;color:var(--col-muted);">${p.Description ? p.Description.slice(0, 100) + (p.Description.length > 100 ? "…" : "") : "—"}</span>`)),
+    ['Price per person', p => `R${Number(p.Min_Price || p.Base_Price || 0).toLocaleString('en-ZA')}`],
+    ['Duration', p => escHtml(p.Duration || '-')],
+    ['Destination', p => escHtml(destinationLabel(p))],
+    ['Rating', p => p.Avg_Rating ? `${p.Avg_Rating} (${p.Review_Count || 0})` : 'No reviews']
   ];
 
-  // Footer cells
-  const footCells = pkgs.map((p, i) => {
-    const featured = i === best;
-    return `
-      <td style="padding:0 0.75rem 0;">
-        <div class="compare-foot${featured ? " featured" : ""}">
-          <a href="package-detail.html?id=${p.Package_ID}" class="btn${featured ? " btn-primary" : ""}" style="width:100%;justify-content:center;">
-            ${featured ? "Book now" : "View package"}
-          </a>
+  let html = `
+    <div class="page-header">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <div>
+          <h1 style="font-size:2rem;">Compare packages</h1>
+          <p class="text-muted mt-1">Live package comparison</p>
         </div>
-      </td>`;
-  }).join("");
-
-  document.getElementById("compare-wrap").innerHTML = `
-    <div class="compare-table-wrap">
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th class="row-label"></th>
-            ${headCells}
-          </tr>
-        </thead>
-        <tbody>${rows.join("")}</tbody>
-        <tfoot>
-          <tr>
-            <td class="row-label"></td>
-            ${footCells}
-          </tr>
-        </tfoot>
-      </table>
-    </div>`;
-
-  updateSubtitle();
-}
-
-function updateSubtitle() {
-  const locations = [...new Set(comparedPackages.map(p => p.Country).filter(Boolean))];
-  const el = document.getElementById("compare-subtitle");
-  if (!el) return;
-  el.textContent = locations.length
-    ? `Comparing packages in: ${locations.join(", ")}`
-    : "Search below to add packages to compare";
-}
-
-// ── Search ───────────────────────────────────────────────────────────────────
-
-let searchResults = [];
-
-async function runSearch() {
-  const q = document.getElementById("pkg-search").value.trim();
-  const resultsEl = document.getElementById("search-results");
-
-  if (!q) { resultsEl.innerHTML = ""; return; }
-
-  resultsEl.innerHTML = `<p class="text-muted" style="padding:0.5rem 0;">Searching…</p>`;
-
-  const params = { destination: q, package_type: currentType };
-  const data = await fetchPackages(params);
-  searchResults = data;
-
-  if (data.length === 0) {
-    resultsEl.innerHTML = `<p class="text-muted" style="padding:0.5rem 0;">No packages found.</p>`;
-    return;
-  }
-
-  resultsEl.innerHTML = data.map(p => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:0.625rem 0;border-bottom:1px solid var(--col-border);">
-      <div>
-        <div style="font-weight:500;font-size:0.9rem;">${p.Name}</div>
-        <div style="font-size:0.8rem;color:var(--col-muted);">${p.Company_Name} · ${p.City || ""}${p.Country ? ", " + p.Country : ""} · ${p.Duration ? p.Duration + " days" : ""}</div>
+        <button class="btn btn-ghost btn-sm" onclick="clearCompare()">Clear compare</button>
       </div>
-      <button class="btn btn-sm" onclick="addPackage(${p.Package_ID})">Add</button>
     </div>
-  `).join("");
+    <div class="compare-table-wrap"><table class="compare-table"><thead><tr><th class="row-label"></th>
+  `;
+
+  html += packages.map(p => `
+    <th class="compare-col" style="padding:0 0.75rem 1.25rem;">
+      <div class="compare-head">
+        <div style="font-size:0.8rem;color:var(--col-muted);margin-bottom:0.25rem;">${escHtml(p.Company_Name || '')}</div>
+        <div style="font-weight:500;line-height:1.35;margin-bottom:0.5rem;">${escHtml(p.Name)}</div>
+        <div class="text-xs text-muted">${p.Avg_Rating ? `${p.Avg_Rating} (${p.Review_Count || 0})` : 'No reviews'}</div>
+      </div>
+    </th>
+  `).join('');
+  html += '</tr></thead><tbody>';
+
+  rows.forEach(([label, fn]) => {
+    html += `<tr><td class="row-label">${label}</td>`;
+    html += packages.map(p => `<td style="padding:0 0.75rem;"><div class="compare-cell">${fn(p)}</div></td>`).join('');
+    html += '</tr>';
+  });
+  html += '</tbody><tfoot><tr><td class="row-label"></td>';
+  html += packages.map(p => `
+    <td style="padding:0 0.75rem 0;">
+      <div class="compare-foot">
+        <a href="package-detail.html?id=${p.Package_ID}" class="btn btn-primary" style="width:100%;justify-content:center;">View package</a>
+      </div>
+    </td>
+  `).join('');
+  html += '</tr></tfoot></table></div>';
+  container.innerHTML = html;
 }
 
-function addPackage(id) {
-  const pkg = searchResults.find(p => p.Package_ID === id);
-  if (!pkg) return;
-  if (comparedPackages.find(p => p.Package_ID === id)) {
-    alert("That package is already in the comparison.");
+async function loadCompare() {
+  const ids = getCompareIds();
+  if (!ids.length) {
+    renderCompare([]);
     return;
   }
-  if (comparedPackages.length >= 4) {
-    alert("You can compare up to 4 packages at a time.");
+  const res = await callAPI({ type: 'GetPackages' });
+  if (res.status !== 'success') {
+    renderCompare([]);
     return;
   }
-  comparedPackages.push(pkg);
-  renderTable();
+  const map = new Map((res.data || []).map(p => [Number(p.Package_ID), p]));
+  renderCompare(ids.map(id => map.get(id)).filter(Boolean));
 }
 
-function removePackage(id) {
-  comparedPackages = comparedPackages.filter(p => p.Package_ID !== id);
-  renderTable();
-}
-
-// ── Type filter ───────────────────────────────────────────────────────────────
-
-function setType(type) {
-  currentType = type;
-  document.querySelectorAll(".type-btn").forEach(b => b.classList.toggle("active", b.dataset.type === type));
-  // Re-fetch current packages with new type to refresh pricing
-  if (comparedPackages.length > 0) {
-    const ids = comparedPackages.map(p => p.Package_ID);
-    comparedPackages = comparedPackages.map(p => ({ ...p })); // keep displayed, note: re-fetch not possible by ID alone
-    renderTable(); // table still shows, type affects new searches
-  }
-  // Re-run search if there's a query
-  const q = document.getElementById("pkg-search").value.trim();
-  if (q) runSearch();
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-
-async function init() {
-  // Load some default packages to show on arrival
-  const defaults = await fetchPackages({ sort: "rating_desc", package_type: currentType });
-  comparedPackages = defaults.slice(0, 3);
-  renderTable();
-}
-
-init();
+document.addEventListener('DOMContentLoaded', async () => {
+  const user = await checkAuth();
+  updateNav(user);
+  loadCompare();
+});

@@ -1,4 +1,4 @@
-﻿const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 
 async function callAPI(payload) {
   const res = await fetch(API_URL, {
