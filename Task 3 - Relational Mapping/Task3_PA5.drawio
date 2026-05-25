@@ -2066,6 +2066,15 @@
         <mxCell id="oHogAEGM2p7cG3CWwEJi-54" parent="oHogAEGM2p7cG3CWwEJi-55" style="rounded=0;whiteSpace=wrap;html=1;" value="City" vertex="1">
           <mxGeometry height="40" width="120" x="240" y="20" as="geometry" />
         </mxCell>
+        <mxCell id="BqL09rOwGEPTTbsGUevl-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Image_url" vertex="1">
+          <mxGeometry height="40" width="120" x="-526.12" y="8480" as="geometry" />
+        </mxCell>
+        <mxCell id="BqL09rOwGEPTTbsGUevl-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Image_url" vertex="1">
+          <mxGeometry height="40" width="120" x="-470" y="3520" as="geometry" />
+        </mxCell>
+        <mxCell id="BqL09rOwGEPTTbsGUevl-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Image_url" vertex="1">
+          <mxGeometry height="40" width="120" x="-440" y="2130" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
