@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Account - Tripistry</title>
+<title>My Account – Tripistry</title>
 <link rel="stylesheet" href="style.css">
+
 <style>
 .dash-layout { display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;padding-top:2rem; }
 .dash-sidebar {
@@ -30,47 +31,17 @@
 }
 .dash-nav a:hover,.dash-nav a.active{color:var(--col);background:var(--bg-secondary);}
 .dash-nav a.active{font-weight:500;}
-.booking-card{border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:1rem;transition:border-color 0.15s,box-shadow 0.2s,transform 0.15s;}
-.booking-card:hover{border-color:var(--col-border-strong);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.06);}
+.booking-card {
+  border:1px solid var(--col-border);border-radius:var(--radius-lg);
+  padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;
+  margin-bottom:1rem;transition:border-color 0.15s;
+}
+.booking-card:hover{border-color:var(--col-border-strong);}
 .booking-thumb {
   width:80px;height:70px;border-radius:var(--radius-md);
   background:var(--bg-tertiary);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:2rem;
 }
-@keyframes shimmer {
-  0%{background-position:-600px 0}
-  100%{background-position:600px 0}
-}
-.skeleton {
-  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--col-border) 50%, var(--bg-tertiary) 75%);
-  background-size: 600px 100%;
-  animation: shimmer 1.6s infinite linear;
-  border-radius: var(--radius-sm);
-}
-.skel-line { height:14px; margin-bottom:0.5rem; }
-.skel-line.wide { width:75%; }
-.skel-line.med { width:50%; }
-.skel-line.short { width:30%; }
-.skel-thumb { height:140px; border-radius:var(--radius-md); margin-bottom:0.875rem; }
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.section-animate { animation: fadeSlideIn 0.25s ease forwards; }
-#stats-content { grid-template-columns: repeat(3,1fr); }
-#pkgs-content { grid-template-columns: repeat(3,1fr); }
-.top-pkg-card:hover .top-pkg-rank { transform: scale(1.2); transition: transform 0.2s; }
-.top-pkg-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.09); transform: translateY(-2px); }
-/* Star rating */
-.star-rating { display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:0.25rem;margin-bottom:0.5rem; }
-.star-rating input[type=radio] { display:none; }
-.star-rating label { font-size:1.75rem;color:var(--col-border-strong);cursor:pointer;transition:color 0.1s; }
-.star-rating label:hover,
-.star-rating label:hover ~ label,
-.star-rating input[type=radio]:checked ~ label { color:#e8a200; }
-/* Review form */
-.review-form-card { border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem; }
-.review-form-header { padding:1rem 1.25rem;background:var(--bg-secondary);border-bottom:1px solid var(--col-border); }
-.review-form-body { padding:1.25rem; }
 </style>
 </head>
 <body>
@@ -84,9 +55,8 @@
     <a href="group-trips.html">Group Trips</a>
   </div>
   <div class="nav-actions">
-    <!-- PHP: echo $_SESSION['username']; -->
-    <span class="text-sm text-muted">[Username]</span>
-    <a href="logout.php" class="btn btn-ghost btn-sm">Log out</a>
+    <span class="text-sm text-muted">Sipho N.</span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
   </div>
 </nav>
 
@@ -95,81 +65,25 @@
     <div class="dash-layout">
       <aside class="dash-sidebar">
         <div class="dash-sidebar-profile">
-          <div class="avatar" id="profile-initials">--</div>
-          <!-- PHP: echo $traveller['First_Name'] . ' ' . $traveller['Surname']; -->
-          <div style="font-weight:500;font-size:0.9375rem;" id="profile-name">[Full Name]</div>
-          <!-- PHP: echo $traveller['Email']; -->
-          <div class="text-xs text-muted" id="profile-email">[Email]</div>
+          <div class="avatar">SN</div>
+          <div style="font-weight:500;font-size:0.9375rem;">Sipho Nkosi</div>
+          <div class="text-xs text-muted">sipho@email.com</div>
           <div style="margin-top:0.625rem;"><span class="badge badge-green">Traveller</span></div>
         </div>
         <div class="dash-nav">
-          <a href="#overview" class="active" onclick="showSection('overview',this)">Overview</a>
-          <a href="#bookings" onclick="showSection('bookings',this)">My bookings</a>
-          <a href="#reviews" onclick="showSection('reviews',this)">My reviews</a>
-          <a href="#profile" onclick="showSection('profile',this)">Profile</a>
-          <a href="#security" onclick="showSection('security',this)">Security</a>
+          <a href="#bookings" class="active" onclick="showSection('bookings',this)"> My bookings</a>
+          <a href="#reviews" onclick="showSection('reviews',this)"> My reviews</a>
+          <a href="#profile" onclick="showSection('profile',this)"> Profile</a>
+          <a href="#security" onclick="showSection('security',this)"> Security</a>
           <div style="border-top:1px solid var(--col-border);margin:0.5rem 0;padding-top:0.5rem;">
-            <a href="browse.html" style="color:var(--accent);">Browse packages</a>
+            <a href="browse.html" style="color:var(--accent);"> Browse packages</a>
           </div>
         </div>
       </aside>
 
       <div>
 
-        <div id="section-overview" class="section-animate">
-          <!-- PHP: echo 'Welcome back, ' . $traveller['First_Name']; -->
-          <h2 style="margin-bottom:0.375rem;">Welcome back, [First Name]</h2>
-          <p class="text-muted text-sm" style="margin-bottom:1.75rem;">Here's what's trending on Tripistry right now.</p>
-
-          <div style="margin-bottom:1.75rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-              <h3 style="font-size:1rem;">Top-rated packages</h3>
-              <a href="browse.html" class="text-sm text-accent" style="text-decoration:none;">Browse all</a>
-            </div>
-            <div id="pkgs-skeleton" class="grid-3">
-              <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1rem;"><div class="skeleton skel-thumb"></div><div class="skeleton skel-line wide"></div><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div>
-              <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1rem;"><div class="skeleton skel-thumb"></div><div class="skeleton skel-line wide"></div><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div>
-              <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1rem;"><div class="skeleton skel-thumb"></div><div class="skeleton skel-line wide"></div><div class="skeleton skel-line med"></div><div class="skeleton skel-line short"></div></div>
-            </div>
-            <div id="pkgs-content" style="display:none;gap:1.5rem;">
-              <!-- PHP: query top 3 packages by avg rating -->
-              <!-- PHP: foreach top_packages as i => pkg -->
-              <!-- <a href="package-detail.php?id={pkg.Package_ID}" class="top-pkg-card" style="border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;text-decoration:none;color:inherit;display:block;transition:box-shadow 0.2s,transform 0.2s;"> -->
-              <!--   <div style="height:140px;background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;position:relative;"> -->
-              <!--     <div class="top-pkg-rank" style="position:absolute;top:0.75rem;left:0.75rem;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;">{i+1}</div> -->
-              <!--   </div> -->
-              <!--   <div style="padding:0.875rem 1rem;"> -->
-              <!--     <div class="text-xs text-muted" style="margin-bottom:0.25rem;">{pkg.Agency_Name}</div> -->
-              <!--     <div style="font-weight:600;font-size:0.9375rem;line-height:1.35;margin-bottom:0.375rem;">{pkg.Name}</div> -->
-              <!--     <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars">★★★★★</span><span class="text-xs text-muted">{pkg.avg_rating} ({pkg.review_count})</span></div> -->
-              <!--     <div style="font-size:1.1rem;font-weight:700;margin-top:0.5rem;">R{pkg.Base_Price} <span style="font-size:0.8rem;font-weight:400;color:var(--col-muted);">/ person</span></div> -->
-              <!--   </div> -->
-              <!-- </a> -->
-              <!-- PHP: endforeach -->
-              <div style="grid-column:span 3;text-align:center;padding:2rem;" class="text-muted text-sm">Top packages load from database.</div>
-            </div>
-          </div>
-
-          <div>
-            <h3 style="font-size:1rem;margin-bottom:1rem;">Most active reviewers</h3>
-            <div class="card card-body" id="reviewers-list">
-              <!-- PHP: query top reviewers by COUNT(Feedback_ID) -->
-              <!-- PHP: foreach top_reviewers as reviewer -->
-              <!-- <div style="display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0;border-bottom:1px solid var(--col-border);"> -->
-              <!--   <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;flex-shrink:0;">{initials}</div> -->
-              <!--   <div style="flex:1;"> -->
-              <!--     <div style="font-size:0.9rem;font-weight:500;">{reviewer.First_Name} {reviewer.Surname}</div> -->
-              <!--     <div class="text-xs text-muted">{reviewer.review_count} reviews · avg {reviewer.avg_rating}</div> -->
-              <!--   </div> -->
-              <!--   <span class="badge {reviewer.review_count >= 10 ? 'badge-green' : ''}">{reviewer.review_count >= 10 ? 'Top reviewer' : 'Active'}</span> -->
-              <!-- </div> -->
-              <!-- PHP: endforeach -->
-              <p class="text-sm text-muted">Reviewer data loads from database.</p>
-            </div>
-          </div>
-        </div>
-
-        <div id="section-bookings" style="display:none;">
+        <div id="section-bookings">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
             <h2>My bookings</h2>
             <div class="tabs" style="margin-bottom:0;border-bottom:none;">
@@ -180,165 +94,126 @@
             </div>
           </div>
 
-          <div id="bookings-list">
-            <!-- PHP: query BOOKING JOIN PACKAGE JOIN PACKAGE_OPTION WHERE Traveller_ID = session -->
-            <!-- PHP: foreach bookings as booking -->
-            <!-- <div class="booking-card"> -->
-            <!--   <div class="booking-thumb"></div> -->
-            <!--   <div style="flex:1;"> -->
-            <!--     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;"> -->
-            <!--       <div> -->
-            <!--         <div style="font-weight:500;margin-bottom:0.25rem;">{booking.Package_Name}</div> -->
-            <!--         <div class="text-sm text-muted">{booking.Agency_Name} · {booking.Package_Type} · {booking.Number_Of_People} travellers</div> -->
-            <!--       </div> -->
-            <!--       <span class="badge {booking.Booking_Status == 'confirmed' ? 'badge-green' : booking.Booking_Status == 'cancelled' ? 'badge-red' : 'badge-amber'}">{booking.Booking_Status}</span> -->
-            <!--     </div> -->
-            <!--     <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);flex-wrap:wrap;"> -->
-            <!--       <span>Booked: {booking.Booking_Date}</span> -->
-            <!--       <span>R{booking.Total_Price} total</span> -->
-            <!--     </div> -->
-            <!--     <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;"> -->
-            <!--       <a href="package-detail.php?id={booking.Package_ID}" class="btn btn-sm">View details</a> -->
-            <!--       {if booking.Booking_Status == 'confirmed'} -->
-            <!--       <button class="btn btn-sm btn-ghost" style="color:var(--danger);border-color:var(--col-border);" onclick="cancelBooking({booking.Booking_ID})">Cancel booking</button> -->
-            <!--       {endif} -->
-            <!--       {if booking.Booking_Status == 'completed' and not booking.has_review} -->
-            <!--       <button class="btn btn-sm btn-primary" onclick="openWriteReview({booking.Booking_ID}, '{booking.Package_Name}', '{booking.Package_Type}')">Leave review</button> -->
-            <!--       {endif} -->
-            <!--     </div> -->
-            <!--   </div> -->
-            <!-- </div> -->
-            <!-- PHP: endforeach -->
-            <div style="text-align:center;padding:3rem;" class="text-muted">Bookings load from database.</div>
+          <div class="booking-card">
+            <div class="booking-thumb"></div>
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Tokyo & Kyoto Cultural Immersion</div>
+                  <div class="text-sm text-muted">Wanderlust Co. · Family package · 4 travellers</div>
+                </div>
+                <span class="badge badge-green">Confirmed</span>
+              </div>
+              <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);flex-wrap:wrap;">
+                <span> Departs 14 Jul 2026</span>
+                <span> JNB → NRT</span>
+                <span> R74,000 total</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
+                <a href="package-detail.html" class="btn btn-sm">View details</a>
+                <button class="btn btn-sm btn-ghost" style="color:var(--danger);border-color:var(--col-border);">Cancel booking</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-card">
+            <div class="booking-thumb"></div>
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Greek Islands Sailing Week</div>
+                  <div class="text-sm text-muted">Aegean Escapes · Couple package · 2 travellers</div>
+                </div>
+                <span class="badge">Completed</span>
+              </div>
+              <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);flex-wrap:wrap;">
+                <span> April 2026</span>
+                <span> R44,000 total</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
+                <a href="package-detail.html" class="btn btn-sm">View details</a>
+                <button class="btn btn-sm btn-primary" onclick="openReviewsSection()">Leave review</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-card" style="opacity:0.65;">
+            <div class="booking-thumb"></div>
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Bali Wellness & Culture Retreat</div>
+                  <div class="text-sm text-muted">Island Spirits · Solo package · 1 traveller</div>
+                </div>
+                <span class="badge badge-red">Cancelled</span>
+              </div>
+              <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);">
+                <span> February 2026 (cancelled)</span>
+                <span> Refunded</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <div id="section-reviews" style="display:none;">
           <h2 style="margin-bottom:1.5rem;">My reviews</h2>
-
-          <!-- Existing reviews - integrate backend -->
-          <div id="my-reviews-list">
-            <!-- PHP: query FEEDBACK WHERE Traveller_ID = session -->
-            <!-- PHP: foreach reviews as review -->
-            <!-- <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1rem;"> -->
-            <!--   <div style="padding:1rem 1.25rem;background:var(--bg-secondary);border-bottom:1px solid var(--col-border);"> -->
-            <!--     <div style="font-weight:500;">{review.Package_Name}</div> -->
-            <!--     <div class="text-xs text-muted">{review.Agency_Name} · {review.Last_Updated}</div> -->
-            <!--   </div> -->
-            <!--   <div style="padding:1.25rem;"> -->
-            <!--     <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;"> -->
-            <!--       <span class="stars" style="font-size:1.125rem;">{stars}</span> -->
-            <!--       <span class="text-sm text-muted">{review.Rating}/5</span> -->
-            <!--     </div> -->
-            <!--     <p class="text-sm text-muted" style="line-height:1.65;">{review.Comment}</p> -->
-            <!--     <div style="display:flex;gap:0.5rem;margin-top:0.875rem;"> -->
-            <!--       <button class="btn btn-sm" onclick="editReview({review.Feedback_ID})">Edit review</button> -->
-            <!--       <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="deleteReview({review.Feedback_ID})">Delete</button> -->
-            <!--     </div> -->
-            <!--   </div> -->
-            <!-- </div> -->
-            <!-- PHP: endforeach -->
-          </div>
-
-          <!-- Write review form — shown when triggered from bookings or directly -->
-          <div id="write-review-form" style="display:none;">
-            <div class="review-form-card">
-              <div class="review-form-header">
-                <div style="font-weight:500;" id="review-pkg-name">[Package Name]</div>
-                <div class="text-xs text-muted" id="review-pkg-type">[Package Type]</div>
+          <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem;">
+            <div style="padding:1rem 1.25rem;background:var(--bg-secondary);border-bottom:1px solid var(--col-border);">
+              <div style="font-weight:500;">Greek Islands Sailing Week</div>
+              <div class="text-xs text-muted">Aegean Escapes · April 2026</div>
+            </div>
+            <div style="padding:1.25rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+                <span class="stars" style="font-size:1.125rem;"></span>
+                <span class="text-sm text-muted">5/5 · Posted 2 May 2026</span>
               </div>
-              <div class="review-form-body">
-                <div class="form-group" style="margin-bottom:1rem;">
-                  <label>Rating *</label>
-                  <div class="star-rating">
-                    <input type="radio" name="review-rating" id="rs5" value="5"><label for="rs5">★</label>
-                    <input type="radio" name="review-rating" id="rs4" value="4"><label for="rs4">★</label>
-                    <input type="radio" name="review-rating" id="rs3" value="3"><label for="rs3">★</label>
-                    <input type="radio" name="review-rating" id="rs2" value="2"><label for="rs2">★</label>
-                    <input type="radio" name="review-rating" id="rs1" value="1"><label for="rs1">★</label>
-                  </div>
-                  <div class="text-xs text-muted" id="review-rating-label">Select a rating</div>
-                </div>
-                <div class="form-group" style="margin-bottom:1rem;">
-                  <label>Comment <span class="text-faint">(optional)</span></label>
-                  <textarea id="review-comment" placeholder="Share your experience with other travellers..." style="min-height:100px;"></textarea>
-                </div>
-                <div style="display:flex;gap:0.5rem;">
-                  <button class="btn btn-primary" onclick="submitReview()">Submit review</button>
-                  <button class="btn" onclick="cancelReview()">Cancel</button>
-                </div>
-                <div id="review-error" class="alert alert-danger" style="display:none;margin-top:0.75rem;"></div>
-                <div id="review-success" class="alert alert-success" style="display:none;margin-top:0.75rem;">Review submitted successfully.</div>
+              <p class="text-sm text-muted" style="line-height:1.65;">We got engaged at the bamboo grove in Arashiyama. The agency sent us a congratulations card at the hotel that evening. The thoughtfulness throughout the trip was remarkable.</p>
+              <div style="display:flex;gap:0.5rem;margin-top:0.875rem;">
+                <button class="btn btn-sm" onclick="editFirstReview()">Edit review</button>
+                <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="deleteFirstReview()">Delete</button>
               </div>
             </div>
           </div>
-
           <div style="border:2px dashed var(--col-border);border-radius:var(--radius-lg);padding:2rem;text-align:center;">
+            <div style="font-size:1.75rem;margin-bottom:0.5rem;"></div>
             <div style="font-weight:500;margin-bottom:0.375rem;">Write a review for a past trip</div>
-            <p class="text-sm text-muted" style="margin-bottom:1rem;">Go to My bookings and click Leave review on a completed booking.</p>
-            <button class="btn btn-primary btn-sm" onclick="showSection('bookings', document.querySelector('[onclick*=bookings]'))">View my bookings</button>
+            <p class="text-sm text-muted" style="margin-bottom:1rem;">Share your experience to help other travellers.</p>
+            <a href="browse.html" class="btn btn-primary btn-sm">Browse past bookings</a>
           </div>
         </div>
 
-        <!-- PROFILE -->
         <div id="section-profile" style="display:none;">
           <h2 style="margin-bottom:1.5rem;">Profile details</h2>
           <div style="max-width:520px;display:flex;flex-direction:column;gap:1rem;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-              <!-- PHP: echo $traveller['First_Name']; -->
-              <div class="form-group"><label>First name</label><input id="profile-first-name" type="text" placeholder="[First Name]"></div>
-              <!-- PHP: echo $traveller['Surname']; -->
-              <div class="form-group"><label>Surname</label><input id="profile-surname" type="text" placeholder="[Surname]"></div>
+              <div class="form-group"><label>First name</label><input id="profile-first-name" type="text" value="Sipho"></div>
+              <div class="form-group"><label>Surname</label><input id="profile-surname" type="text" value="Nkosi"></div>
             </div>
-            <!-- PHP: echo $traveller['Mid_Initial']; -->
-            <div class="form-group"><label>Middle initial</label><input id="profile-mid-initial" type="text" placeholder="[Mid Initial]" style="max-width:80px;"></div>
-            <!-- PHP: echo $traveller['Email']; -->
-            <div class="form-group"><label>Email address</label><input id="profile-email-input" type="email" placeholder="[Email]"></div>
+            <div class="form-group"><label>Middle initial</label><input id="profile-middle-initial" type="text" value="T" style="max-width:80px;"></div>
+            <div class="form-group"><label>Email address</label><input id="profile-email" type="email" value="sipho@email.com"></div>
             <div class="form-group">
               <label>Country of residence</label>
-              <!-- PHP: populate with $traveller['Country_Of_Residence'] selected -->
-              <select id="profile-country">
-                <option value="">Select a country</option>
-                <option>South Africa</option>
-                <option>Botswana</option>
-                <option>Zimbabwe</option>
-                <option>Kenya</option>
-                <option>Nigeria</option>
-                <option>United Kingdom</option>
-                <option>United States</option>
-                <option>Other</option>
-              </select>
+              <select id="profile-country"><option selected>South Africa</option><option>Botswana</option><option>Other</option></select>
             </div>
-            <!-- PHP: query USER_CONTACT_INFO WHERE User_ID = session -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-              <div class="form-group"><label>Mobile number</label><input id="contact-mobile" type="text" placeholder="+27 82 000 0000"></div>
-              <div class="form-group"><label>Home number</label><input id="contact-home" type="text" placeholder="+27 11 000 0000"></div>
+            <div class="form-group">
+              <label>Contact number</label>
+              <input id="profile-contact" type="text" value="+27 82 555 0199">
             </div>
             <div>
-              <!-- PHP: POST to update_profile.php -->
-              <button class="btn btn-primary" onclick="saveProfile()">Save changes</button>
+              <button class="btn btn-primary" onclick="saveProfileChanges()">Save changes</button>
             </div>
-            <div id="profile-success" class="alert alert-success" style="display:none;">Profile updated successfully.</div>
-            <div id="profile-error" class="alert alert-danger" style="display:none;"></div>
           </div>
         </div>
 
-        <!-- SECURITY -->
         <div id="section-security" style="display:none;">
           <h2 style="margin-bottom:1.5rem;">Security</h2>
           <div style="max-width:420px;display:flex;flex-direction:column;gap:1rem;">
-            <div class="form-group"><label>Current password</label><input id="sec-current" type="password" placeholder="Enter current password"></div>
-            <div class="form-group"><label>New password</label><input id="sec-new" type="password" placeholder="At least 8 characters"></div>
-            <div class="form-group"><label>Confirm new password</label><input id="sec-confirm" type="password" placeholder="Repeat new password"></div>
-            <div>
-              <!-- PHP: POST to update_password.php -->
-              <button class="btn btn-primary" onclick="updatePassword()">Update password</button>
-            </div>
-            <div id="security-success" class="alert alert-success" style="display:none;">Password updated successfully.</div>
-            <div id="security-error" class="alert alert-danger" style="display:none;"></div>
+            <div class="form-group"><label>Current password</label><input id="sec-current-password" type="password" placeholder="Enter current password"></div>
+            <div class="form-group"><label>New password</label><input id="sec-new-password" type="password" placeholder="At least 8 characters"></div>
+            <div class="form-group"><label>Confirm new password</label><input id="sec-confirm-password" type="password" placeholder="Repeat new password"></div>
+            <div><button class="btn btn-primary" onclick="updateSecuritySettings()">Update password</button></div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -348,128 +223,11 @@
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
       <a href="index.html" class="footer-logo">Tripistry</a>
-      <span class="text-xs text-faint">Tripistry - Team Name</span>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
     </div>
   </div>
 </footer>
 
 <script src="../js/traveller-dashboard.js"></script>
-<script>
-function showSection(id, el) {
-  ['overview','bookings','reviews','profile','security'].forEach(s => {
-    const section = document.getElementById('section-'+s);
-    if (s === id) {
-      section.style.display = 'block';
-      section.classList.remove('section-animate');
-      void section.offsetWidth;
-      section.classList.add('section-animate');
-    } else {
-      section.style.display = 'none';
-    }
-  });
-  document.querySelectorAll('.dash-nav a').forEach(a => a.classList.remove('active'));
-  if (el) el.classList.add('active');
-}
-
-function filterBookings(filter, btn) {
-  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  // PHP: re-query with Booking_Status filter
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.getElementById('stats-skeleton').style.display = 'none';
-    document.getElementById('stats-content').style.display = 'grid';
-  }, 1200);
-  setTimeout(() => {
-    document.getElementById('pkgs-skeleton').style.display = 'none';
-    document.getElementById('pkgs-content').style.display = 'grid';
-  }, 1600);
-});
-
-let currentBookingID = null;
-function openWriteReview(bookingID, packageName, packageType) {
-  currentBookingID = bookingID;
-  document.getElementById('review-pkg-name').textContent = packageName;
-  document.getElementById('review-pkg-type').textContent = packageType + ' package';
-  document.getElementById('write-review-form').style.display = 'block';
-  document.getElementById('review-error').style.display = 'none';
-  document.getElementById('review-success').style.display = 'none';
-  showSection('reviews', document.querySelector('[onclick*=reviews]'));
-  document.getElementById('write-review-form').scrollIntoView({ behavior: 'smooth' });
-}
-
-function cancelReview() {
-  document.getElementById('write-review-form').style.display = 'none';
-  document.querySelectorAll('input[name=review-rating]').forEach(r => r.checked = false);
-  document.getElementById('review-comment').value = '';
-}
-
-document.querySelectorAll('input[name=review-rating]').forEach(input => {
-  input.addEventListener('change', function() {
-    const labels = ['','Poor','Fair','Good','Very good','Excellent'];
-    document.getElementById('review-rating-label').textContent = labels[this.value] + ' (' + this.value + '/5)';
-  });
-});
-
-function submitReview() {
-  const rating = document.querySelector('input[name=review-rating]:checked');
-  const comment = document.getElementById('review-comment').value;
-  const errorEl = document.getElementById('review-error');
-  const successEl = document.getElementById('review-success');
-
-  errorEl.style.display = 'none';
-  successEl.style.display = 'none';
-
-  if (!rating) {
-    errorEl.textContent = 'Please select a rating before submitting.';
-    errorEl.style.display = 'block';
-    return;
-  }
-
-  // PHP: POST to submit_review.php
-  // Body: Booking_ID, Rating, Comment, Traveller_ID (from session), Package_ID, Package_Type
-  successEl.style.display = 'block';
-  document.querySelector('#write-review-form .btn-primary').disabled = true;
-}
-
-function saveProfile() {
-  const successEl = document.getElementById('profile-success');
-  const errorEl = document.getElementById('profile-error');
-  errorEl.style.display = 'none';
-  // PHP: POST to update_profile.php with form fields
-  successEl.style.display = 'block';
-  setTimeout(() => successEl.style.display = 'none', 3000);
-}
-
-function updatePassword() {
-  const current = document.getElementById('sec-current').value;
-  const newPw = document.getElementById('sec-new').value;
-  const confirm = document.getElementById('sec-confirm').value;
-  const successEl = document.getElementById('security-success');
-  const errorEl = document.getElementById('security-error');
-  errorEl.style.display = 'none';
-
-  if (!current || !newPw || !confirm) {
-    errorEl.textContent = 'Please fill in all password fields.';
-    errorEl.style.display = 'block';
-    return;
-  }
-  if (newPw !== confirm) {
-    errorEl.textContent = 'New passwords do not match.';
-    errorEl.style.display = 'block';
-    return;
-  }
-  if (newPw.length < 8) {
-    errorEl.textContent = 'Password must be at least 8 characters.';
-    errorEl.style.display = 'block';
-    return;
-  }
-  // PHP: POST to update_password.php
-  successEl.style.display = 'block';
-  setTimeout(() => successEl.style.display = 'none', 3000);
-}
-</script>
 </body>
 </html>
