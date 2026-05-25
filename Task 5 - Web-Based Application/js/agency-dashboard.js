@@ -1,4 +1,4 @@
-const API_URL = 'api/api.php';
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 
 function escHtml(str) {
   if (!str) return '';
@@ -56,7 +56,8 @@ async function handleLogout() {
 }
 
 async function loadDashboard() {
-  const data = await callAPI({type: 'GetPackages'});
+  // CHANGED: scope dashboard data to logged-in agency only.
+  const data = await callAPI({type: 'GetAgencyPackages'});
   if (data.status !== 'success') return;
 
   const packages = data.data || [];

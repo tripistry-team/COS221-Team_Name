@@ -1,4 +1,4 @@
-﻿const API_URL = 'api/api.php';
+﻿const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 let currentUser = null;
 let allTrips = [];
 let activeStatus = 'active';
@@ -47,7 +47,7 @@ async function loadTrips() {
   const counts = { active: 0, upcoming: 0, completed: 0 };
   allTrips.forEach(t => { counts[classifyTrip(t)]++; });
   const p = document.querySelector('.agency-layout > div > div p.text-muted.text-sm');
-  if (p) p.textContent = `${counts.active} active · ${counts.upcoming} upcoming · ${counts.completed} completed`;
+  if (p) p.textContent = `${counts.active} active | ${counts.upcoming} upcoming | ${counts.completed} completed`;
   const tabs = document.querySelectorAll('.tabs .tab');
   if (tabs[0]) tabs[0].textContent = `Active (${counts.active})`;
   if (tabs[1]) tabs[1].textContent = `Upcoming (${counts.upcoming})`;
@@ -58,7 +58,7 @@ async function loadTrips() {
 function classifyTrip(t) {
   const s = String(t.Trip_Status || '').toLowerCase();
   if (s === 'completed') return 'completed';
-  if (s === 'cancelled') return 'completed';
+  if (s === 'cancelled') return 'upcoming'; // CHANGED: cancelled no longer grouped under completed tab
   const now = new Date();
   const start = new Date(t.Start_Date);
   if (start > now) return 'upcoming';
@@ -107,12 +107,19 @@ async function createTrip() {
   const end_date = dates[1]?.value;
   const join_deadline = dates[2]?.value || null;
   const nums = document.querySelectorAll('#new-trip-modal input[type=number]');
-  const participants_min = parseInt(nums[0]?.value || '0', 10);
-  const participants_max = parseInt(nums[1]?.value || '0', 10);
+  const min_participants = parseInt(nums[0]?.value || '0', 10);
+  const max_participants = parseInt(nums[1]?.value || '0', 10);
 
   const res = await callAPI({
-    type: 'AddGroupTrip', trip_name: name, start_date, end_date, join_deadline,
-    participants_min, participants_max
+    // CHANGED: aligned payload keys to API req.json spec
+    type: 'AddGroupTrip',
+    name,
+    start_date,
+    end_date,
+    join_deadline,
+    min_participants,
+    max_participants,
+    agency_id: Number(currentUser?.type_id || 0)
   });
   if (res.status !== 'success') return alert(res.message || 'Failed to create trip');
   closeModal();
@@ -186,3 +193,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadTrips();
 });
+
+
+

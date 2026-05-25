@@ -1,4 +1,4 @@
-const API_URL = 'api/api.php';
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 
 let currentUser = null;
 
@@ -49,7 +49,8 @@ async function loadReviews() {
   const content = document.querySelector('.agency-layout > div');
   if (!content) return;
 
-  const data = await callAPI({type: 'GetPackages'});
+  // CHANGED: only fetch current agency packages.
+  const data = await callAPI({type: 'GetAgencyPackages'});
   if (data.status !== 'success' || !data.data.length) return;
 
   // load detail for each package to get reviews
@@ -114,9 +115,8 @@ async function submitResponse(feedbackId) {
 
   const res = await callAPI({
     type: 'AddResponse',
-    feedback_ID: feedbackId,
-    response: response,
-    user_Type: 'agency_staff'
+    feedback_id: feedbackId,
+    response: response
   });
 
   if (res.status === 'success') {

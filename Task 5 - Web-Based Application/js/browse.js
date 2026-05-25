@@ -1,4 +1,4 @@
-const API_URL = 'api/api.php';
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 const PAGE_SIZE = 6;
 const COMPARE_KEY = 'tripistry_compare_ids';
 
@@ -67,8 +67,7 @@ async function handleLogout() {
 function collectFilters() {
   const filters = {};
 
-  const destInput = document.getElementById('dest-search');
-  if (destInput && destInput.value.trim()) filters.destination = destInput.value.trim();
+  // CHANGED: destination filtering handled client-side for reliable continent/multi-select support.
 
   const priceRange = document.getElementById('price-range');
   if (priceRange && parseFloat(priceRange.value) < parseFloat(priceRange.max))
@@ -167,6 +166,21 @@ async function getPackageDetailCached(packageId) {
 async function applyClientFilters(packages) {
   let out = [...packages];
 
+  // CHANGED: destination search + continent checkbox filtering moved client-side.
+  const destInput = (document.getElementById('dest-search')?.value || '').trim().toLowerCase();
+  const selectedContinents = ['d1','d2','d3','d4','d5','d6'].filter(id => document.getElementById(id)?.checked);
+  if (destInput || selectedContinents.length) {
+    out = out.filter(p => {
+      const country = String(p.Country || '').toLowerCase();
+      const city = String(p.City || '').toLowerCase();
+      const name = String(p.Name || '').toLowerCase();
+      const cKey = continentOf(p);
+      const continentMatch = !selectedContinents.length || (cKey && selectedContinents.includes(cKey));
+      const textMatch = !destInput || country.includes(destInput) || city.includes(destInput) || name.includes(destInput);
+      return continentMatch && textMatch;
+    });
+  }
+
   const durs = [];
   if (document.getElementById('dur1')?.checked) durs.push([1, 3]);
   if (document.getElementById('dur2')?.checked) durs.push([4, 7]);
@@ -193,9 +207,11 @@ async function applyClientFilters(packages) {
       const detail = await getPackageDetailCached(p.Package_ID);
       const experiences = detail.experiences || [];
       const hasFlights = (detail.flights || []).length > 0;
-      const hasAccommodation = experiences.some(e => String(e.Category || '').toLowerCase() === 'accommodation');
-      const hasTours = experiences.some(e => ['activity', 'attraction'].includes(String(e.Category || '').toLowerCase()));
-      const hasMeals = experiences.some(e => String(e.Category || '').toLowerCase() === 'restaurant');
+      // CHANGED: tolerate category naming/casing variants.
+      const cats = experiences.map(e => String(e.Category || '').trim().toLowerCase());
+      const hasAccommodation = cats.some(c => ['accommodation', 'hotel', 'lodging'].includes(c));
+      const hasTours = cats.some(c => ['activity', 'attraction', 'tour'].includes(c));
+      const hasMeals = cats.some(c => ['restaurant', 'meal', 'dining'].includes(c));
       const hasTransfers = hasFlights || hasTours;
       const ok =
         (!checks.flights || hasFlights) &&
@@ -338,26 +354,11 @@ function prefillFromUrl() {
 }
 
 function wireDestinationChecks() {
-  const map = {
-    d1: 'South Africa, Morocco, Kenya, Nigeria, Egypt, Botswana, Zimbabwe',
-    d2: 'Japan, Indonesia, Thailand, China, India, UAE, Qatar, Saudi Arabia',
-    d3: 'France, Greece, Italy, Spain, Germany, United Kingdom',
-    d4: 'United States, Canada, Mexico',
-    d5: 'Peru, Brazil, Argentina, Chile, Colombia',
-    d6: 'Australia, New Zealand'
-  };
-  Object.entries(map).forEach(([id, name]) => {
+  // CHANGED: do not overwrite destination search with huge continent strings.
+  ['d1','d2','d3','d4','d5','d6'].forEach((id) => {
     const cb = document.getElementById(id);
     if (!cb) return;
-    cb.addEventListener('change', () => {
-      const input = document.getElementById('dest-search');
-      if (!input) return;
-      const selected = Object.entries(map)
-        .filter(([key]) => document.getElementById(key)?.checked)
-        .map(([,label]) => label);
-      input.value = selected.join(', ');
-      fetchAndRender();
-    });
+    cb.addEventListener('change', fetchAndRender);
   });
 }
 
