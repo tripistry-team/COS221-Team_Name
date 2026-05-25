@@ -48,7 +48,7 @@
     "Get Feature for Browsing": 
     {
         "type": "GetFeature",
-        "feature": "<destination, flight, experience, attraction, accommodation, restaurant, or activity>"
+        "feature": "<destination, flight, product_service, experience, attraction, accommodation, restaurant, or activity>"
     },
     
     "Get Packages":{
@@ -325,8 +325,7 @@
 
     "Get Bookings":
     {
-        "type": "GetBookings",
-        "traveller_id": -1
+        "type": "GetBookings"
     },
 
     "Get details about a booking":

@@ -19,14 +19,14 @@
 }
 .dest-search input { border:none;background:none;flex:1;font-size:0.9375rem;padding:0.375rem 0.625rem; }
 .dest-search input:focus { box-shadow:none; }
-.continent-tabs { display:flex;gap:0.375rem;flex-wrap:wrap;margin-bottom:2rem; }
-.continent-tab {
+.region-tabs { display:flex;gap:0.375rem;flex-wrap:wrap;margin-bottom:2rem; }
+.region-tab {
   font-size:0.875rem;font-weight:400;color:var(--col-muted);
   padding:0.4rem 1rem;border:1px solid var(--col-border);border-radius:999px;
   cursor:pointer;background:var(--bg);transition:all 0.15s;
 }
-.continent-tab:hover { border-color:var(--col-border-strong);color:var(--col); }
-.continent-tab.active { background:var(--accent);color:#fff;border-color:var(--accent); }
+.region-tab:hover { border-color:var(--col-border-strong);color:var(--col); }
+.region-tab.active { background:var(--accent);color:#fff;border-color:var(--accent); }
 .dest-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -60,8 +60,8 @@
     <a href="group-trips.html">Group Trips</a>
   </div>
   <div class="nav-actions">
-    <a href="login.html" class="btn btn-ghost btn-sm" id="login">Log in</a>
-    <a href="register.html" class="btn btn-primary btn-sm" id="signup">Sign up</a>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
   </div>
 </nav>
 
@@ -76,119 +76,22 @@
       </div>
     </div>
 
-    <div class="continent-tabs">
-      <button class="continent-tab active" onclick="setcontinent('all',this)">All continents</button>
-      <button class="continent-tab" onclick="setcontinent('africa',this)">Africa</button>
-      <button class="continent-tab" onclick="setcontinent('asia',this)">Asia</button>
-      <button class="continent-tab" onclick="setcontinent('europe',this)">Europe</button>
-      <button class="continent-tab" onclick="setcontinent('americas',this)">Americas</button>
-      <button class="continent-tab" onclick="setcontinent('oceania',this)">Oceania</button>
-      <button class="continent-tab" onclick="setcontinent('middleeast',this)">Middle East</button>
+    <div class="region-tabs">
+      <button class="region-tab active" onclick="setRegion('all',this)">All continents</button>
+      <button class="region-tab" onclick="setRegion('africa',this)">Africa</button>
+      <button class="region-tab" onclick="setRegion('asia',this)">Asia</button>
+      <button class="region-tab" onclick="setRegion('europe',this)">Europe</button>
+      <button class="region-tab" onclick="setRegion('north-america',this)">North America</button>
+      <button class="region-tab" onclick="setRegion('south-america',this)">South America</button>
+      <button class="region-tab" onclick="setRegion('oceania',this)">Oceania</button>
     </div>
 
-    <div class="dest-grid" id="dest-grid">
-      <a href="browse.html" class="dest-card" data-continent="asia" data-name="tokyo japan">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Japan</div>
-          <div class="dest-name">Tokyo</div>
-          <div class="dest-meta"><span>48 packages</span><span>4.9</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="europe" data-name="santorini greece">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Greece</div>
-          <div class="dest-name">Santorini</div>
-          <div class="dest-meta"><span>31 packages</span><span>4.8</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="africa" data-name="cape town south africa">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">South Africa</div>
-          <div class="dest-name">Cape Town</div>
-          <div class="dest-meta"><span>27 packages</span><span>4.7</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="asia" data-name="bali indonesia">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Indonesia</div>
-          <div class="dest-name">Bali</div>
-          <div class="dest-meta"><span>39 packages</span><span>4.8</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="europe" data-name="paris france">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">France</div>
-          <div class="dest-name">Paris</div>
-          <div class="dest-meta"><span>52 packages</span><span>4.6</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="asia" data-name="bangkok thailand">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Thailand</div>
-          <div class="dest-name">Bangkok</div>
-          <div class="dest-meta"><span>44 packages</span><span>4.7</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="americas" data-name="new york usa">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">United States</div>
-          <div class="dest-name">New York</div>
-          <div class="dest-meta"><span>38 packages</span><span>4.5</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="africa" data-name="marrakech morocco">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Morocco</div>
-          <div class="dest-name">Marrakech</div>
-          <div class="dest-meta"><span>22 packages</span><span>4.6</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="europe" data-name="rome italy">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Italy</div>
-          <div class="dest-name">Rome</div>
-          <div class="dest-meta"><span>45 packages</span><span>4.7</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="oceania" data-name="sydney australia">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Australia</div>
-          <div class="dest-name">Sydney</div>
-          <div class="dest-meta"><span>29 packages</span><span>4.8</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="middleeast" data-name="dubai uae">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">UAE</div>
-          <div class="dest-name">Dubai</div>
-          <div class="dest-meta"><span>33 packages</span><span>4.6</span></div>
-        </div>
-      </a>
-      <a href="browse.html" class="dest-card" data-continent="americas" data-name="machu picchu peru">
-        <div class="dest-thumb"></div>
-        <div class="dest-body">
-          <div class="dest-country">Peru</div>
-          <div class="dest-name">Machu Picchu</div>
-          <div class="dest-meta"><span>18 packages</span><span>4.9</span></div>
-        </div>
-      </a>
-    </div>
+    <div class="dest-grid" id="dest-grid"></div>
 
     <div id="no-results" style="display:none;text-align:center;padding:4rem 0;">
       <div style="font-size:2.5rem;margin-bottom:1rem;"></div>
       <h3>No destinations found</h3>
-      <p class="text-muted mt-1">Try a different search term or continent.</p>
+      <p class="text-muted mt-1">Try a different search term or region.</p>
     </div>
   </div>
 </main>
@@ -197,13 +100,11 @@
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
       <a href="index.html" class="footer-logo">Tripistry</a>
-      <span class="text-xs text-faint">Tripistry — Team Name</span>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
     </div>
   </div>
 </footer>
 
-<script src="../js/destinations.js">
-
-</script>
+<script src="../js/destinations.js"></script>
 </body>
 </html>

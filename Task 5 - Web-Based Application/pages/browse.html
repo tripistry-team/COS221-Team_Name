@@ -1,27 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Browse Packages - Tripistry</title>
 <link rel="stylesheet" href="style.css">
-
 <script src="../js/browse.js"></script>
-
 <style>
 .browse-layout { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; align-items: start; }
-.filter-panel {
-  position: sticky; top: calc(var(--nav-h) + 1rem);
-  background: var(--bg);
-  border: 1px solid var(--col-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-.filter-panel-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--col-border);
-  display: flex; justify-content: space-between; align-items: center;
-}
+.filter-panel { position: sticky; top: calc(var(--nav-h) + 1rem); background: var(--bg); border: 1px solid var(--col-border); border-radius: var(--radius-lg); overflow: hidden; }
+.filter-panel-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--col-border); display: flex; justify-content: space-between; align-items: center; }
 .filter-section { padding: 1.125rem 1.25rem; border-bottom: 1px solid var(--col-border); }
 .filter-section:last-child { border-bottom: none; }
 .filter-section h4 { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--col-faint); margin-bottom: 0.75rem; }
@@ -29,33 +17,19 @@
 .check-item input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
 .check-item label { font-size: 0.9rem; cursor: pointer; }
 .check-item .count { margin-left: auto; font-size: 0.8rem; color: var(--col-faint); }
-.price-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; }
 .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
 .active-filters { display: flex; flex-wrap: wrap; gap: 0.375rem; }
-.filter-tag {
-  display: inline-flex; align-items: center; gap: 0.375rem;
-  font-size: 0.8rem; padding: 0.25rem 0.625rem;
-  background: var(--accent-light); color: var(--accent);
-  border: 1px solid #b8ddc8; border-radius: 999px;
-  cursor: pointer;
-}
+.filter-tag { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.8rem; padding: 0.25rem 0.625rem; background: var(--accent-light); color: var(--accent); border: 1px solid #b8ddc8; border-radius: 999px; cursor: pointer; }
 .filter-tag:hover { background: #d4ebdb; }
 .pkg-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
 .pagination { display: flex; gap: 0.375rem; justify-content: center; margin-top: 2rem; }
-.page-btn {
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--col-border); border-radius: var(--radius-sm);
-  font-size: 0.875rem; cursor: pointer; background: var(--bg);
-  text-decoration: none; color: var(--col);
-  transition: all 0.12s;
-}
+.page-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--col-border); border-radius: var(--radius-sm); font-size: 0.875rem; cursor: pointer; background: var(--bg); color: var(--col); }
 .page-btn:hover { background: var(--bg-secondary); }
 .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.page-btn.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 </style>
 </head>
 <body>
-
 <nav>
   <a class="nav-logo" href="index.html">Tripistry</a>
   <div class="nav-links">
@@ -69,24 +43,23 @@
     <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
   </div>
 </nav>
-
 <main>
   <div class="container">
     <div class="page-header">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
         <div>
           <h1 style="font-size:2rem;">Browse packages</h1>
-          <p class="text-muted mt-1">1,247 packages across 85 destinations</p>
+          <p class="text-muted mt-1">Find your next trip</p>
         </div>
         <div style="display:flex;gap:0.5rem;align-items:center;">
           <span class="text-sm text-muted">Sort by:</span>
           <select style="width:auto;" id="sort-select">
-            <option>Most popular</option>
-            <option>Price: low to high</option>
-            <option>Price: high to low</option>
-            <option>Highest rated</option>
-            <option>Newest</option>
-            <option>Duration: shortest</option>
+            <option value="rating_desc">Most popular</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="rating_desc">Highest rated</option>
+            <option value="name_desc">Newest</option>
+            <option value="duration_asc">Duration: shortest</option>
           </select>
         </div>
       </div>
@@ -98,10 +71,9 @@
           <span style="font-weight:500;font-size:0.9rem;">Filters</span>
           <button class="btn btn-ghost btn-sm" id="clear-filters">Clear all</button>
         </div>
-
         <div class="filter-section">
           <h4>Destination</h4>
-          <input id="dest-search" type="text" placeholder="Search destinations…" style="margin-bottom:0.75rem;">
+          <input id="dest-search" type="text" placeholder="Search destinations..." style="margin-bottom:0.75rem;">
           <div class="check-item"><input type="checkbox" id="d1"><label for="d1">Africa</label><span class="count">0</span></div>
           <div class="check-item"><input type="checkbox" id="d2"><label for="d2">Asia</label><span class="count">0</span></div>
           <div class="check-item"><input type="checkbox" id="d3"><label for="d3">Europe</label><span class="count">0</span></div>
@@ -109,7 +81,6 @@
           <div class="check-item"><input type="checkbox" id="d5"><label for="d5">South America</label><span class="count">0</span></div>
           <div class="check-item"><input type="checkbox" id="d6"><label for="d6">Oceania</label><span class="count">0</span></div>
         </div>
-
         <div class="filter-section">
           <h4>Price per person</h4>
           <input type="range" min="0" max="100000" value="50000" id="price-range" style="width:100%;margin-bottom:0.5rem;">
@@ -117,7 +88,6 @@
             <span>R0</span><span id="price-label">up to R50,000</span>
           </div>
         </div>
-
         <div class="filter-section">
           <h4>Duration</h4>
           <div class="check-item"><input type="checkbox" id="dur1"><label for="dur1">Weekend (1-3 days)</label></div>
@@ -125,7 +95,6 @@
           <div class="check-item"><input type="checkbox" id="dur3"><label for="dur3">Medium (8-14 days)</label></div>
           <div class="check-item"><input type="checkbox" id="dur4"><label for="dur4">Long (15+ days)</label></div>
         </div>
-
         <div class="filter-section">
           <h4>Package type</h4>
           <div class="check-item"><input class="pkg-type-check" value="solo" type="checkbox" id="pt1"><label for="pt1">Solo</label></div>
@@ -133,14 +102,12 @@
           <div class="check-item"><input class="pkg-type-check" value="family" type="checkbox" id="pt3"><label for="pt3">Family</label></div>
           <div class="check-item"><input class="pkg-type-check" value="group" type="checkbox" id="pt4"><label for="pt4">Group</label></div>
         </div>
-
         <div class="filter-section">
           <h4>Rating (in stars)</h4>
           <div class="check-item"><input class="rating-check" value="5" type="checkbox" id="r1"><label for="r1"><span class="stars"></span> 5 only</label></div>
           <div class="check-item"><input class="rating-check" value="4" type="checkbox" id="r2"><label for="r2"><span class="stars"></span> 4 & up</label></div>
           <div class="check-item"><input class="rating-check" value="3" type="checkbox" id="r3"><label for="r3"><span class="stars"></span> 3 & up</label></div>
         </div>
-
         <div class="filter-section">
           <h4>Includes</h4>
           <div class="check-item"><input type="checkbox" id="inc1"><label for="inc1">Flights</label></div>
@@ -155,128 +122,22 @@
         <div class="results-header">
           <div>
             <span class="text-sm text-muted">Showing <strong id="results-count">0</strong> packages</span>
-            <div class="active-filters" id="active-filters" style="margin-top:0.5rem;">
-              <span class="filter-tag">Japan ✕</span>
-              <span class="filter-tag">4-7 days ✕</span>
-              <span class="filter-tag">8-14 days ✕</span>
-              <span class="filter-tag">Includes flights ✕</span>
-            </div>
-          </div>
-          <div style="display:flex;gap:0.375rem;">
-            <button class="btn btn-sm" title="Grid view">⊞</button>
-            <button class="btn btn-sm btn-primary" title="List view">☰</button>
+            <div class="active-filters" id="active-filters" style="margin-top:0.5rem;"></div>
           </div>
         </div>
-
-        <div class="pkg-list" id="pkg-list">
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Wanderlust Co.</div>
-              <div class="pkg-name">Tokyo & Kyoto Cultural Immersion</div>
-              <div class="pkg-meta"><span> 10 days</span><span> Flights incl.</span><span> 4 star hotels</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge badge-green">Family</span><span class="badge">Couple</span></div>
-              <div class="pkg-price">R18,500 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.9 (128)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Horizon Trails</div>
-              <div class="pkg-name">Hokkaido Winter Snow Experience</div>
-              <div class="pkg-meta"><span> 7 days</span><span> Flights incl.</span><span> Ski pass</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge">Couple</span></div>
-              <div class="pkg-price">R21,000 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.8 (67)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Eastern Routes</div>
-              <div class="pkg-name">Ancient Temples of Nara & Osaka</div>
-              <div class="pkg-meta"><span> 5 days</span><span> Rail pass</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge badge-green">Group</span></div>
-              <div class="pkg-price">R12,800 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.6 (203)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Sakura Journeys</div>
-              <div class="pkg-name">Cherry Blossom Season in Hiroshima</div>
-              <div class="pkg-meta"><span> 6 days</span><span> Flights incl.</span><span> Seasonal</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge badge-amber">Limited slots</span></div>
-              <div class="pkg-price">R16,400 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">5.0 (44)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Wanderlust Co.</div>
-              <div class="pkg-name">Japan Rail Pass: 14-Day Highlights</div>
-              <div class="pkg-meta"><span> 14 days</span><span> JR Pass incl.</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge">Couple</span><span class="badge">Family</span></div>
-              <div class="pkg-price">R28,900 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.7 (311)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Asia Authentic</div>
-              <div class="pkg-name">Tokyo Street Food & Culture Deep Dive</div>
-              <div class="pkg-meta"><span> 5 days</span><span> Food tours</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge badge-green">Group</span></div>
-              <div class="pkg-price">R11,200 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.9 (89)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="pagination" id="pagination">
-          <a href="#" class="page-btn"></a>
-          <a href="#" class="page-btn active">1</a>
-          <a href="#" class="page-btn">2</a>
-          <a href="#" class="page-btn">3</a>
-          <span class="page-btn" style="border:none;cursor:default;">…</span>
-          <a href="#" class="page-btn">26</a>
-          <a href="#" class="page-btn">></a>
-        </div>
+        <div class="pkg-list" id="pkg-list"></div>
+        <div class="pagination" id="pagination"></div>
       </div>
     </div>
   </div>
 </main>
-
 <footer>
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
       <a href="index.html" class="footer-logo">Tripistry</a>
-      <span class="text-xs text-faint">Tripistry — Team Name</span>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
     </div>
   </div>
 </footer>
-<script src="../js/browse.js"></script>
 </body>
 </html>

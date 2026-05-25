@@ -42,10 +42,6 @@
 
 <nav>
   <a class="nav-logo" href="index.html">Tripistry</a>
-  <div class="nav-actions">
-    <span class="text-sm text-muted">Already have an account?</span>
-    <a href="login.html" class="btn btn-sm">Log in</a>
-  </div>
 </nav>
 
 <div class="auth-layout">
@@ -66,7 +62,7 @@
         <div style="font-size:0.8125rem;font-weight:500;color:var(--col-muted);margin-bottom:0.5rem;">I am a:</div>
         <div class="role-toggle">
           <button class="role-btn active" id="role-traveller" onclick="setRole('traveller')">Traveller</button>
-          <button class="role-btn" id="role-agency" onclick="setRole('agency')" onclick="">Travel agency</button>
+          <button class="role-btn" id="role-agency" onclick="setRole('agency')">Travel agency</button>
         </div>
       </div>
 
@@ -74,20 +70,20 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
           <div class="form-group">
             <label>First name</label>
-            <input type="text" placeholder="Jane" id="reg-first-name">
+            <input id="reg-first-name" type="text" placeholder="Jane">
           </div>
           <div class="form-group">
             <label>Surname</label>
-            <input type="text" placeholder=" Doe" id="reg-surname">
+            <input id="reg-surname" type="text" placeholder=" Doe">
           </div>
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Middle initial <span class="text-faint">(optional)</span></label>
-          <input type="text" placeholder="A" maxlength="1" style="max-width:80px;" id="reg-mid-init">
+          <input id="reg-mid-init" type="text" placeholder="A" maxlength="1" style="max-width:80px;">
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Country of residence</label>
-          <select id = "selCountry">
+          <select id="reg-country">
             <option value="">Select a country</option>
             <option>South Africa</option>
             <option>Botswana</option>
@@ -104,11 +100,11 @@
       <div id="agency-fields" style="display:none;">
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Agency / company name</label>
-          <input type="text" placeholder="Wanderlust Co." id="reg-agency-name">
+          <input id="reg-agency-name" type="text" placeholder="Wanderlust Co.">
         </div>
         <div class="form-group" style="margin-bottom:0.75rem;">
           <label>Agency description <span class="text-faint">(optional)</span></label>
-          <textarea placeholder="Tell travellers about your agency…" style="min-height:80px;" id="reg-agency-description"></textarea>
+          <textarea id="reg-agency-description" placeholder="Tell travellers about your agency…" style="min-height:80px;"></textarea>
         </div>
       </div>
 
@@ -116,32 +112,23 @@
 
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Username</label>
-        <input type="text" placeholder="janedoe" autocomplete="username" id="reg-username">
+        <input id="reg-username" type="text" placeholder="janedoe" autocomplete="username">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Email address</label>
-        <input type="email" placeholder="you@example.com" autocomplete="email" id="reg-email">
+        <input id="reg-email" type="email" placeholder="you@example.com" autocomplete="email">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Password</label>
-        <input type="password" placeholder="At least 8 characters" autocomplete="new-password" id="reg-password">
+        <input id="reg-password" type="password" placeholder="At least 8 characters" autocomplete="new-password">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
         <label>Confirm password</label>
-        <input type="password" placeholder="Repeat your password" autocomplete="new-password" id="reg-confirm-password">
+        <input id="reg-confirm-password" type="password" placeholder="Repeat your password" autocomplete="new-password">
       </div>
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-          <div class="form-group"><label>Mobile number <span class="text-faint">(optional)</span></label><input type="text" placeholder="+27 82 000 0000"></div>
-          <div class="form-group"><label>Home number <span class="text-faint">(optional)</span></label><input type="text" placeholder="+27 11 000 0000"></div>
-        </div>
-      </div>
-
-      <div style="margin:1.25rem 0;">
-        <label style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;cursor:pointer;color:var(--col);line-height:1.5;">
-          <input type="checkbox" id="cbxAgree" style="width:15px;height:15px;accent-color:var(--accent);margin-top:2px;flex-shrink:0;">
-          I agree to the <a href="#" class="text-accent" style="text-decoration:none;">Terms of Service</a> and <a href="#" class="text-accent" style="text-decoration:none;">Privacy Policy</a>
-        </label>
+        <label>Contact number <span class="text-faint">(optional)</span></label>
+        <input type="text" placeholder="+27 82 000 0000">
       </div>
 
       <button class="btn btn-primary btn-lg" style="width:100%;justify-content:center;" onclick="handleRegister()">Create account</button>
@@ -154,8 +141,6 @@
   </div>
 </div>
 
-<script src="../js/register.js">
-
-</script>
+<script src="../js/register.js"></script>
 </body>
 </html>

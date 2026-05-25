@@ -167,6 +167,71 @@ else if ($data["type"] === "GetBookingDetails") {
     echo json_encode($api->getBookingDetails($data));
 } 
 
+// CHANGED: Added missing routes required by Task 5 JavaScript files.
+else if ($data["type"] === "GetTravellerBookings") {
+    echo json_encode($api->getTravellerBookings($data));
+}
+else if ($data["type"] === "CancelBooking") {
+    echo json_encode($api->cancelBooking($data));
+}
+else if ($data["type"] === "LeaveGroupTrip") {
+    echo json_encode($api->leaveGroupTrip($data));
+}
+else if ($data["type"] === "GetTravellerFeedback") {
+    echo json_encode($api->getTravellerFeedback($data));
+}
+else if ($data["type"] === "UpdateFeedback") {
+    echo json_encode($api->updateFeedback($data));
+}
+else if ($data["type"] === "DeleteFeedback") {
+    echo json_encode($api->deleteFeedback($data));
+}
+else if ($data["type"] === "GetAgencyGroupTrips") {
+    echo json_encode($api->getAgencyGroupTrips($data));
+}
+else if ($data["type"] === "GetPublicGroupTrips") {
+    echo json_encode($api->getPublicGroupTrips($data));
+}
+else if ($data["type"] === "JoinGroupTrip") {
+    echo json_encode($api->joinGroupTrip($data));
+}
+else if ($data["type"] === "UpdateGroupTrip") {
+    echo json_encode($api->updateGroupTrip($data));
+}
+else if ($data["type"] === "CancelGroupTrip") {
+    echo json_encode($api->cancelGroupTrip($data));
+}
+else if ($data["type"] === "GetAgencyBookings") {
+    echo json_encode($api->getAgencyBookings($data));
+}
+else if ($data["type"] === "GetAgencyPackages") {
+    echo json_encode($api->getAgencyPackages($data));
+}
+else if ($data["type"] === "DeletePackage") {
+    echo json_encode($api->deletePackage($data));
+}
+else if ($data["type"] === "UpdatePackage") {
+    echo json_encode($api->updatePackage($data));
+}
+else if ($data["type"] === "GetAgencyProfile") {
+    echo json_encode($api->getAgencyProfile($data));
+}
+else if ($data["type"] === "UpdateAgencyProfile") {
+    echo json_encode($api->updateAgencyProfile($data));
+}
+else if ($data["type"] === "UpdateAgencyPassword") {
+    echo json_encode($api->updateAgencyPassword($data));
+}
+else if ($data["type"] === "GetTravellerProfile") {
+    echo json_encode($api->getTravellerProfile($data));
+}
+else if ($data["type"] === "UpdateTravellerProfile") {
+    echo json_encode($api->updateTravellerProfile($data));
+}
+else if ($data["type"] === "UpdateTravellerPassword") {
+    echo json_encode($api->updateTravellerPassword($data));
+}
+
 else {
     http_response_code(400);
     echo json_encode([
