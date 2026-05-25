@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tripistry - Discover Travel Packages</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.hero {
+  padding: 5rem 0 4rem;
+  text-align: center;
+  position: relative;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.8125rem; font-weight: 500; color: var(--accent);
+  background: var(--accent-light); border: 1px solid #b8ddc8;
+  border-radius: 999px; padding: 0.3rem 0.875rem;
+  margin-bottom: 1.5rem;
+}
+.hero h1 { max-width: 700px; margin: 0 auto 1.25rem; }
+.hero p { font-size: 1.125rem; color: var(--col-muted); max-width: 520px; margin: 0 auto 2.5rem; }
+.search-box {
+  display: flex; gap: 0.5rem; max-width: 640px; margin: 0 auto;
+  background: var(--bg);
+  border: 1px solid var(--col-border-strong);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+.search-box input {
+  border: none; background: none; flex: 1;
+  font-size: 0.9375rem; padding: 0.375rem 0.625rem;
+}
+.search-box input:focus { box-shadow: none; }
+.search-box select {
+  border: none; background: none; width: auto;
+  font-size: 0.875rem; color: var(--col-muted);
+  padding: 0.375rem 0.5rem;
+  border-left: 1px solid var(--col-border);
+  border-radius: 0;
+}
+.search-box select:focus { box-shadow: none; }
+.trust-bar {
+  display: flex; justify-content: center; gap: 2.5rem;
+  margin-top: 3rem; padding-top: 2.5rem;
+  border-top: 1px solid var(--col-border);
+}
+.trust-item { text-align: center; }
+.trust-item .val { font-size: 1.5rem; font-weight: 600; }
+.trust-item .lbl { font-size: 0.8125rem; color: var(--col-muted); }
+.dest-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.dest-card {
+  aspect-ratio: 3/4;
+  border-radius: var(--radius-lg);
+  background: var(--bg-tertiary);
+  position: relative; overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex; align-items: flex-end;
+  transition: transform 0.2s;
+}
+.dest-card:hover { transform: scale(1.02); }
+.dest-card:first-child { grid-row: span 2; aspect-ratio: auto; min-height: 420px; }
+.dest-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+}
+.dest-card-bg {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem; opacity: 0.18; color: var(--col);
+}
+.dest-card-info {
+  position: relative; z-index: 1;
+  padding: 1.25rem;
+  color: #fff;
+}
+.dest-card-info h3 { font-size: 1.0625rem; font-weight: 500; }
+.dest-card-info p { font-size: 0.8125rem; opacity: 0.8; margin-top: 0.125rem; }
+.section-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.why-card { padding: 1.75rem; }
+.why-icon {
+  width: 44px; height: 44px;
+  background: var(--accent-light);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1rem;
+  color: var(--accent); font-size: 1.25rem;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="browse.html">Browse</a>
+    <a href="destinations.html">Destinations</a>
+    <a href="compare.html">Compare</a>
+    <a href="group-trips.html">Group Trips</a>
+  </div>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+
+    <section class="hero">
+      <div class="hero-eyebrow"> Curated travel packages</div>
+      <h1>Your next trip, thoughtfully packaged.</h1>
+      <p>Browse, compare, and book complete travel packages from verified agencies — all in one place.</p>
+      <div class="search-box">
+        <input type="text" placeholder="Where do you want to go?" id="hero-search">
+        <select>
+          <option>Any duration</option>
+          <option>3-5 days</option>
+          <option>1 week</option>
+          <option>2 weeks</option>
+          <option>3+ weeks</option>
+        </select>
+        <button class="btn btn-primary" onclick="document.location='browse.html'">Search</button>
+      </div>
+      <div class="trust-bar">
+        <div class="trust-item"><div class="val">1,200+</div><div class="lbl">Packages listed</div></div>
+        <div class="trust-item"><div class="val">140+</div><div class="lbl">Travel agencies</div></div>
+        <div class="trust-item"><div class="val">85+</div><div class="lbl">Destinations</div></div>
+        <div class="trust-item"><div class="val">4.7 </div><div class="lbl">Average rating</div></div>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="section-header">
+        <h2>Popular destinations</h2>
+        <a href="destinations.html" class="btn btn-ghost btn-sm">View all →</a>
+      </div>
+      <div class="dest-grid" id="dest-grid">
+        <a href="destinations.html#tokyo" class="dest-card">
+          <div class="dest-card-bg"></div>
+          <div class="dest-card-overlay"></div>
+          <div class="dest-card-info">
+            <h3>Tokyo</h3>
+            <p>Japan · 48 packages</p>
+          </div>
+        </a>
+        <a href="destinations.html#santorini" class="dest-card">
+          <div class="dest-card-bg"></div>
+          <div class="dest-card-overlay"></div>
+          <div class="dest-card-info">
+            <h3>Santorini</h3>
+            <p>Greece · 31 packages</p>
+          </div>
+        </a>
+        <a href="destinations.html#capetown" class="dest-card">
+          <div class="dest-card-bg"></div>
+          <div class="dest-card-overlay"></div>
+          <div class="dest-card-info">
+            <h3>Cape Town</h3>
+            <p>South Africa · 27 packages</p>
+          </div>
+        </a>
+        <a href="destinations.html#bali" class="dest-card">
+          <div class="dest-card-bg"></div>
+          <div class="dest-card-overlay"></div>
+          <div class="dest-card-info">
+            <h3>Bali</h3>
+            <p>Indonesia · 39 packages</p>
+          </div>
+        </a>
+        <a href="destinations.html#paris" class="dest-card">
+          <div class="dest-card-bg"></div>
+          <div class="dest-card-overlay"></div>
+          <div class="dest-card-info">
+            <h3>Paris</h3>
+            <p>France · 52 packages</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="section-header">
+        <h2>Featured packages</h2>
+        <a href="browse.html" class="btn btn-ghost btn-sm">Browse all →</a>
+      </div>
+      <div class="grid-3" id="featured-packages">
+        <a href="package-detail.html" class="pkg-card">
+          <div class="pkg-thumb"></div>
+          <div class="pkg-body">
+            <div class="pkg-agency">Wanderlust Co.</div>
+            <div class="pkg-name">Tokyo & Kyoto Cultural Immersion</div>
+            <div class="pkg-meta">
+              <span> 10 days</span>
+              <span> Includes flights</span>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;">
+              <span class="badge badge-green">Family</span>
+              <span class="badge">Couple</span>
+            </div>
+            <div class="pkg-price">R18,500 <span>per person</span></div>
+            <div style="display:flex;align-items:center;gap:0.375rem;margin-top:0.375rem;">
+              <span class="stars"></span>
+              <span class="text-sm text-muted">4.9 (128 reviews)</span>
+            </div>
+          </div>
+        </a>
+        <a href="package-detail.html" class="pkg-card">
+          <div class="pkg-thumb"></div>
+          <div class="pkg-body">
+            <div class="pkg-agency">Aegean Escapes</div>
+            <div class="pkg-name">Greek Islands Sailing Week</div>
+            <div class="pkg-meta">
+              <span> 7 days</span>
+              <span> Yacht included</span>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;">
+              <span class="badge">Couple</span>
+              <span class="badge">Solo</span>
+            </div>
+            <div class="pkg-price">R22,000 <span>per person</span></div>
+            <div style="display:flex;align-items:center;gap:0.375rem;margin-top:0.375rem;">
+              <span class="stars"></span>
+              <span class="text-sm text-muted">4.8 (94 reviews)</span>
+            </div>
+          </div>
+        </a>
+        <a href="package-detail.html" class="pkg-card">
+          <div class="pkg-thumb"></div>
+          <div class="pkg-body">
+            <div class="pkg-agency">Safari Roots</div>
+            <div class="pkg-name">Cape Town & Winelands Explorer</div>
+            <div class="pkg-meta">
+              <span>8 days</span>
+              <span> Private transfers</span>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;">
+              <span class="badge badge-green">Group</span>
+              <span class="badge">Family</span>
+            </div>
+            <div class="pkg-price">R15,200 <span>per person</span></div>
+            <div style="display:flex;align-items:center;gap:0.375rem;margin-top:0.375rem;">
+              <span class="stars"></span>
+              <span class="text-sm text-muted">4.7 (76 reviews)</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section-sm" style="background:var(--bg-secondary);border-radius:var(--radius-xl);padding:3rem 2.5rem;margin-bottom:3rem;">
+      <div style="text-align:center;margin-bottom:2.5rem;">
+        <h2>Why Tripistry?</h2>
+        <p class="text-muted mt-1">Built for travellers who want transparency and choice.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon"></div>
+          <h4>Compare prices</h4>
+          <p class="text-muted text-sm mt-1" style="line-height:1.6">See the same destination across multiple agencies side by side. No hidden fees, no surprises.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"></div>
+          <h4>Verified reviews</h4>
+          <p class="text-muted text-sm mt-1" style="line-height:1.6">Every review comes from a traveller who actually booked and completed the trip.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"></div>
+          <h4>Group trips</h4>
+          <p class="text-muted text-sm mt-1" style="line-height:1.6">Travel with strangers who become friends. Agencies host open group trips you can join solo.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;flex-wrap:wrap;margin-bottom:2rem;">
+      <div>
+        <a href="index.html" class="footer-logo">Tripistry</a>
+        <p class="text-sm mt-2" style="max-width:260px;color:var(--col-muted);">A travel package platform connecting travellers with trusted agencies.</p>
+      </div>
+      <div style="display:flex;gap:3rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.8125rem;font-weight:500;margin-bottom:0.75rem;">Travellers</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <a href="browse.html" class="text-sm text-muted" style="text-decoration:none;">Browse packages</a>
+            <a href="destinations.html" class="text-sm text-muted" style="text-decoration:none;">Destinations</a>
+            <a href="compare.html" class="text-sm text-muted" style="text-decoration:none;">Compare</a>
+            <a href="group-trips.html" class="text-sm text-muted" style="text-decoration:none;">Group trips</a>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:0.8125rem;font-weight:500;margin-bottom:0.75rem;">Agencies</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <a href="login.html" class="text-sm text-muted" style="text-decoration:none;">Agency login</a>
+            <a href="agency-dashboard.html" class="text-sm text-muted" style="text-decoration:none;">Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1.25rem;flex-wrap:wrap;gap:0.5rem;">
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
+    </div>
+  </div>
+</footer>
+<script src="../js/index.js"></script>
+</body>
+</html>

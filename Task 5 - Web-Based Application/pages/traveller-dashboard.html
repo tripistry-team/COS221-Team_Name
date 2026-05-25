@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account – Tripistry</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.dash-layout { display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;padding-top:2rem; }
+.dash-sidebar {
+  position:sticky;top:calc(var(--nav-h)+1rem);
+  border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;
+}
+.dash-sidebar-profile {
+  padding:1.25rem;background:var(--bg-secondary);border-bottom:1px solid var(--col-border);
+  text-align:center;
+}
+.avatar {
+  width:56px;height:56px;border-radius:50%;
+  background:var(--accent-light);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:500;font-size:1.125rem;margin:0 auto 0.625rem;
+}
+.dash-nav { padding:0.5rem; }
+.dash-nav a {
+  display:flex;align-items:center;gap:0.625rem;
+  font-size:0.9rem;color:var(--col-muted);
+  text-decoration:none;padding:0.5rem 0.625rem;
+  border-radius:var(--radius-sm);transition:all 0.12s;
+}
+.dash-nav a:hover,.dash-nav a.active{color:var(--col);background:var(--bg-secondary);}
+.dash-nav a.active{font-weight:500;}
+.booking-card {
+  border:1px solid var(--col-border);border-radius:var(--radius-lg);
+  padding:1.25rem;display:flex;gap:1.25rem;align-items:flex-start;
+  margin-bottom:1rem;transition:border-color 0.15s;
+}
+.booking-card:hover{border-color:var(--col-border-strong);}
+.booking-thumb {
+  width:80px;height:70px;border-radius:var(--radius-md);
+  background:var(--bg-tertiary);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:2rem;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="browse.html">Browse</a>
+    <a href="destinations.html">Destinations</a>
+    <a href="compare.html">Compare</a>
+    <a href="group-trips.html">Group Trips</a>
+  </div>
+  <div class="nav-actions">
+    <span class="text-sm text-muted">Sipho N.</span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-sidebar-profile">
+          <div class="avatar">SN</div>
+          <div style="font-weight:500;font-size:0.9375rem;">Sipho Nkosi</div>
+          <div class="text-xs text-muted">sipho@email.com</div>
+          <div style="margin-top:0.625rem;"><span class="badge badge-green">Traveller</span></div>
+        </div>
+        <div class="dash-nav">
+          <a href="#bookings" class="active" onclick="showSection('bookings',this)"> My bookings</a>
+          <a href="#reviews" onclick="showSection('reviews',this)"> My reviews</a>
+          <a href="#profile" onclick="showSection('profile',this)"> Profile</a>
+          <a href="#security" onclick="showSection('security',this)"> Security</a>
+          <div style="border-top:1px solid var(--col-border);margin:0.5rem 0;padding-top:0.5rem;">
+            <a href="browse.html" style="color:var(--accent);"> Browse packages</a>
+          </div>
+        </div>
+      </aside>
+
+      <div>
+
+        <div id="section-bookings">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+            <h2>My bookings</h2>
+            <div class="tabs" style="margin-bottom:0;border-bottom:none;">
+              <button class="tab active" onclick="filterBookings('all',this)">All</button>
+              <button class="tab" onclick="filterBookings('upcoming',this)">Upcoming</button>
+              <button class="tab" onclick="filterBookings('past',this)">Past</button>
+              <button class="tab" onclick="filterBookings('cancelled',this)">Cancelled</button>
+            </div>
+          </div>
+
+          <div class="booking-card">
+            <div class="booking-thumb"></div>
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Tokyo & Kyoto Cultural Immersion</div>
+                  <div class="text-sm text-muted">Wanderlust Co. · Family package · 4 travellers</div>
+                </div>
+                <span class="badge badge-green">Confirmed</span>
+              </div>
+              <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);flex-wrap:wrap;">
+                <span> Departs 14 Jul 2026</span>
+                <span> JNB → NRT</span>
+                <span> R74,000 total</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
+                <a href="package-detail.html" class="btn btn-sm">View details</a>
+                <button class="btn btn-sm btn-ghost" style="color:var(--danger);border-color:var(--col-border);">Cancel booking</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-card">
+            <div class="booking-thumb"></div>
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Greek Islands Sailing Week</div>
+                  <div class="text-sm text-muted">Aegean Escapes · Couple package · 2 travellers</div>
+                </div>
+                <span class="badge">Completed</span>
+              </div>
+              <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);flex-wrap:wrap;">
+                <span> April 2026</span>
+                <span> R44,000 total</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;">
+                <a href="package-detail.html" class="btn btn-sm">View details</a>
+                <button class="btn btn-sm btn-primary" onclick="openReviewsSection()">Leave review</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-card" style="opacity:0.65;">
+            <div class="booking-thumb"></div>
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <div style="font-weight:500;margin-bottom:0.25rem;">Bali Wellness & Culture Retreat</div>
+                  <div class="text-sm text-muted">Island Spirits · Solo package · 1 traveller</div>
+                </div>
+                <span class="badge badge-red">Cancelled</span>
+              </div>
+              <div style="display:flex;gap:1.25rem;margin-top:0.625rem;font-size:0.875rem;color:var(--col-muted);">
+                <span> February 2026 (cancelled)</span>
+                <span> Refunded</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-reviews" style="display:none;">
+          <h2 style="margin-bottom:1.5rem;">My reviews</h2>
+          <div style="border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem;">
+            <div style="padding:1rem 1.25rem;background:var(--bg-secondary);border-bottom:1px solid var(--col-border);">
+              <div style="font-weight:500;">Greek Islands Sailing Week</div>
+              <div class="text-xs text-muted">Aegean Escapes · April 2026</div>
+            </div>
+            <div style="padding:1.25rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+                <span class="stars" style="font-size:1.125rem;"></span>
+                <span class="text-sm text-muted">5/5 · Posted 2 May 2026</span>
+              </div>
+              <p class="text-sm text-muted" style="line-height:1.65;">We got engaged at the bamboo grove in Arashiyama. The agency sent us a congratulations card at the hotel that evening. The thoughtfulness throughout the trip was remarkable.</p>
+              <div style="display:flex;gap:0.5rem;margin-top:0.875rem;">
+                <button class="btn btn-sm" onclick="editFirstReview()">Edit review</button>
+                <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="deleteFirstReview()">Delete</button>
+              </div>
+            </div>
+          </div>
+          <div style="border:2px dashed var(--col-border);border-radius:var(--radius-lg);padding:2rem;text-align:center;">
+            <div style="font-size:1.75rem;margin-bottom:0.5rem;"></div>
+            <div style="font-weight:500;margin-bottom:0.375rem;">Write a review for a past trip</div>
+            <p class="text-sm text-muted" style="margin-bottom:1rem;">Share your experience to help other travellers.</p>
+            <a href="browse.html" class="btn btn-primary btn-sm">Browse past bookings</a>
+          </div>
+        </div>
+
+        <div id="section-profile" style="display:none;">
+          <h2 style="margin-bottom:1.5rem;">Profile details</h2>
+          <div style="max-width:520px;display:flex;flex-direction:column;gap:1rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+              <div class="form-group"><label>First name</label><input id="profile-first-name" type="text" value="Sipho"></div>
+              <div class="form-group"><label>Surname</label><input id="profile-surname" type="text" value="Nkosi"></div>
+            </div>
+            <div class="form-group"><label>Middle initial</label><input id="profile-middle-initial" type="text" value="T" style="max-width:80px;"></div>
+            <div class="form-group"><label>Email address</label><input id="profile-email" type="email" value="sipho@email.com"></div>
+            <div class="form-group">
+              <label>Country of residence</label>
+              <select id="profile-country"><option selected>South Africa</option><option>Botswana</option><option>Other</option></select>
+            </div>
+            <div class="form-group">
+              <label>Contact number</label>
+              <input id="profile-contact" type="text" value="+27 82 555 0199">
+            </div>
+            <div>
+              <button class="btn btn-primary" onclick="saveProfileChanges()">Save changes</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-security" style="display:none;">
+          <h2 style="margin-bottom:1.5rem;">Security</h2>
+          <div style="max-width:420px;display:flex;flex-direction:column;gap:1rem;">
+            <div class="form-group"><label>Current password</label><input id="sec-current-password" type="password" placeholder="Enter current password"></div>
+            <div class="form-group"><label>New password</label><input id="sec-new-password" type="password" placeholder="At least 8 characters"></div>
+            <div class="form-group"><label>Confirm new password</label><input id="sec-confirm-password" type="password" placeholder="Repeat new password"></div>
+            <div><button class="btn btn-primary" onclick="updateSecuritySettings()">Update password</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="index.html" class="footer-logo">Tripistry</a>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/traveller-dashboard.js"></script>
+</body>
+</html>

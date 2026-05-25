@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agency Profile - Tripistry</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.agency-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start;padding-top:2rem;}
+.agency-sidebar{position:sticky;top:calc(var(--nav-h)+1rem);border:1px solid var(--col-border);border-radius:var(--radius-lg);overflow:hidden;}
+.agency-sidebar-header{padding:1.25rem;background:var(--accent);color:#fff;}
+.agency-nav{padding:0.5rem;}
+.agency-nav a{display:flex;align-items:center;gap:0.625rem;font-size:0.9rem;color:var(--col-muted);text-decoration:none;padding:0.5rem 0.625rem;border-radius:var(--radius-sm);transition:all 0.12s;}
+.agency-nav a:hover,.agency-nav a.active{color:var(--col);background:var(--bg-secondary);}
+.agency-nav a.active{font-weight:500;}
+.form-section{background:var(--bg);border:1px solid var(--col-border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.25rem;}
+.form-section-title{font-size:1rem;font-weight:600;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--col-border);}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="agency-packages.html">My Packages</a>
+    <a href="agency-group-trips.html">Group Trips</a>
+    <a href="agency-bookings.html">Bookings</a>
+  </div>
+  <div class="nav-actions">
+    <span class="text-sm text-muted">Wanderlust Co.</span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
+  </div>
+</nav>
+<main>
+  <div class="container">
+    <div class="agency-layout">
+      <aside class="agency-sidebar">
+        <div class="agency-sidebar-header">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;">WC</div>
+            <div><div style="font-weight:500;">Wanderlust Co.</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+          </div>
+        </div>
+        <div class="agency-nav">
+          <a href="agency-dashboard.html"> Dashboard</a>
+          <a href="agency-packages.html"> My packages</a>
+          <a href="agency-group-trips.html"> Group trips</a>
+          <a href="agency-bookings.html"> Bookings</a>
+          <a href="agency-reviews.html"> Reviews</a>
+          <div style="border-top:1px solid var(--col-border);margin:0.5rem 0;padding-top:0.5rem;">
+            <a href="agency-profile.html" class="active"> Agency profile</a>
+            <a href="login.html" style="color:var(--danger);"> Log out</a>
+          </div>
+        </div>
+      </aside>
+      <div>
+        <div style="margin-bottom:1.5rem;"><h2>Agency profile</h2><p class="text-muted text-sm">Update your agency's public information and account settings.</p></div>
+
+        <div class="form-section">
+          <div class="form-section-title"> Agency information</div>
+          <div style="display:flex;flex-direction:column;gap:1rem;">
+            <div class="form-group"><label>Agency / company name *</label><input type="text"></div>
+            <div class="form-group"><label>Description</label><textarea style="min-height:100px;"></textarea></div>
+            <div class="form-group"><label>Email address *</label><input type="email"></div>
+            <div class="form-group"><label>Contact number</label><input type="text"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title"> Account credentials</div>
+          <div style="display:flex;flex-direction:column;gap:1rem;max-width:420px;">
+            <div class="form-group"><label>Username</label><input type="text"></div>
+            <div class="form-group"><label>Current password</label><input type="password" placeholder="Enter current password"></div>
+            <div class="form-group"><label>New password</label><input type="password" placeholder="Leave blank to keep current"></div>
+            <div class="form-group"><label>Confirm new password</label><input type="password" placeholder="Repeat new password"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;">
+          <button class="btn btn-primary" onclick="saveProfile()">Save changes</button>
+          <a href="agency-dashboard.html" class="btn">Cancel</a>
+        </div>
+
+        <div id="save-alert" class="alert alert-success" style="display:none;margin-top:1rem;">Profile updated successfully.</div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="index.html" class="footer-logo">Tripistry</a>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
+    </div>
+  </div>
+</footer>
+<script src="../js/agency-profile.js"></script>
+</body>
+</html>
+

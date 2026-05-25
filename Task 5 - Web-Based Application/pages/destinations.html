@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Destinations - Tripistry</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.dest-hero {
+  padding: 4rem 0 3rem;
+  text-align: center;
+}
+.dest-search {
+  display: flex; gap: 0.5rem; max-width: 520px; margin: 1.5rem auto 0;
+  background: var(--bg); border: 1px solid var(--col-border-strong);
+  border-radius: var(--radius-md); padding: 0.4rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+.dest-search input { border:none;background:none;flex:1;font-size:0.9375rem;padding:0.375rem 0.625rem; }
+.dest-search input:focus { box-shadow:none; }
+.region-tabs { display:flex;gap:0.375rem;flex-wrap:wrap;margin-bottom:2rem; }
+.region-tab {
+  font-size:0.875rem;font-weight:400;color:var(--col-muted);
+  padding:0.4rem 1rem;border:1px solid var(--col-border);border-radius:999px;
+  cursor:pointer;background:var(--bg);transition:all 0.15s;
+}
+.region-tab:hover { border-color:var(--col-border-strong);color:var(--col); }
+.region-tab.active { background:var(--accent);color:#fff;border-color:var(--accent); }
+.dest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+.dest-card {
+  border:1px solid var(--col-border);border-radius:var(--radius-lg);
+  overflow:hidden;text-decoration:none;color:inherit;
+  display:block;transition:box-shadow 0.2s,transform 0.2s;
+}
+.dest-card:hover { box-shadow:0 8px 24px rgba(0,0,0,0.09);transform:translateY(-2px); }
+.dest-thumb {
+  height:180px;background:var(--bg-tertiary);
+  display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;position:relative;overflow:hidden;
+}
+.dest-body { padding:1rem 1.125rem; }
+.dest-country { font-size:0.8rem;color:var(--col-muted);margin-bottom:0.2rem; }
+.dest-name { font-size:1.0625rem;font-weight:500;margin-bottom:0.375rem; }
+.dest-meta { display:flex;gap:0.875rem;font-size:0.8125rem;color:var(--col-muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="browse.html">Browse</a>
+    <a href="destinations.html" class="active">Destinations</a>
+    <a href="compare.html">Compare</a>
+    <a href="group-trips.html">Group Trips</a>
+  </div>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="dest-hero">
+      <h1>Explore destinations</h1>
+      <p class="text-muted" style="margin-top:0.75rem;">85 destinations across 6 continents</p>
+      <div class="dest-search">
+        <input type="text" id="dest-search" placeholder="Search cities or countries…" oninput="filterDests()">
+        <button class="btn btn-primary btn-sm">Search</button>
+      </div>
+    </div>
+
+    <div class="region-tabs">
+      <button class="region-tab active" onclick="setRegion('all',this)">All continents</button>
+      <button class="region-tab" onclick="setRegion('africa',this)">Africa</button>
+      <button class="region-tab" onclick="setRegion('asia',this)">Asia</button>
+      <button class="region-tab" onclick="setRegion('europe',this)">Europe</button>
+      <button class="region-tab" onclick="setRegion('north-america',this)">North America</button>
+      <button class="region-tab" onclick="setRegion('south-america',this)">South America</button>
+      <button class="region-tab" onclick="setRegion('oceania',this)">Oceania</button>
+    </div>
+
+    <div class="dest-grid" id="dest-grid"></div>
+
+    <div id="no-results" style="display:none;text-align:center;padding:4rem 0;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;"></div>
+      <h3>No destinations found</h3>
+      <p class="text-muted mt-1">Try a different search term or region.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="index.html" class="footer-logo">Tripistry</a>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/destinations.js"></script>
+</body>
+</html>
