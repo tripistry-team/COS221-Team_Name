@@ -27,7 +27,12 @@ jobs:
 
       - name: Validate PHP Files
         run: |
-          find . -name "*.php" -exec php -l {} \;
+          echo "Checking PHP syntax..."
+
+          for file in $(find . -name "*.php"); do
+            echo "Linting $file"
+            php -l "$file" || exit 1
+          done
 
       - name: Display Success Message
         run: echo "CI completed successfully"
