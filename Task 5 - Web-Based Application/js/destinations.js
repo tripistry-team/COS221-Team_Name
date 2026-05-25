@@ -50,9 +50,13 @@ function slugify(str) {
     .replace(/^-+|-+$/g, '');
 }
 
-function destinationImage(city, country) {
+function destinationImage(imageUrl, city, country) {
   const s = slugify(city || country || 'destination');
-  return `url('../assets/images/destinations/${s}.jpg'), url('../assets/images/travel-placeholder.svg')`;
+  const fallback = `url('../assets/images/destinations/${s}.jpg'), url('../assets/images/travel-placeholder.svg')`;
+  const u = String(imageUrl || '').trim();
+  if (!u) return fallback;
+  const safe = u.replace(/'/g, "\\'");
+  return `url('${safe}'), ${fallback}`;
 }
 
 function setRegion(r, btn) {
@@ -93,7 +97,7 @@ async function loadDestinations() {
     const nameData = `${city} ${country}`.toLowerCase();
     return `
       <a href="browse.html?destination=${encodeURIComponent(city)}" class="dest-card" data-region="${region}" data-name="${nameData}">
-        <div class="dest-thumb" style="background-image:${destinationImage(city, country)};background-size:cover;background-position:center;"></div>
+        <div class="dest-thumb" style="background-image:${destinationImage(d.Image_url, city, country)};background-size:cover;background-position:center;"></div>
         <div class="dest-body">
           <div class="dest-country">${country}</div>
           <div class="dest-name">${city}</div>

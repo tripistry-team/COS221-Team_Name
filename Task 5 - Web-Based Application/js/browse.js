@@ -25,6 +25,14 @@ function packageImage(name) {
   return `url('../assets/images/packages/${slugify(name)}.jpg'), url('../assets/images/travel-placeholder.svg')`;
 }
 
+function packageImageFromDestination(imageUrl, name) {
+  const fallback = packageImage(name);
+  const u = String(imageUrl || '').trim();
+  if (!u) return fallback;
+  const safe = u.replace(/'/g, "\\'");
+  return `url('${safe}'), ${fallback}`;
+}
+
 async function callAPI(payload) {
   const res = await fetch(API_URL, {
     method: 'POST',
@@ -82,16 +90,8 @@ function collectFilters() {
     filters.min_rating = Math.max(...vals);
   }
 
-  const sortMap = {
-    'Most popular'       : 'rating_desc',
-    'Price: low to high' : 'price_asc',
-    'Price: high to low' : 'price_desc',
-    'Highest rated'      : 'rating_desc',
-    'Duration: shortest' : 'duration_asc',
-    'Name'               : 'name_asc'
-  };
   const sortSelect = document.getElementById('sort-select');
-  if (sortSelect) filters.sort = sortMap[sortSelect.value] ?? 'name_asc';
+  if (sortSelect) filters.sort = (sortSelect.value || 'rating_desc');
 
   return filters;
 }
@@ -124,19 +124,19 @@ function buildPackageCard(pkg) {
     ? `R${parseFloat(pkg.Min_Price).toLocaleString('en-ZA')}`
     : `R${parseFloat(pkg.Base_Price).toLocaleString('en-ZA')}`;
   const rating   = pkg.Avg_Rating ? `${pkg.Avg_Rating} &#9733; (${pkg.Review_Count})` : 'No reviews yet';
-  const location = pkg.City ? `${pkg.City}, ${pkg.Country}` : (pkg.Country || '');
+  const location = pkg.City ? `${pkg.City}, ${pkg.Country}` : (pkg.Country || 'Destination');
   // Agencies is the comma-separated string from GROUP_CONCAT in getPackages
   const agencies = pkg.Agencies || '';
 
   return `
     <a href="package-detail.html?id=${pkg.Package_ID}" class="pkg-card">
-      <div class="pkg-thumb" style="background-image:${packageImage(pkg.Name)};background-size:cover;background-position:center;"></div>
+      <div class="pkg-thumb" style="background-image:${packageImageFromDestination(pkg.Image_url, pkg.Name)};background-size:cover;background-position:center;"></div>
       <div class="pkg-body">
         <div class="pkg-agency">${escHtml(agencies)}</div>
-        <div class="pkg-name">${escHtml(pkg.Name)}</div>
+        <div class="pkg-name">${escHtml(location)}</div>
         <div class="pkg-meta">
-          <span>${escHtml(pkg.Duration)}</span>
-          ${location ? `<span>${escHtml(location)}</span>` : ''}
+          <span>${escHtml(formatDuration(pkg.Duration))}</span>
+          <span>${escHtml(pkg.Name || '')}</span>
         </div>
         <div class="pkg-price">${price} <span>per person</span></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
@@ -149,6 +149,13 @@ function buildPackageCard(pkg) {
       </div>
     </a>
   `;
+}
+
+function formatDuration(duration) {
+  const d = String(duration || '').trim();
+  if (!d) return '-';
+  if (/day/i.test(d)) return d;
+  return `${d} days`;
 }
 
 function durationDays(text) {
@@ -165,6 +172,20 @@ async function getPackageDetailCached(packageId) {
 
 async function applyClientFilters(packages) {
   let out = [...packages];
+
+  const priceRange = document.getElementById('price-range');
+  if (priceRange) {
+    const maxPrice = parseFloat(priceRange.value);
+    const sliderMax = parseFloat(priceRange.max);
+    if (!Number.isNaN(maxPrice) && maxPrice < sliderMax) {
+      out = out.filter(p => {
+        const candidate = (p.Min_Price != null && p.Min_Price !== '')
+          ? parseFloat(p.Min_Price)
+          : parseFloat(p.Base_Price);
+        return !Number.isNaN(candidate) && candidate <= maxPrice;
+      });
+    }
+  }
 
   // CHANGED: destination search + continent checkbox filtering moved client-side.
   const destInput = (document.getElementById('dest-search')?.value || '').trim().toLowerCase();
@@ -231,6 +252,16 @@ function applyClientSort(packages, sort) {
     packages.sort((a, b) => durationDays(a.Duration) - durationDays(b.Duration));
   } else if (sort === 'duration_desc') {
     packages.sort((a, b) => durationDays(b.Duration) - durationDays(a.Duration));
+  } else if (sort === 'price_asc') {
+    packages.sort((a, b) => Number(a.Min_Price ?? a.Base_Price ?? 0) - Number(b.Min_Price ?? b.Base_Price ?? 0));
+  } else if (sort === 'price_desc') {
+    packages.sort((a, b) => Number(b.Min_Price ?? b.Base_Price ?? 0) - Number(a.Min_Price ?? a.Base_Price ?? 0));
+  } else if (sort === 'rating_desc') {
+    packages.sort((a, b) => Number(b.Avg_Rating ?? 0) - Number(a.Avg_Rating ?? 0));
+  } else if (sort === 'name_desc') {
+    packages.sort((a, b) => String(b.Name || '').localeCompare(String(a.Name || '')));
+  } else {
+    packages.sort((a, b) => String(a.Name || '').localeCompare(String(b.Name || '')));
   }
 }
 
@@ -255,11 +286,32 @@ function renderPagination() {
   const totalPages = Math.ceil(allPackages.length / PAGE_SIZE);
   if (totalPages <= 1) { container.innerHTML = ''; return; }
 
-  let html = `<a class="page-btn" onclick="changePage(${currentPage - 1})">&#8249;</a>`;
-  for (let i = 1; i <= totalPages; i++) {
-    html += `<a class="page-btn${i === currentPage ? ' active' : ''}" onclick="changePage(${i})">${i}</a>`;
+  const pages = [];
+  const pushPage = (n) => {
+    if (n >= 1 && n <= totalPages && !pages.includes(n)) pages.push(n);
+  };
+
+  pushPage(1);
+  pushPage(currentPage - 1);
+  pushPage(currentPage);
+  pushPage(currentPage + 1);
+  pushPage(totalPages);
+  pages.sort((a, b) => a - b);
+
+  const prevDisabled = currentPage === 1 ? ' disabled' : '';
+  const nextDisabled = currentPage === totalPages ? ' disabled' : '';
+  let html = `<button class="page-btn${prevDisabled}" type="button" onclick="changePage(${currentPage - 1})" aria-label="Previous page">&#8249;</button>`;
+
+  for (let i = 0; i < pages.length; i++) {
+    const n = pages[i];
+    const prev = pages[i - 1];
+    if (i > 0 && n - prev > 1) {
+      html += `<span class="page-btn" style="border:none;cursor:default;" aria-hidden="true">...</span>`;
+    }
+    html += `<button class="page-btn${n === currentPage ? ' active' : ''}" type="button" onclick="changePage(${n})">${n}</button>`;
   }
-  html += `<a class="page-btn" onclick="changePage(${currentPage + 1})">&#8250;</a>`;
+
+  html += `<button class="page-btn${nextDisabled}" type="button" onclick="changePage(${currentPage + 1})" aria-label="Next page">&#8250;</button>`;
   container.innerHTML = html;
 }
 
@@ -332,7 +384,6 @@ function addToCompare(packageId) {
   ids = ids.filter(n => Number.isInteger(n));
   if (!ids.includes(packageId)) ids.push(packageId);
   localStorage.setItem(COMPARE_KEY, JSON.stringify(ids.slice(0, 3)));
-  window.location.href = 'compare.html';
 }
 
 function prefillFromUrl() {

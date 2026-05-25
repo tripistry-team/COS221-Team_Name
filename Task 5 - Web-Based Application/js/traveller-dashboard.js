@@ -2,6 +2,7 @@ const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 
 let allBookings = [];
 let allReviews = [];
+let currentUser = null;
 
 function escHtml(str) {
   if (!str) return '';
@@ -54,14 +55,21 @@ function updateProfileUI(user) {
 }
 
 function statusBucket(b) {
-  const s = String(b.Booking_Status || '').toLowerCase();
+  const isGt = isGroupTripBooking(b);
+  const gtStatus = String(b.Group_Trip_Status || '').trim().toLowerCase();
+  if (isGt) {
+    if (gtStatus === 'cancelled') return 'cancelled';
+    if (gtStatus === 'completed') return 'past';
+    return 'upcoming';
+  }
+  const s = String(b.Booking_Status || '').trim().toLowerCase();
   if (s === 'cancelled') return 'cancelled';
   if (s === 'completed') return 'past';
   return 'upcoming';
 }
 
 function canCancelBooking(b) {
-  const s = String(b.Booking_Status || '').toLowerCase();
+  const s = String(b.Booking_Status || '').trim().toLowerCase();
   const bookingId = String(b.Booking_ID ?? '');
   const isNumericBooking = /^\d+$/.test(bookingId);
   return isNumericBooking && s !== 'cancelled' && s !== 'completed';
@@ -100,7 +108,7 @@ function renderBookings(filter = 'all') {
             : ''}
           ${canCancelBooking(b)
             ? `<button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick='cancelBooking(${JSON.stringify(String(b.Booking_ID ?? ""))})'>Cancel booking</button>`
-            : `<button class="btn btn-sm" disabled>${statusBucket(b) === 'past' ? 'Past booking' : 'Cancelled'}</button>`}
+            : ``}
         </div>
       </div>
     </div>
@@ -207,10 +215,15 @@ async function saveProfileChanges() {
     mid_initial: document.getElementById('profile-middle-initial')?.value.trim() || '',
     email: document.getElementById('profile-email')?.value.trim() || '',
     country: document.getElementById('profile-country')?.value || '',
-    username: (document.querySelector('.nav-actions .text-sm')?.textContent || '').trim() || 'traveller'
+    username: currentUser?.username || 'traveller'
   };
   const res = await callAPI(payload);
   if (res.status !== 'success') return alert(res.message || 'Failed to save profile.');
+  const displayName = `${payload.first_name} ${payload.surname}`.trim();
+  if (displayName) {
+    const sideName = document.querySelector('.dash-sidebar-profile div[style*="font-weight:500"]');
+    if (sideName) sideName.textContent = displayName;
+  }
   alert('Profile updated.');
 }
 
@@ -242,9 +255,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
   }
 
-  const user = await checkAuth();
-  if (!user) return;
-  updateProfileUI(user);
+  currentUser = await checkAuth();
+  if (!currentUser) return;
+  updateProfileUI(currentUser);
   await loadBookings();
   await loadReviews();
   const profile = await callAPI({ type: 'GetTravellerProfile' });
@@ -256,7 +269,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('profile-email')) document.getElementById('profile-email').value = p.Email || '';
     if (document.getElementById('profile-country')) document.getElementById('profile-country').value = p.Country_Of_Residence || 'South Africa';
     const sideName = document.querySelector('.dash-sidebar-profile div[style*="font-weight:500"]');
-    if (sideName) sideName.textContent = `${p.First_Name || ''} ${p.Surname || ''}`.trim() || user.username;
+    if (sideName) sideName.textContent = `${p.First_Name || ''} ${p.Surname || ''}`.trim() || currentUser.username;
     const sideEmail = document.querySelector('.dash-sidebar-profile .text-xs.text-muted');
     if (sideEmail) sideEmail.textContent = p.Email || '';
     const mid = document.getElementById('profile-middle-initial');

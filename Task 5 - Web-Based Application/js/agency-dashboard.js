@@ -5,6 +5,13 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function formatDuration(duration) {
+  const d = String(duration || '').trim();
+  if (!d) return '-';
+  if (/day/i.test(d)) return d;
+  return `${d} days`;
+}
+
 async function callAPI(payload) {
   const res = await fetch(API_URL, {
     method: 'POST',
@@ -33,17 +40,18 @@ function updateNav(user) {
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
 }
 
-function updateSidebar(user) {
+function updateSidebar(user, profile = null) {
   const header = document.querySelector('.agency-sidebar-header');
   if (!header || !user) return;
+  const display = profile?.Company_Name || user.username;
   header.innerHTML = `
     <div style="display:flex;align-items:center;gap:0.75rem;">
       <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);
                   display:flex;align-items:center;justify-content:center;font-weight:500;font-size:0.9rem;">
-        ${escHtml(user.username.charAt(0).toUpperCase())}
+        ${escHtml(display.charAt(0).toUpperCase())}
       </div>
       <div>
-        <div style="font-weight:500;">${escHtml(user.username)}</div>
+        <div style="font-weight:500;">${escHtml(display)}</div>
         <div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div>
       </div>
     </div>
@@ -84,7 +92,7 @@ async function loadDashboard() {
           <div style="font-weight:500;font-size:0.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
             ${escHtml(p.Name)}
           </div>
-          <div class="text-xs text-muted">${escHtml(p.Duration)}</div>
+          <div class="text-xs text-muted">${escHtml(formatDuration(p.Duration))}</div>
         </div>
         <div style="text-align:right;flex-shrink:0;">
           <div style="font-weight:500;font-size:0.875rem;">
@@ -110,13 +118,43 @@ async function loadDashboard() {
       </div>
     `).join('') : '<p class="text-muted text-sm">No package activity yet.</p>';
   }
+
+  // Recent reviews card
+  const reviews = [];
+  for (const p of packages.slice(0, 8)) {
+    const detail = await callAPI({ type: 'GetPackageDetails', package_id: p.Package_ID });
+    if (detail.status === 'success' && Array.isArray(detail.data.reviews)) {
+      detail.data.reviews.forEach(r => reviews.push({ ...r, Package_Name: p.Name }));
+    }
+  }
+  reviews.sort((a, b) => new Date(b.Last_Updated) - new Date(a.Last_Updated));
+  const reviewsHeader = Array.from(document.querySelectorAll('.card h4')).find(h => String(h.textContent || '').toLowerCase().includes('recent reviews'));
+  const reviewsBody = reviewsHeader ? reviewsHeader.closest('div')?.nextElementSibling : null;
+  if (reviewsBody) {
+    const recent = reviews.slice(0, 3);
+    reviewsBody.innerHTML = recent.length ? recent.map(r => {
+      const first = String(r.First_Name || '').trim();
+      const sur = String(r.Surname || '').trim();
+      const initials = `${(first[0] || 'U')}${(sur[0] || 'U')}`.toUpperCase();
+      return `
+        <div style="display:flex;gap:0.875rem;align-items:flex-start;margin-bottom:0.875rem;">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:500;flex-shrink:0;">${escHtml(initials)}</div>
+          <div style="flex:1;">
+            <div style="font-size:0.9rem;font-weight:500;">${escHtml(first || 'Anonymous')} ${escHtml((sur[0] || '').toUpperCase())}${sur ? '.' : ''} <span class="text-xs text-muted">· ${escHtml(r.Package_Name || '')}</span></div>
+            <p class="text-sm text-muted" style="margin-top:0.25rem;line-height:1.55;">${escHtml(String(r.Comment || '').slice(0, 160))}</p>
+          </div>
+        </div>
+      `;
+    }).join('') : '<p class="text-muted text-sm">No reviews yet.</p>';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   const user = await checkAuth();
   if (!user) return;
   updateNav(user);
-  updateSidebar(user);
+  const profile = await callAPI({ type: 'GetAgencyProfile' });
+  updateSidebar(user, profile.status === 'success' ? profile.data : null);
   loadDashboard();
 });
 

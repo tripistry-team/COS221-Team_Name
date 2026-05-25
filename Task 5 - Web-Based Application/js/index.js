@@ -13,14 +13,33 @@ function slugify(str) {
     .replace(/^-+|-+$/g, '');
 }
 
-function destinationImage(city, country) {
+function destinationImage(imageUrl, city, country) {
   const a = slugify(city);
   const b = slugify(country);
-  return `url('../assets/images/destinations/${a || b}.jpg'), url('../assets/images/travel-placeholder.svg')`;
+  const fallback = `url('../assets/images/destinations/${a || b}.jpg'), url('../assets/images/travel-placeholder.svg')`;
+  const u = String(imageUrl || '').trim();
+  if (!u) return fallback;
+  const safe = u.replace(/'/g, "\\'");
+  return `url('${safe}'), ${fallback}`;
 }
 
 function packageImage(name) {
   return `url('../assets/images/packages/${slugify(name)}.jpg'), url('../assets/images/travel-placeholder.svg')`;
+}
+
+function packageImageFromDestination(imageUrl, name) {
+  const fallback = packageImage(name);
+  const u = String(imageUrl || '').trim();
+  if (!u) return fallback;
+  const safe = u.replace(/'/g, "\\'");
+  return `url('${safe}'), ${fallback}`;
+}
+
+function formatDuration(duration) {
+  const d = String(duration || '').trim();
+  if (!d) return '-';
+  if (/day/i.test(d)) return d;
+  return `${d} days`;
 }
 
 async function callAPI(payload) {
@@ -106,7 +125,7 @@ async function loadDestinations() {
     const dest = d.City || d.Country;
     return `
       <a href="browse.html?destination=${encodeURIComponent(dest)}" class="dest-card">
-        <div class="dest-card-bg" style="background-image:${destinationImage(d.City || '', d.Country || '')};background-size:cover;background-position:center;"></div>
+        <div class="dest-card-bg" style="background-image:${destinationImage(d.Image_url, d.City || '', d.Country || '')};background-size:cover;background-position:center;"></div>
         <div class="dest-card-overlay"></div>
         <div class="dest-card-info">
           <h3>${escHtml(d.City || d.Country)}</h3>
@@ -122,18 +141,18 @@ function buildPackageCard(pkg) {
     ? `R${parseFloat(pkg.Min_Price).toLocaleString('en-ZA')}`
     : `R${parseFloat(pkg.Base_Price).toLocaleString('en-ZA')}`;
   const rating   = pkg.Avg_Rating ? `${pkg.Avg_Rating} &#9733; (${pkg.Review_Count} reviews)` : 'No reviews yet';
-  const location = pkg.City ? `${pkg.City}, ${pkg.Country}` : (pkg.Country || '');
+  const location = pkg.City ? `${pkg.City}, ${pkg.Country}` : (pkg.Country || 'Destination');
   const agencies = pkg.Agencies || '';
 
   return `
     <a href="package-detail.html?id=${pkg.Package_ID}" class="pkg-card">
-      <div class="pkg-thumb" style="background-image:${packageImage(pkg.Name)};background-size:cover;background-position:center;"></div>
+      <div class="pkg-thumb" style="background-image:${packageImageFromDestination(pkg.Image_url, pkg.Name)};background-size:cover;background-position:center;"></div>
       <div class="pkg-body">
         <div class="pkg-agency">${escHtml(agencies)}</div>
-        <div class="pkg-name">${escHtml(pkg.Name)}</div>
+        <div class="pkg-name">${escHtml(location)}</div>
         <div class="pkg-meta">
-          <span>${escHtml(pkg.Duration)}</span>
-          ${location ? `<span>${escHtml(location)}</span>` : ''}
+          <span>${escHtml(formatDuration(pkg.Duration))}</span>
+          <span>${escHtml(pkg.Name || '')}</span>
         </div>
         <div class="pkg-price">${price} <span>per person</span></div>
         <div style="margin-top:0.375rem;">

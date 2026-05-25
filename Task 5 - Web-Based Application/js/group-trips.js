@@ -7,6 +7,23 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function slugify(str) {
+  return String(str || '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function tripImage(t) {
+  const u = String(t.Image_url || '').trim();
+  const cityOrCountry = t.Country || countryFromName(t.Trip_Name) || 'destination';
+  const fallback = `url('../assets/images/destinations/${slugify(cityOrCountry)}.jpg'), url('../assets/images/travel-placeholder.svg')`;
+  if (!u) return fallback;
+  const safe = u.replace(/'/g, "\\'");
+  return `url('${safe}'), ${fallback}`;
+}
+
 async function callAPI(payload) {
   const res = await fetch(API_URL, {
     method: 'POST',
@@ -49,16 +66,21 @@ function countryFromName(name) {
   return 'Destination';
 }
 
+function tripPrice(t) {
+  const p = Number(t.Min_Price ?? t.Base_Price ?? t.Price_Per_Person ?? 0);
+  return Number.isFinite(p) && p > 0 ? p : 0;
+}
+
 function renderTrips() {
   const grid = document.querySelector('.grid-3');
   if (!grid) return;
 
   const destFilter = (document.getElementById('gt-destination-filter')?.value || 'All destinations').toLowerCase();
   const dateFilter = (document.getElementById('gt-date-filter')?.value || 'Any date').toLowerCase();
-  const sortFilter = (document.getElementById('gt-sort-filter')?.value || 'Sort: Soonest first').toLowerCase();
+  const sortFilter = (document.getElementById('gt-sort-filter')?.value || 'soonest').toLowerCase();
 
   let rows = allTrips.filter(t => {
-    const country = countryFromName(t.Trip_Name).toLowerCase();
+    const country = String(t.Country || countryFromName(t.Trip_Name)).toLowerCase();
     const d = new Date(t.Start_Date);
     const monthLabel = d.toLocaleDateString('en-ZA', { month: 'long', year: 'numeric' }).toLowerCase();
     const matchDest = destFilter === 'all destinations' || country === destFilter;
@@ -69,7 +91,7 @@ function renderTrips() {
   if (sortFilter.includes('spots')) {
     rows = rows.sort((a, b) => (Number(a.Participants_Max) - Number(a.Participants_Current)) - (Number(b.Participants_Max) - Number(b.Participants_Current)));
   } else if (sortFilter.includes('price')) {
-    rows = rows.sort((a, b) => Number(a.Participants_Current) - Number(b.Participants_Current));
+    rows = rows.sort((a, b) => tripPrice(a) - tripPrice(b));
   } else {
     rows = rows.sort((a, b) => new Date(a.Start_Date) - new Date(b.Start_Date));
   }
@@ -87,20 +109,21 @@ function renderTrips() {
     const start = new Date(t.Start_Date).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' });
     const end = new Date(t.End_Date).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' });
     const deadline = t.Join_Deadline ? new Date(t.Join_Deadline).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' }) : '-';
+    const countryLabel = t.Country || countryFromName(t.Trip_Name);
     const joinBtn = !currentUser
       ? `<a href="login.html?redirect=group-trips.html" class="btn btn-primary btn-sm">Log in to join</a>`
       : (currentUser.user_type !== 'traveller'
         ? `<button class="btn btn-sm" disabled>Traveller account required</button>`
-        : `<button class="btn btn-primary btn-sm" onclick="joinTrip(${Number(t.Group_Trip_ID)})">Join trip</button>`);
+        : `<button class="btn btn-primary btn-sm" id="joinBtn" onclick="joinTrip(${Number(t.Group_Trip_ID)})">Join trip</button>`);
     return `
       <div class="gt-card">
-        <div class="gt-thumb"><span class="gt-spots">${spotsLeft} spots left</span></div>
+        <div class="gt-thumb" style="background-image:${tripImage(t)};background-size:cover;background-position:center;"><span class="gt-spots">${spotsLeft} spots left</span></div>
         <div class="gt-body">
           <div class="gt-agency">${escHtml(t.Company_Name || 'Agency')}</div>
-          <div class="gt-name">${escHtml(t.Trip_Name)}</div>
+          <div class="gt-name">${escHtml(countryLabel)}</div>
           <div class="gt-meta">
             <span>${escHtml(start)}-${escHtml(end)}</span>
-            <span>${escHtml(countryFromName(t.Trip_Name))}</span>
+            <span>${escHtml(t.Trip_Name || '')}</span>
             <span>${current}/${max} joined</span>
           </div>
           <div class="progress-bar"><div class="progress-fill" style="width:${fillPct}%;"></div></div>
@@ -110,7 +133,10 @@ function renderTrips() {
           </div>
         </div>
         <div class="gt-footer">
-          <div><div style="font-size:0.9rem;font-weight:500;">Group trip</div><div class="text-xs text-muted">Join with travellers</div></div>
+          <div>
+            <div style="font-size:1.05rem;font-weight:600;">${tripPrice(t) > 0 ? `R${tripPrice(t).toLocaleString('en-ZA')}` : 'Price on request'}</div>
+            <div class="text-xs text-muted">${tripPrice(t) > 0 ? 'per person' : 'contact agency'}</div>
+          </div>
           ${joinBtn}
         </div>
       </div>
@@ -125,6 +151,8 @@ async function joinTrip(groupTripId) {
     return;
   }
   alert('Joined trip successfully.');
+  document.getElementById("joinBtn").textContent = "Joined";
+
   await loadTrips();
 }
 

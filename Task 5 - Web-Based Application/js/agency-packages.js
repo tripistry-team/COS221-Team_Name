@@ -1,4 +1,4 @@
-const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
+﻿const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 
 let currentUser = null;
 let deleteTargetId = null;
@@ -59,6 +59,25 @@ async function handleLogout() {
   window.location.href = 'login.html';
 }
 
+function updateSidebar(profile, user) {
+  const header = document.querySelector('.agency-sidebar-header');
+  if (!header) return;
+  const name = (profile && profile.Company_Name) ? profile.Company_Name : (user && user.username ? user.username : 'Agency');
+  const initial = String(name).charAt(0).toUpperCase();
+  header.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:0.9rem;">${escHtml(initial)}</div>
+      <div><div style="font-weight:500;">${escHtml(name)}</div><div style="font-size:0.8rem;opacity:0.75;">Travel Agency</div></div>
+    </div>
+  `;
+}
+
+function formatDuration(duration) {
+  const d = String(duration || '').trim();
+  if (!d) return '-';
+  if (/day/i.test(d)) return d;
+  return `${d} days`;
+}
 async function loadPackages() {
   const list = document.getElementById('pkg-list');
   if (!list) return;
@@ -91,7 +110,7 @@ function updateCounts() {
   if (tabs[3]) tabs[3].textContent = `Archived (${counts.archived})`;
 
   const summary = document.getElementById('pkg-summary');
-  if (summary) summary.textContent = `${counts.all} packages · ${counts.draft} drafts`;
+  if (summary) summary.textContent = `${counts.all} packages  ${counts.draft} drafts`;
 }
 
 function updateDestinationFilter() {
@@ -161,7 +180,7 @@ function renderPackages() {
   }
 
   list.innerHTML = source.map(pkg => {
-    const rating = pkg.Avg_Rating ? `${pkg.Avg_Rating} ★ (${pkg.Review_Count || 0})` : 'No reviews';
+    const rating = pkg.Avg_Rating ? `${pkg.Avg_Rating}(${pkg.Review_Count || 0})` : 'No reviews';
     const price = `R${parseFloat(pkg.Base_Price || 0).toLocaleString('en-ZA')}`;
     const status = String(pkg.Package_Status || '').toLowerCase();
     const statusClass = status === 'active' ? 'badge-green' : (status === 'draft' ? 'badge-amber' : '');
@@ -170,7 +189,7 @@ function renderPackages() {
         <div class="pkg-row-thumb" style="background-image:${packageImage(pkg.Name)};background-size:cover;background-position:center;"></div>
         <div style="flex:1;min-width:0;">
           <div style="font-weight:500;">${escHtml(pkg.Name)}</div>
-          <div class="text-xs text-muted">${escHtml(pkg.Countries || 'No destination')} · ${escHtml(pkg.Duration)} · ${price}</div>
+          <div class="text-xs text-muted">${escHtml(pkg.Countries || 'No destination')} · ${escHtml(formatDuration(pkg.Duration))} · ${price}</div>
           <div class="text-xs text-muted" style="margin-top:0.25rem;">${rating} · ${Number(pkg.Total_Bookings || 0)} bookings</div>
         </div>
         <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
@@ -234,6 +253,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentUser = await checkAuth();
   if (!currentUser) return;
   updateNav(currentUser);
+  const profile = await callAPI({ type: 'GetAgencyProfile' });
+  if (profile.status === 'success') updateSidebar(profile.data, currentUser);
 
   const tabs = document.querySelectorAll('.tabs .tab');
   if (tabs[0]) tabs[0].onclick = () => setPackageTab('all', tabs[0]);
@@ -252,3 +273,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadPackages();
 });
+
