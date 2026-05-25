@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Packages - Tripistry</title>
+<link rel="stylesheet" href="style.css">
+<script src="../js/browse.js"></script>
+<style>
+.browse-layout { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; align-items: start; }
+.filter-panel { position: sticky; top: calc(var(--nav-h) + 1rem); background: var(--bg); border: 1px solid var(--col-border); border-radius: var(--radius-lg); overflow: hidden; }
+.filter-panel-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--col-border); display: flex; justify-content: space-between; align-items: center; }
+.filter-section { padding: 1.125rem 1.25rem; border-bottom: 1px solid var(--col-border); }
+.filter-section:last-child { border-bottom: none; }
+.filter-section h4 { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--col-faint); margin-bottom: 0.75rem; }
+.check-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; cursor: pointer; }
+.check-item input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
+.check-item label { font-size: 0.9rem; cursor: pointer; }
+.check-item .count { margin-left: auto; font-size: 0.8rem; color: var(--col-faint); }
+.results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
+.active-filters { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+.filter-tag { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.8rem; padding: 0.25rem 0.625rem; background: var(--accent-light); color: var(--accent); border: 1px solid #b8ddc8; border-radius: 999px; cursor: pointer; }
+.filter-tag:hover { background: #d4ebdb; }
+.pkg-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+.pagination { display: flex; gap: 0.375rem; justify-content: center; margin-top: 2rem; }
+.page-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--col-border); border-radius: var(--radius-sm); font-size: 0.875rem; cursor: pointer; background: var(--bg); color: var(--col); }
+.page-btn:hover { background: var(--bg-secondary); }
+.page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.page-btn.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html">Tripistry</a>
+  <div class="nav-links">
+    <a href="browse.html" class="active">Browse</a>
+    <a href="destinations.html">Destinations</a>
+    <a href="compare.html">Compare</a>
+    <a href="group-trips.html">Group Trips</a>
+  </div>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
+  </div>
+</nav>
+<main>
+  <div class="container">
+    <div class="page-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 style="font-size:2rem;">Browse packages</h1>
+          <p class="text-muted mt-1">Find your next trip</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <span class="text-sm text-muted">Sort by:</span>
+          <select style="width:auto;" id="sort-select">
+            <option value="rating_desc">Most popular</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="rating_desc">Highest rated</option>
+            <option value="name_desc">Newest</option>
+            <option value="duration_asc">Duration: shortest</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="browse-layout">
+      <aside class="filter-panel">
+        <div class="filter-panel-header">
+          <span style="font-weight:500;font-size:0.9rem;">Filters</span>
+          <button class="btn btn-ghost btn-sm" id="clear-filters">Clear all</button>
+        </div>
+        <div class="filter-section">
+          <h4>Destination</h4>
+          <input id="dest-search" type="text" placeholder="Search destinations..." style="margin-bottom:0.75rem;">
+          <div class="check-item"><input type="checkbox" id="d1"><label for="d1">Africa</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d2"><label for="d2">Asia</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d3"><label for="d3">Europe</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d4"><label for="d4">North America</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d5"><label for="d5">South America</label><span class="count">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d6"><label for="d6">Oceania</label><span class="count">0</span></div>
+        </div>
+        <div class="filter-section">
+          <h4>Price per person</h4>
+          <input type="range" min="0" max="100000" value="50000" id="price-range" style="width:100%;margin-bottom:0.5rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.8125rem;color:var(--col-muted);">
+            <span>R0</span><span id="price-label">up to R50,000</span>
+          </div>
+        </div>
+        <div class="filter-section">
+          <h4>Duration</h4>
+          <div class="check-item"><input type="checkbox" id="dur1"><label for="dur1">Weekend (1-3 days)</label></div>
+          <div class="check-item"><input type="checkbox" id="dur2"><label for="dur2">Short (4-7 days)</label></div>
+          <div class="check-item"><input type="checkbox" id="dur3"><label for="dur3">Medium (8-14 days)</label></div>
+          <div class="check-item"><input type="checkbox" id="dur4"><label for="dur4">Long (15+ days)</label></div>
+        </div>
+        <div class="filter-section">
+          <h4>Package type</h4>
+          <div class="check-item"><input class="pkg-type-check" value="solo" type="checkbox" id="pt1"><label for="pt1">Solo</label></div>
+          <div class="check-item"><input class="pkg-type-check" value="couple" type="checkbox" id="pt2"><label for="pt2">Couple</label></div>
+          <div class="check-item"><input class="pkg-type-check" value="family" type="checkbox" id="pt3"><label for="pt3">Family</label></div>
+          <div class="check-item"><input class="pkg-type-check" value="group" type="checkbox" id="pt4"><label for="pt4">Group</label></div>
+        </div>
+        <div class="filter-section">
+          <h4>Rating (in stars)</h4>
+          <div class="check-item"><input class="rating-check" value="5" type="checkbox" id="r1"><label for="r1"><span class="stars"></span> 5 only</label></div>
+          <div class="check-item"><input class="rating-check" value="4" type="checkbox" id="r2"><label for="r2"><span class="stars"></span> 4 & up</label></div>
+          <div class="check-item"><input class="rating-check" value="3" type="checkbox" id="r3"><label for="r3"><span class="stars"></span> 3 & up</label></div>
+        </div>
+        <div class="filter-section">
+          <h4>Includes</h4>
+          <div class="check-item"><input type="checkbox" id="inc1"><label for="inc1">Flights</label></div>
+          <div class="check-item"><input type="checkbox" id="inc2"><label for="inc2">Accommodation</label></div>
+          <div class="check-item"><input type="checkbox" id="inc3"><label for="inc3">Transfers</label></div>
+          <div class="check-item"><input type="checkbox" id="inc4"><label for="inc4">Tours & activities</label></div>
+          <div class="check-item"><input type="checkbox" id="inc5"><label for="inc5">Meals</label></div>
+        </div>
+      </aside>
+
+      <div>
+        <div class="results-header">
+          <div>
+            <span class="text-sm text-muted">Showing <strong id="results-count">0</strong> packages</span>
+            <div class="active-filters" id="active-filters" style="margin-top:0.5rem;"></div>
+          </div>
+        </div>
+        <div class="pkg-list" id="pkg-list"></div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <a href="index.html" class="footer-logo">Tripistry</a>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
