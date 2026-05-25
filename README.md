@@ -7,7 +7,7 @@ Tripistry is a travel comparison platform that allows travellers to browse, comp
 - HTML
 - CSS
 - JavaScript
-- MySQL
+- SQL
 
 ## Run the Application
 
