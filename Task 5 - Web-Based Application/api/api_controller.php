@@ -62,7 +62,7 @@ class API {
             return $this->error("Post parameters are missing");
 
         $fname = trim($data["f_name"]);
-        $minit = trim($data["mid_init"]);
+        $minit = trim($data["mid_init"] ?? "");
         $sname = trim($data["s_name"]);
         $email = trim($data["email"]);
         $country = trim($data["country"]);
@@ -274,7 +274,7 @@ class API {
         if (!$feature)
             return $this->error("Post parameters are empty");
 
-        $allowed = ["destination", "flight", "experience", "attraction", "accommodation", "restaurant", "activity"];
+        $allowed = ["destination", "flight", "product_service", "experience", "attraction", "accommodation", "restaurant", "activity"];
         if (!in_array($feature, $allowed)) 
             return $this->error("Invalid feature");
 
@@ -1862,12 +1862,21 @@ class API {
     }
 
     public function getBookings($data) {
-        if (!isset($data["traveller_id"])) 
-            return $this->error("Post parameters are missing");
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
+            return $this->error("Not authenticated", "cred");
 
-        $tID = (int)$data["traveller_id"];
+        $tID = $_SESSION['type_id'];
 
-        $sql = "SELECT * FROM BOOKING WHERE Traveller_ID = ?";
+        if ($_SESSION['user_type'] === "agency") 
+            $sql = "SELECT DISTINCT b.* FROM BOOKING b 
+                    JOIN BOOKING_PACKAGE_OPTION bpo ON b.Booking_ID = bpo.Booking_ID
+                    JOIN PACKAGE_OPTION po ON bpo.Package_ID = po.Package_ID AND bpo.Package_Type = po.Package_Type
+                    JOIN PACKAGE p ON po.Package_ID = p.Package_ID 
+                    JOIN AGENCY_DESIGNS_PACKAGE adp ON p.Package_ID = adp.Package_ID
+                    WHERE adp.Agency_ID = ?";
+        else 
+            $sql = "SELECT * FROM BOOKING WHERE Traveller_ID = ?";
+
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -1877,7 +1886,7 @@ class API {
 
         $result = $stmt->get_result();
         if ($result->num_rows == 0)
-            return $this->error("Invalid traveller id");
+            return $this->error("Invalid type id");
 
         $bookings = [];
         while ($row = $result->fetch_assoc()) {
