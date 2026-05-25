@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -27,12 +27,13 @@
 <nav>
   <a class="nav-logo" href="index.html">Tripistry</a>
   <div class="nav-links">
+    <a href="agency-dashboard.html">Dashboard</a>
     <a href="agency-packages.html" class="active">My Packages</a>
     <a href="agency-group-trips.html">Group Trips</a>
     <a href="agency-bookings.html">Bookings</a>
   </div>
   <div class="nav-actions">
-    <span class="text-sm text-muted"></span>
+    <span class="text-sm text-muted">Wanderlust Co.</span>
     <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
   </div>
 </nav>
@@ -64,23 +65,28 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div>
             <h2>My packages</h2>
-            <p class="text-muted text-sm">28 packages · 4 drafts</p>
+            <p class="text-muted text-sm" id="pkg-summary">0 packages  0 drafts</p>
           </div>
           <a href="agency-package-form.html" class="btn btn-primary">+ New package</a>
         </div>
 
         <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;">
-          <input type="text" placeholder="Search packages…" style="flex:1;min-width:180px;">
-          <select style="width:auto;">
+          <input type="text" id="pkg-search" placeholder="Search packages..." style="flex:1;min-width:180px;">
+          <select id="status-filter" style="width:auto;">
             <option>All statuses</option>
             <option>Active</option>
             <option>Draft</option>
             <option>Archived</option>
           </select>
-          <select style="width:auto;">
+          <select id="destination-filter" style="width:auto;">
             <option>All destinations</option>
-            <option>Japan</option>
-            <option>Europe</option>
+          </select>
+          <select id="sort-filter" style="width:auto;">
+            <option value="name_asc">Name (A-Z)</option>
+            <option value="name_desc">Name (Z-A)</option>
+            <option value="price_asc">Price low-high</option>
+            <option value="price_desc">Price high-low</option>
+            <option value="rating_desc">Top rated</option>
           </select>
         </div>
 
@@ -96,7 +102,7 @@
             <div class="pkg-row-thumb"></div>
             <div style="flex:1;min-width:0;">
               <div style="font-weight:500;margin-bottom:0.2rem;">Tokyo & Kyoto Cultural Immersion</div>
-              <div class="text-xs text-muted">Japan · 10 days · Solo, Couple, Family</div>
+              <div class="text-xs text-muted">Japan Â· 10 days Â· Solo, Couple, Family</div>
               <div style="display:flex;gap:0.625rem;margin-top:0.375rem;align-items:center;flex-wrap:wrap;">
                 <span class="badge badge-green">Active</span>
                 <span class="text-xs text-muted">128 bookings</span>
@@ -115,7 +121,7 @@
             <div class="pkg-row-thumb"></div>
             <div style="flex:1;min-width:0;">
               <div style="font-weight:500;margin-bottom:0.2rem;">Japan Rail Pass: 14-Day Highlights</div>
-              <div class="text-xs text-muted">Japan · 14 days · Solo, Couple, Family</div>
+              <div class="text-xs text-muted">Japan Â· 14 days Â· Solo, Couple, Family</div>
               <div style="display:flex;gap:0.625rem;margin-top:0.375rem;align-items:center;flex-wrap:wrap;">
                 <span class="badge badge-green">Active</span>
                 <span class="text-xs text-muted">311 bookings</span>
@@ -134,7 +140,7 @@
             <div class="pkg-row-thumb"></div>
             <div style="flex:1;min-width:0;">
               <div style="font-weight:500;margin-bottom:0.2rem;">Hokkaido Winter Snow Experience</div>
-              <div class="text-xs text-muted">Japan · 7 days · Solo, Couple</div>
+              <div class="text-xs text-muted">Japan Â· 7 days Â· Solo, Couple</div>
               <div style="display:flex;gap:0.625rem;margin-top:0.375rem;align-items:center;flex-wrap:wrap;">
                 <span class="badge badge-green">Active</span>
                 <span class="text-xs text-muted">67 bookings</span>
@@ -153,7 +159,7 @@
             <div class="pkg-row-thumb"></div>
             <div style="flex:1;min-width:0;">
               <div style="font-weight:500;margin-bottom:0.2rem;">Tokyo Street Food & Culture Deep Dive</div>
-              <div class="text-xs text-muted">Japan · 5 days · Solo, Group</div>
+              <div class="text-xs text-muted">Japan Â· 5 days Â· Solo, Group</div>
               <div style="display:flex;gap:0.625rem;margin-top:0.375rem;align-items:center;flex-wrap:wrap;">
                 <span class="badge badge-amber">Draft</span>
                 <span class="text-xs text-muted">Not published</span>
@@ -169,8 +175,8 @@
           <div class="pkg-row">
             <div class="pkg-row-thumb"></div>
             <div style="flex:1;min-width:0;">
-              <div style="font-weight:500;margin-bottom:0.2rem;">Cherry Blossom Season — Hiroshima</div>
-              <div class="text-xs text-muted">Japan · 6 days · Solo, Couple</div>
+              <div style="font-weight:500;margin-bottom:0.2rem;">Cherry Blossom Season â€” Hiroshima</div>
+              <div class="text-xs text-muted">Japan Â· 6 days Â· Solo, Couple</div>
               <div style="display:flex;gap:0.625rem;margin-top:0.375rem;align-items:center;flex-wrap:wrap;">
                 <span class="badge badge-amber">Draft</span>
                 <span class="text-xs text-muted">Not published</span>
@@ -203,7 +209,7 @@
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
       <a href="index.html" class="footer-logo">Tripistry</a>
-      <span class="text-xs text-faint">Tripistry — Team Name</span>
+      <span class="text-xs text-faint">Tripistry - Team_Name</span>
     </div>
   </div>
 </footer>
@@ -211,4 +217,5 @@
 <script src="../js/agency-packages.js"></script>
 </body>
 </html>
+
 
