@@ -109,9 +109,13 @@
     <a href="compare.html">Compare</a>
     <a href="group-trips.html">Group Trips</a>
   </div>
-  <div class="nav-actions">
-    <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
-    <a href="register.html" class="btn btn-primary btn-sm">Sign up</a>
+  <div class="nav-actions" id="navLoggedOut">
+    <a href="login.html" class="btn btn-ghost btn-sm" id="loginNav">Log in</a>
+    <a href="register.html" class="btn btn-primary btn-sm" id="signupNav">Sign up</a>
+  </div>
+  <div class="nav-actions" id="navLoggedIn">
+    <span class="text-sm text-muted" id="navUsername"></span>
+    <a href="login.html" class="btn btn-ghost btn-sm">Log out</a>
   </div>
 </nav>
 
@@ -146,7 +150,7 @@
         <h2>Popular destinations</h2>
         <a href="destinations.html" class="btn btn-ghost btn-sm">View all →</a>
       </div>
-      <div class="dest-grid">
+      <div class="dest-grid" id="dest-grid">
         <a href="destinations.html#tokyo" class="dest-card">
           <div class="dest-card-bg"></div>
           <div class="dest-card-overlay"></div>
@@ -195,7 +199,7 @@
         <h2>Featured packages</h2>
         <a href="browse.html" class="btn btn-ghost btn-sm">Browse all →</a>
       </div>
-      <div class="grid-3">
+      <div class="grid-3" id="featured-packages">
         <a href="package-detail.html" class="pkg-card">
           <div class="pkg-thumb"></div>
           <div class="pkg-body">
@@ -306,7 +310,7 @@
         <div>
           <div style="font-size:0.8125rem;font-weight:500;margin-bottom:0.75rem;">Agencies</div>
           <div style="display:flex;flex-direction:column;gap:0.4rem;">
-            <a href="agency-login.html" class="text-sm text-muted" style="text-decoration:none;">Agency login</a>
+            <a href="login.html" class="text-sm text-muted" style="text-decoration:none;">Agency login</a>
             <a href="agency-dashboard.html" class="text-sm text-muted" style="text-decoration:none;">Dashboard</a>
           </div>
         </div>
@@ -319,5 +323,9 @@
   </div>
 </footer>
 
+<script src="../js/index.js">
+</script>
+
 </body>
 </html>
+

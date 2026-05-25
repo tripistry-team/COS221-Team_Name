@@ -3,21 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Browse Packages - Tripistry</title>
+<title>Browse - Tripistry</title>
 <link rel="stylesheet" href="style.css">
-
 <style>
 .browse-layout { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; align-items: start; }
 .filter-panel {
   position: sticky; top: calc(var(--nav-h) + 1rem);
-  background: var(--bg);
-  border: 1px solid var(--col-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  background: var(--bg); border: 1px solid var(--col-border);
+  border-radius: var(--radius-lg); overflow: hidden;
 }
 .filter-panel-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--col-border);
+  padding: 1rem 1.25rem; border-bottom: 1px solid var(--col-border);
   display: flex; justify-content: space-between; align-items: center;
 }
 .filter-section { padding: 1.125rem 1.25rem; border-bottom: 1px solid var(--col-border); }
@@ -27,29 +23,48 @@
 .check-item input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
 .check-item label { font-size: 0.9rem; cursor: pointer; }
 .check-item .count { margin-left: auto; font-size: 0.8rem; color: var(--col-faint); }
-.price-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; }
 .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
 .active-filters { display: flex; flex-wrap: wrap; gap: 0.375rem; }
 .filter-tag {
   display: inline-flex; align-items: center; gap: 0.375rem;
   font-size: 0.8rem; padding: 0.25rem 0.625rem;
   background: var(--accent-light); color: var(--accent);
-  border: 1px solid #b8ddc8; border-radius: 999px;
-  cursor: pointer;
+  border: 1px solid #b8ddc8; border-radius: 999px; cursor: pointer;
 }
-.filter-tag:hover { background: #d4ebdb; }
 .pkg-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
 .pagination { display: flex; gap: 0.375rem; justify-content: center; margin-top: 2rem; }
 .page-btn {
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
   border: 1px solid var(--col-border); border-radius: var(--radius-sm);
   font-size: 0.875rem; cursor: pointer; background: var(--bg);
-  text-decoration: none; color: var(--col);
-  transition: all 0.12s;
+  text-decoration: none; color: var(--col); transition: all 0.12s;
 }
 .page-btn:hover { background: var(--bg-secondary); }
 .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.category-tabs { display: flex; gap: 0.375rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.category-tab {
+  font-size: 0.875rem; font-weight: 500; padding: 0.5rem 1.125rem;
+  border: 1px solid var(--col-border); border-radius: 999px;
+  cursor: pointer; background: var(--bg); color: var(--col-muted);
+  transition: all 0.15s;
+}
+.category-tab:hover { border-color: var(--col-border-strong); color: var(--col); }
+.category-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+/* Generic result card for non-package categories */
+.result-card {
+  border: 1px solid var(--col-border); border-radius: var(--radius-lg);
+  overflow: hidden; transition: box-shadow 0.2s, transform 0.2s;
+  text-decoration: none; color: inherit; display: block; background: var(--bg);
+}
+.result-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.09); transform: translateY(-2px); }
+.result-thumb { height: 160px; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; }
+.result-body { padding: 1rem 1.125rem; }
+.result-category { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--col-faint); margin-bottom: 0.25rem; }
+.result-name { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+.result-meta { font-size: 0.8125rem; color: var(--col-muted); }
+
+.empty-state { text-align: center; padding: 4rem 2rem; }
+.empty-state h3 { margin-bottom: 0.5rem; }
 </style>
 </head>
 <body>
@@ -73,21 +88,29 @@
     <div class="page-header">
       <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
         <div>
-          <h1 style="font-size:2rem;">Browse packages</h1>
-          <p class="text-muted mt-1">1,247 packages across 85 destinations</p>
+          <h1 style="font-size:2rem;">Browse</h1>
+          <p class="text-muted mt-1" id="results-subtitle">Loading...</p>
         </div>
         <div style="display:flex;gap:0.5rem;align-items:center;">
           <span class="text-sm text-muted">Sort by:</span>
-          <select style="width:auto;">
-            <option>Most popular</option>
-            <option>Price: low to high</option>
-            <option>Price: high to low</option>
-            <option>Highest rated</option>
-            <option>Newest</option>
-            <option>Duration: shortest</option>
+          <select style="width:auto;" id="sort-select">
+            <option value="popular">Most popular</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="rating">Highest rated</option>
+            <option value="newest">Newest</option>
           </select>
         </div>
       </div>
+    </div>
+
+    <div class="category-tabs">
+      <button class="category-tab active" onclick="setCategory('packages', this)">Packages</button>
+      <button class="category-tab" onclick="setCategory('flights', this)">Flights</button>
+      <button class="category-tab" onclick="setCategory('accommodation', this)">Accommodation</button>
+      <button class="category-tab" onclick="setCategory('attractions', this)">Attractions</button>
+      <button class="category-tab" onclick="setCategory('restaurants', this)">Restaurants</button>
+      <button class="category-tab" onclick="setCategory('activities', this)">Activities</button>
     </div>
 
     <div class="browse-layout">
@@ -98,170 +121,234 @@
         </div>
 
         <div class="filter-section">
-          <h4>Destination</h4>
-          <input type="text" placeholder="Search destinations…" style="margin-bottom:0.75rem;">
-          <div class="check-item"><input type="checkbox" id="d1" checked><label for="d1">Japan</label><span class="count">48</span></div>
-          <div class="check-item"><input type="checkbox" id="d2"><label for="d2">Greece</label><span class="count">31</span></div>
-          <div class="check-item"><input type="checkbox" id="d3"><label for="d3">South Africa</label><span class="count">27</span></div>
-          <div class="check-item"><input type="checkbox" id="d4"><label for="d4">Indonesia</label><span class="count">39</span></div>
-          <div class="check-item"><input type="checkbox" id="d5"><label for="d5">France</label><span class="count">52</span></div>
-          <div class="check-item"><input type="checkbox" id="d6"><label for="d6">Thailand</label><span class="count">44</span></div>
-          <button class="btn btn-ghost btn-sm" style="margin-top:0.5rem;">Show more</button>
+          <h4>Continent</h4>
+          <input id="dest-search" type="text" placeholder="Search..." style="margin-bottom:0.75rem;">
+          <div class="check-item"><input type="checkbox" id="d1"><label for="d1">Africa</label><span class="count" id="count-africa">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d2"><label for="d2">Asia</label><span class="count" id="count-asia">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d3"><label for="d3">Europe</label><span class="count" id="count-europe">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d4"><label for="d4">North America</label><span class="count" id="count-namerica">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d5"><label for="d5">South America</label><span class="count" id="count-samerica">0</span></div>
+          <div class="check-item"><input type="checkbox" id="d6"><label for="d6">Oceania</label><span class="count" id="count-oceania">0</span></div>
         </div>
 
-        <div class="filter-section">
-          <h4>Price per person</h4>
-          <input type="range" min="0" max="100000" value="50000" id="price-range" style="width:100%;margin-bottom:0.5rem;">
-          <div style="display:flex;justify-content:space-between;font-size:0.8125rem;color:var(--col-muted);">
-            <span>R0</span><span id="price-label">up to R50,000</span>
+        <div id="pkg-filters">
+          <div class="filter-section">
+            <h4>Price per person</h4>
+            <input type="range" min="0" max="100000" value="100000" id="price-range" style="width:100%;margin-bottom:0.5rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.8125rem;color:var(--col-muted);">
+              <span>R0</span><span id="price-label">up to R100,000</span>
+            </div>
+          </div>
+          <div class="filter-section">
+            <h4>Duration</h4>
+            <div class="check-item"><input type="checkbox" id="dur1"><label for="dur1">Weekend (1-3 days)</label></div>
+            <div class="check-item"><input type="checkbox" id="dur2"><label for="dur2">Short (4-7 days)</label></div>
+            <div class="check-item"><input type="checkbox" id="dur3"><label for="dur3">Medium (8-14 days)</label></div>
+            <div class="check-item"><input type="checkbox" id="dur4"><label for="dur4">Long (15+ days)</label></div>
+          </div>
+          <div class="filter-section">
+            <h4>Package type</h4>
+            <div class="check-item"><input class="pkg-type-check" value="solo" type="checkbox" id="pt1"><label for="pt1">Solo</label></div>
+            <div class="check-item"><input class="pkg-type-check" value="couple" type="checkbox" id="pt2"><label for="pt2">Couple</label></div>
+            <div class="check-item"><input class="pkg-type-check" value="family" type="checkbox" id="pt3"><label for="pt3">Family</label></div>
+            <div class="check-item"><input class="pkg-type-check" value="group" type="checkbox" id="pt4"><label for="pt4">Group</label></div>
+          </div>
+          <div class="filter-section">
+            <h4>Rating</h4>
+            <div class="check-item"><input class="rating-check" value="5" type="checkbox" id="r1"><label for="r1">5 stars only</label></div>
+            <div class="check-item"><input class="rating-check" value="4" type="checkbox" id="r2"><label for="r2">4 stars and up</label></div>
+            <div class="check-item"><input class="rating-check" value="3" type="checkbox" id="r3"><label for="r3">3 stars and up</label></div>
           </div>
         </div>
 
-        <div class="filter-section">
-          <h4>Duration</h4>
-          <div class="check-item"><input type="checkbox" id="dur1"><label for="dur1">Weekend (1-3 days)</label></div>
-          <div class="check-item"><input type="checkbox" id="dur2" checked><label for="dur2">Short (4-7 days)</label></div>
-          <div class="check-item"><input type="checkbox" id="dur3" checked><label for="dur3">Medium (8-14 days)</label></div>
-          <div class="check-item"><input type="checkbox" id="dur4"><label for="dur4">Long (15+ days)</label></div>
+        <div id="flight-filters" style="display:none;">
+          <div class="filter-section">
+            <h4>Seat class</h4>
+            <div class="check-item"><input type="checkbox" id="sc1"><label for="sc1">Economy</label></div>
+            <div class="check-item"><input type="checkbox" id="sc2"><label for="sc2">Premium Economy</label></div>
+            <div class="check-item"><input type="checkbox" id="sc3"><label for="sc3">Business</label></div>
+            <div class="check-item"><input type="checkbox" id="sc4"><label for="sc4">First</label></div>
+          </div>
+          <div class="filter-section">
+            <h4>Max price (R)</h4>
+            <input type="range" min="0" max="50000" value="50000" id="flight-price-range" style="width:100%;margin-bottom:0.5rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.8125rem;color:var(--col-muted);">
+              <span>R0</span><span id="flight-price-label">up to R50,000</span>
+            </div>
+          </div>
         </div>
 
-        <div class="filter-section">
-          <h4>Package type</h4>
-          <div class="check-item"><input type="checkbox" id="pt1" checked><label for="pt1">Solo</label></div>
-          <div class="check-item"><input type="checkbox" id="pt2" checked><label for="pt2">Couple</label></div>
-          <div class="check-item"><input type="checkbox" id="pt3"><label for="pt3">Family</label></div>
-          <div class="check-item"><input type="checkbox" id="pt4"><label for="pt4">Group</label></div>
+        <div id="accommodation-filters" style="display:none;">
+          <div class="filter-section">
+            <h4>Star rating</h4>
+            <div class="check-item"><input type="checkbox" id="star5"><label for="star5">5 stars</label></div>
+            <div class="check-item"><input type="checkbox" id="star4"><label for="star4">4 stars</label></div>
+            <div class="check-item"><input type="checkbox" id="star3"><label for="star3">3 stars</label></div>
+          </div>
+          <div class="filter-section">
+            <h4>Max price per night (R)</h4>
+            <input type="range" min="0" max="10000" value="10000" id="accom-price-range" style="width:100%;margin-bottom:0.5rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.8125rem;color:var(--col-muted);">
+              <span>R0</span><span id="accom-price-label">up to R10,000</span>
+            </div>
+          </div>
         </div>
 
-        <div class="filter-section">
-          <h4>Rating (in stars)</h4>
-          <div class="check-item"><input type="checkbox" id="r1"><label for="r1"><span class="stars"></span> 5 only</label></div>
-          <div class="check-item"><input type="checkbox" id="r2" checked><label for="r2"><span class="stars"></span> 4 & up</label></div>
-          <div class="check-item"><input type="checkbox" id="r3"><label for="r3"><span class="stars"></span> 3 & up</label></div>
-        </div>
-
-        <div class="filter-section">
-          <h4>Includes</h4>
-          <div class="check-item"><input type="checkbox" id="inc1" checked><label for="inc1">Flights</label></div>
-          <div class="check-item"><input type="checkbox" id="inc2"><label for="inc2">Accommodation</label></div>
-          <div class="check-item"><input type="checkbox" id="inc3"><label for="inc3">Transfers</label></div>
-          <div class="check-item"><input type="checkbox" id="inc4"><label for="inc4">Tours & activities</label></div>
-          <div class="check-item"><input type="checkbox" id="inc5"><label for="inc5">Meals</label></div>
+        <div id="availability-filter" style="display:none;">
+          <div class="filter-section">
+            <h4>Availability</h4>
+            <div class="check-item"><input type="checkbox" id="av1" checked><label for="av1">Available</label></div>
+            <div class="check-item"><input type="checkbox" id="av2"><label for="av2">Unavailable</label></div>
+          </div>
         </div>
       </aside>
 
       <div>
         <div class="results-header">
           <div>
-            <span class="text-sm text-muted">Showing <strong>312</strong> packages</span>
-            <div class="active-filters" style="margin-top:0.5rem;">
-              <span class="filter-tag">Japan ✕</span>
-              <span class="filter-tag">4-7 days ✕</span>
-              <span class="filter-tag">8-14 days ✕</span>
-              <span class="filter-tag">Includes flights ✕</span>
-            </div>
-          </div>
-          <div style="display:flex;gap:0.375rem;">
-            <button class="btn btn-sm" title="Grid view">⊞</button>
-            <button class="btn btn-sm btn-primary" title="List view">☰</button>
+            <span class="text-sm text-muted">Showing <strong id="results-count">0</strong> results</span>
+            <div class="active-filters" id="active-filters" style="margin-top:0.5rem;"></div>
           </div>
         </div>
 
-        <div class="pkg-list">
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Wanderlust Co.</div>
-              <div class="pkg-name">Tokyo & Kyoto Cultural Immersion</div>
-              <div class="pkg-meta"><span> 10 days</span><span> Flights incl.</span><span> 4 star hotels</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge badge-green">Family</span><span class="badge">Couple</span></div>
-              <div class="pkg-price">R18,500 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.9 (128)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
+        <!-- Packages - needs integration from db -->
+        <div id="view-packages">
+          <div class="pkg-list" id="pkg-list">
+            <!-- PHP: foreach package as pkg -->
+            <!-- <a href="package-detail.php?id={pkg.Package_ID}" class="pkg-card"> -->
+            <!--   <div class="pkg-thumb"></div> -->
+            <!--   <div class="pkg-body"> -->
+            <!--     <div class="pkg-agency">{pkg.Agency_Name}</div> -->
+            <!--     <div class="pkg-name">{pkg.Name}</div> -->
+            <!--     <div class="pkg-meta"><span>{pkg.Duration} days</span></div> -->
+            <!--     <div class="pkg-price">R{pkg.Base_Price} <span>per person</span></div> -->
+            <!--   </div> -->
+            <!-- </a> -->
+            <!-- PHP: endforeach -->
+            <div class="empty-state" style="grid-column:span 2;">
+              <h3>No packages found</h3>
+              <p class="text-muted">Results will load from the database.</p>
             </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Horizon Trails</div>
-              <div class="pkg-name">Hokkaido Winter Snow Experience</div>
-              <div class="pkg-meta"><span> 7 days</span><span> Flights incl.</span><span> Ski pass</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge">Couple</span></div>
-              <div class="pkg-price">R21,000 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.8 (67)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Eastern Routes</div>
-              <div class="pkg-name">Ancient Temples of Nara & Osaka</div>
-              <div class="pkg-meta"><span> 5 days</span><span> Rail pass</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge badge-green">Group</span></div>
-              <div class="pkg-price">R12,800 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.6 (203)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Sakura Journeys</div>
-              <div class="pkg-name">Cherry Blossom Season in Hiroshima</div>
-              <div class="pkg-meta"><span> 6 days</span><span> Flights incl.</span><span> Seasonal</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge badge-amber">Limited slots</span></div>
-              <div class="pkg-price">R16,400 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">5.0 (44)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Wanderlust Co.</div>
-              <div class="pkg-name">Japan Rail Pass: 14-Day Highlights</div>
-              <div class="pkg-meta"><span> 14 days</span><span> JR Pass incl.</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge">Couple</span><span class="badge">Family</span></div>
-              <div class="pkg-price">R28,900 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.7 (311)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
-          <a href="package-detail.html" class="pkg-card">
-            <div class="pkg-thumb"></div>
-            <div class="pkg-body">
-              <div class="pkg-agency">Asia Authentic</div>
-              <div class="pkg-name">Tokyo Street Food & Culture Deep Dive</div>
-              <div class="pkg-meta"><span> 5 days</span><span> Food tours</span></div>
-              <div style="display:flex;gap:0.375rem;margin-top:0.5rem;"><span class="badge">Solo</span><span class="badge badge-green">Group</span></div>
-              <div class="pkg-price">R11,200 <span>per person</span></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.375rem;">
-                <div style="display:flex;align-items:center;gap:0.375rem;"><span class="stars"></span><span class="text-sm text-muted">4.9 (89)</span></div>
-                <button class="btn btn-primary btn-sm" onclick="event.preventDefault();">Book</button>
-              </div>
-            </div>
-          </a>
+          </div>
         </div>
 
-        <div class="pagination">
-          <a href="#" class="page-btn"></a>
+        <!-- Flights grid - needs integration from db -->
+        <div id="view-flights" style="display:none;">
+          <div class="pkg-list" id="flight-list">
+            <!-- PHP: foreach flight as flight -->
+            <!-- <div class="result-card"> -->
+            <!--   <div class="result-thumb"></div> -->
+            <!--   <div class="result-body"> -->
+            <!--     <div class="result-category">Flight</div> -->
+            <!--     <div class="result-name">{flight.Airline} · {flight.Flight_Number}</div> -->
+            <!--     <div class="result-meta">{flight.Departure_Airport} to {flight.Arrival_Airport}</div> -->
+            <!--     <div class="result-meta">{flight.Departure_DateTime} · {flight.Seat_Class}</div> -->
+            <!--     <div style="font-weight:700;margin-top:0.5rem;">R{flight.Price}</div> -->
+            <!--     <div class="text-xs text-muted">{flight.Available_Seats} seats available</div> -->
+            <!--   </div> -->
+            <!-- </div> -->
+            <!-- PHP: endforeach -->
+            <div class="empty-state" style="grid-column:span 2;">
+              <h3>No flights found</h3>
+              <p class="text-muted">Results will load from the database.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accommodation grid - needs integration from db -->
+        <div id="view-accommodation" style="display:none;">
+          <div class="pkg-list" id="accommodation-list">
+            <!-- PHP: foreach accommodation as accom -->
+            <!-- <div class="result-card"> -->
+            <!--   <div class="result-thumb"></div> -->
+            <!--   <div class="result-body"> -->
+            <!--     <div class="result-category">Accommodation</div> -->
+            <!--     <div class="result-name">{accom.Name}</div> -->
+            <!--     <div class="result-meta">{accom.Star_Rating} stars · {accom.Destination}</div> -->
+            <!--     <div style="font-weight:700;margin-top:0.5rem;">R{accom.Price_Per_Night} <span style="font-weight:400;color:var(--col-muted);font-size:0.8rem;">/ night</span></div> -->
+            <!--   </div> -->
+            <!-- </div> -->
+            <!-- PHP: endforeach -->
+            <div class="empty-state" style="grid-column:span 2;">
+              <h3>No accommodation found</h3>
+              <p class="text-muted">Results will load from the database.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attractions grid - needs integration from db -->
+        <div id="view-attractions" style="display:none;">
+          <div class="pkg-list" id="attractions-list">
+            <!-- PHP: foreach attraction as attr -->
+            <!-- <div class="result-card"> -->
+            <!--   <div class="result-thumb"></div> -->
+            <!--   <div class="result-body"> -->
+            <!--     <div class="result-category">Attraction</div> -->
+            <!--     <div class="result-name">{attr.Name}</div> -->
+            <!--     <div class="result-meta">{attr.Attraction_Type} · {attr.Destination}</div> -->
+            <!--     <div class="result-meta">Entry: R{attr.Entry_Fee}</div> -->
+            <!--     <div class="result-meta">{attr.Opening_Hours}</div> -->
+            <!--     <span class="badge {attr.Availability_Status == 'available' ? 'badge-green' : 'badge-red'}">{attr.Availability_Status}</span> -->
+            <!--   </div> -->
+            <!-- </div> -->
+            <!-- PHP: endforeach -->
+            <div class="empty-state" style="grid-column:span 2;">
+              <h3>No attractions found</h3>
+              <p class="text-muted">Results will load from the database.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Restaurants grid - needs integration from db -->
+        <div id="view-restaurants" style="display:none;">
+          <div class="pkg-list" id="restaurants-list">
+            <!-- PHP: foreach restaurant as rest -->
+            <!-- <div class="result-card"> -->
+            <!--   <div class="result-thumb"></div> -->
+            <!--   <div class="result-body"> -->
+            <!--     <div class="result-category">Restaurant</div> -->
+            <!--     <div class="result-name">{rest.Name}</div> -->
+            <!--     <div class="result-meta">{rest.Cuisine_Type} · {rest.Destination}</div> -->
+            <!--     <div class="result-meta">Price range: {rest.Price_Range}</div> -->
+            <!--     <div class="result-meta">{rest.Opening_Hours}</div> -->
+            <!--     <span class="badge {rest.Availability_Status == 'available' ? 'badge-green' : 'badge-red'}">{rest.Availability_Status}</span> -->
+            <!--   </div> -->
+            <!-- </div> -->
+            <!-- PHP: endforeach -->
+            <div class="empty-state" style="grid-column:span 2;">
+              <h3>No restaurants found</h3>
+              <p class="text-muted">Results will load from the database.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activities grid - needs integration from db -->
+        <div id="view-activities" style="display:none;">
+          <div class="pkg-list" id="activities-list">
+            <!-- PHP: foreach activity as act -->
+            <!-- <div class="result-card"> -->
+            <!--   <div class="result-thumb"></div> -->
+            <!--   <div class="result-body"> -->
+            <!--     <div class="result-category">Activity</div> -->
+            <!--     <div class="result-name">{act.Name}</div> -->
+            <!--     <div class="result-meta">{act.Activity_Type} · {act.Destination}</div> -->
+            <!--     <div class="result-meta">Duration: {act.Duration}</div> -->
+            <!--     <div class="result-meta">Price range: {act.Price_Range}</div> -->
+            <!--     <span class="badge {act.Availability_Status == 'available' ? 'badge-green' : 'badge-red'}">{act.Availability_Status}</span> -->
+            <!--   </div> -->
+            <!-- </div> -->
+            <!-- PHP: endforeach -->
+            <div class="empty-state" style="grid-column:span 2;">
+              <h3>No activities found</h3>
+              <p class="text-muted">Results will load from the database.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pagination" id="pagination">
+          <a href="#" class="page-btn">&#8249;</a>
           <a href="#" class="page-btn active">1</a>
-          <a href="#" class="page-btn">2</a>
-          <a href="#" class="page-btn">3</a>
-          <span class="page-btn" style="border:none;cursor:default;">…</span>
-          <a href="#" class="page-btn">26</a>
-          <a href="#" class="page-btn">></a>
+          <a href="#" class="page-btn">&#8250;</a>
         </div>
       </div>
     </div>
@@ -272,21 +359,59 @@
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
       <a href="index.html" class="footer-logo">Tripistry</a>
-      <span class="text-xs text-faint">Tripistry — Team Name</span>
+      <span class="text-xs text-faint">Tripistry - Team Name</span>
     </div>
   </div>
 </footer>
 
 <script>
-const priceRange = document.getElementById('price-range');
-const priceLabel = document.getElementById('price-label');
-priceRange.addEventListener('input', () => {
-  const v = parseInt(priceRange.value).toLocaleString('en-ZA');
-  priceLabel.textContent = `up to R${v}`;
+let activeCategory = 'packages';
+
+const categoryViews = {
+  packages:      'view-packages',
+  flights:       'view-flights',
+  accommodation: 'view-accommodation',
+  attractions:   'view-attractions',
+  restaurants:   'view-restaurants',
+  activities:    'view-activities'
+};
+
+const categorySubtitles = {
+  packages:      'Packages across all destinations',
+  flights:       'Available flights',
+  accommodation: 'Hotels and accommodation',
+  attractions:   'Tourist attractions',
+  restaurants:   'Restaurants',
+  activities:    'Activities'
+};
+
+function setCategory(cat, btn) {
+  activeCategory = cat;
+  document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  Object.values(categoryViews).forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById(categoryViews[cat]).style.display = 'block';
+  document.getElementById('results-subtitle').textContent = categorySubtitles[cat];
+
+  document.getElementById('pkg-filters').style.display           = cat === 'packages' ? 'block' : 'none';
+  document.getElementById('flight-filters').style.display        = cat === 'flights' ? 'block' : 'none';
+  document.getElementById('accommodation-filters').style.display = cat === 'accommodation' ? 'block' : 'none';
+  document.getElementById('availability-filter').style.display   = ['attractions','restaurants','activities'].includes(cat) ? 'block' : 'none';
+}
+
+document.getElementById('price-range').addEventListener('input', function() {
+  document.getElementById('price-label').textContent = 'up to R' + parseInt(this.value).toLocaleString('en-ZA');
 });
+document.getElementById('flight-price-range').addEventListener('input', function() {
+  document.getElementById('flight-price-label').textContent = 'up to R' + parseInt(this.value).toLocaleString('en-ZA');
+});
+document.getElementById('accom-price-range').addEventListener('input', function() {
+  document.getElementById('accom-price-label').textContent = 'up to R' + parseInt(this.value).toLocaleString('en-ZA');
+});
+
 document.getElementById('clear-filters').addEventListener('click', () => {
   document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb => cb.checked = false);
-  document.querySelectorAll('.filter-tag').forEach(t => t.remove());
+  document.getElementById('active-filters').innerHTML = '';
 });
 </script>
 </body>
