@@ -1,4 +1,4 @@
-const API_URL = 'api/api.php';
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 const COMPARE_KEY = 'tripistry_compare_ids';
 
 //Utilities
@@ -425,7 +425,8 @@ async function handleBooking(packageId) {
   const selected = document.querySelector('.option-card.selected');
   if (!selected) { alert('Please select a package type.'); return; }
 
-  const pkg_type   = selected.dataset.type;
+  // CHANGED: normalize package type casing for API/table matching.
+  const pkg_type   = String(selected.dataset.type || '').trim().toLowerCase();
   const paxSelect = document.querySelector('.booking-panel-body select');
   const num_people = parseInt(paxSelect?.value || selected.dataset.minPax || '1', 10);
   const price_per  = parseFloat(selected.dataset.price) || 0;
@@ -462,7 +463,7 @@ async function handleBooking(packageId) {
   if (res2.status === 'success') {
     alert(`Booking confirmed! Total: R${total.toLocaleString('en-ZA')}`);
   } else {
-    alert(`Booking partially failed: ${res2.message}`);
+    alert(`Booking failed while linking package option: ${res2.message}`);
   }
 }
 
@@ -515,10 +516,8 @@ async function submitReview(packageId, pkg_type) {
     type: 'AddFeedback',
     rating: rating,
     comment: comment || '',
-    traveller_ID: currentUser.type_id,
-    package_ID: packageId,
-    package_Type: pkg_type,
-    user_type: 'traveller'
+    package_id: packageId,
+    package_type: pkg_type
   });
 
   if (res.status === 'success') {

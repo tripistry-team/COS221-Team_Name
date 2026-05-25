@@ -67,7 +67,10 @@ class API {
         $email = trim($data["email"]);
         $country = trim($data["country"]);
 
-        if (!$fname || !$minit || !$sname || !$email || !$country)
+        // CHANGED: Major mistake note from supplied controller:
+        // `mid_init` is optional in req.json, but original check required it.
+        // Keeping behavior compatible by not requiring middle initial.
+        if (!$fname || !$sname || !$email || !$country)
             return $this->error("Post parameters are empty");
 
         if (!preg_match("/^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i", $email))
@@ -311,6 +314,7 @@ class API {
                 p.Base_Price,
                 p.Duration,
                 p.Package_Status,
+                MAX(a.Company_Name) AS Company_Name,
                 GROUP_CONCAT(DISTINCT a.Company_Name ORDER BY a.Company_Name SEPARATOR ', ') AS Agencies,
                 d.Country,
                 d.City,
@@ -886,18 +890,20 @@ class API {
         $price = (float)$data["base_price"];
         $duration = (int)$data["duration"];
         $status = $data["status"];
+        // CHANGED: PACKAGE table requires Agency_ID; use authenticated agency.
+        $agency_id = (int)($_SESSION['type_id'] ?? 0);
 
         if (!$name || !$description)
             return $this->error("Post parameters are empty");
 
         //===
 
-        $sql = "INSERT INTO PACKAGE (Name, Description, Base_Price, Duration, Package_Status) 
-                VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO PACKAGE (Agency_ID, Name, Description, Base_Price, Duration, Package_Status) 
+                VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
-        $stmt->bind_param("ssdis", $name, $description, $price, $duration, $status);
+        $stmt->bind_param("issdis", $agency_id, $name, $description, $price, $duration, $status);
         if (!$stmt->execute()) 
             return $this->error("Insert failed", "db");
 
@@ -1203,7 +1209,8 @@ class API {
         if ($_SESSION['user_type'] !== "traveller")
             return $this->error("Invalid user type", "fbdn");
 
-        if (!isset($data["date"], $data["status"], $data["num_people"], $data["total_price"], $data["traveller_id"]))
+        // CHANGED: Task 5 BOOKING requires package linkage fields.
+        if (!isset($data["date"], $data["status"], $data["num_people"], $data["total_price"], $data["traveller_id"], $data["package_id"], $data["package_type"]))
                 return $this->error("Post parameters are missing");
 
         $allowed = ["pending", "confirmed", "cancelled", "completed"];
@@ -1215,8 +1222,10 @@ class API {
         $num_people = (int)$data["num_people"];
         $price = (float)$data["total_price"];
         $traveller_id = (int)$data["traveller_id"];
+        $package_id = (int)$data["package_id"];
+        $package_type = strtolower(trim((string)$data["package_type"]));
 
-        if (!$status || !$date)
+        if (!$status || !$date || $package_id <= 0 || $package_type === '')
             return $this->error("Post parameters are empty");
 
         $sql = "SELECT Traveller_ID FROM TRAVELLER WHERE Traveller_ID = ?";        
@@ -1233,12 +1242,12 @@ class API {
 
         //===
 
-        $sql = "INSERT INTO Booking (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID) 
-                VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO BOOKING (Booking_Date, Booking_Status, Number_Of_People, Total_Price, Traveller_ID, Package_ID, Package_Type) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
-        $stmt->bind_param("ssidi", $date, $status, $num_people, $price, $traveller_id);
+        $stmt->bind_param("ssidiis", $date, $status, $num_people, $price, $traveller_id, $package_id, $package_type);
         if (!$stmt->execute()) 
             return $this->error("Insert failed", "db");
 
@@ -1362,7 +1371,9 @@ class API {
         if (!isset($_SESSION['user_id'], $_SESSION['user_type'])) 
             return $this->error("Not authenticated", "cred");
 
-        if ($_SESSION['user_type'] !== "agency")
+        // CHANGED: Major mistake note from supplied controller:
+        // user_type should be `agency_staff`, not `agency`.
+        if ($_SESSION['user_type'] !== "agency_staff")
             return $this->error("Invalid user type", "fbdn");
 
         if (!isset($data["name"], $data["start_date"], $data["end_date"], $data["join_deadline"],
@@ -1394,9 +1405,10 @@ class API {
         
         //===
 
+        // CHANGED: create trips as open so they are discoverable on public group trips immediately.
         $sql = "INSERT INTO GROUP_TRIP 
                 (Trip_Name, Start_Date, End_Date, Join_Deadline, Participants_Min, Participants_Max, Participants_Current, Trip_Status, Agency_ID) 
-                VALUES (?, ?, ?, ?, ?, ?, 0, 'planned', ?)";
+                VALUES (?, ?, ?, ?, ?, ?, 0, 'open', ?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) 
             return $this->error("Connection failed", "db");
@@ -1867,7 +1879,7 @@ class API {
 
         $tID = $_SESSION['type_id'];
 
-        if ($_SESSION['user_type'] === "agency") 
+        if ($_SESSION['user_type'] === "agency_staff") 
             $sql = "SELECT DISTINCT b.* FROM BOOKING b 
                     JOIN BOOKING_PACKAGE_OPTION bpo ON b.Booking_ID = bpo.Booking_ID
                     JOIN PACKAGE_OPTION po ON bpo.Package_ID = po.Package_ID AND bpo.Package_Type = po.Package_Type
@@ -1962,6 +1974,544 @@ class API {
                 "products_services" => $products_services
             ]
         ];
+    }
+
+
+    
+    // these are functions that were not included
+    // CHANGED: Added compatibility endpoints required by Task 5 JavaScript files.
+
+    public function getTravellerBookings($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+
+        $traveller_id = (int)$_SESSION['type_id'];
+        // CHANGED: align with current schema using BOOKING_PACKAGE_OPTION + AGENCY_DESIGNS_PACKAGE.
+        $sql = "SELECT b.Booking_ID, b.Booking_Date, b.Booking_Status, b.Number_Of_People, b.Total_Price,
+                       p.Name, p.Package_ID, a.Company_Name
+                FROM BOOKING b
+                LEFT JOIN BOOKING_PACKAGE_OPTION bpo ON bpo.Booking_ID = b.Booking_ID
+                LEFT JOIN PACKAGE p ON p.Package_ID = bpo.Package_ID
+                LEFT JOIN AGENCY_DESIGNS_PACKAGE adp ON adp.Package_ID = p.Package_ID
+                LEFT JOIN AGENCY a ON a.Agency_ID = adp.Agency_ID
+                WHERE b.Traveller_ID = ?
+                ORDER BY b.Booking_Date DESC, b.Booking_ID DESC";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        $rows = [];
+        while ($row = $result->fetch_assoc()) $rows[] = $row;
+
+        // CHANGED: include joined group trips in traveller bookings list.
+        $this->conn->query("CREATE TABLE IF NOT EXISTS GROUP_TRIP_PARTICIPANT (
+            Group_Trip_ID INT NOT NULL,
+            Traveller_ID INT NOT NULL,
+            Joined_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (Group_Trip_ID, Traveller_ID)
+        )");
+        $sqlGt = "SELECT CONCAT('GT-', gtp.Group_Trip_ID) AS Booking_ID,
+                         DATE(gtp.Joined_At) AS Booking_Date,
+                         CASE
+                           WHEN gt.Trip_Status = 'cancelled' THEN 'cancelled'
+                           WHEN gt.Trip_Status = 'completed' THEN 'completed'
+                           ELSE 'confirmed'
+                         END AS Booking_Status,
+                         1 AS Number_Of_People,
+                         0 AS Total_Price,
+                         gt.Trip_Name AS Name,
+                         a.Company_Name,
+                         NULL AS Package_ID
+                  FROM GROUP_TRIP_PARTICIPANT gtp
+                  JOIN GROUP_TRIP gt ON gt.Group_Trip_ID = gtp.Group_Trip_ID
+                  JOIN AGENCY a ON a.Agency_ID = gt.Agency_ID
+                  WHERE gtp.Traveller_ID = ?
+                  ORDER BY gtp.Joined_At DESC";
+        $stmtGt = $this->conn->prepare($sqlGt);
+        if ($stmtGt) {
+            $stmtGt->bind_param("i", $traveller_id);
+            if ($stmtGt->execute()) {
+                $resGt = $stmtGt->get_result();
+                while ($r = $resGt->fetch_assoc()) $rows[] = $r;
+            }
+        }
+        return ["status" => "success", "timestamp" => time(), "data" => $rows];
+    }
+
+    public function cancelBooking($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["booking_id"])) return $this->error("Post parameters are missing");
+
+        $booking_id = (int)$data["booking_id"];
+        $traveller_id = (int)$_SESSION['type_id'];
+        $sql = "UPDATE BOOKING SET Booking_Status = 'cancelled' WHERE Booking_ID = ? AND Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $booking_id, $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function leaveGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["group_trip_id"])) return $this->error("Post parameters are missing");
+
+        $traveller_id = (int)$_SESSION['type_id'];
+        $group_trip_id = (int)$data["group_trip_id"];
+        $this->conn->query("CREATE TABLE IF NOT EXISTS GROUP_TRIP_PARTICIPANT (
+            Group_Trip_ID INT NOT NULL,
+            Traveller_ID INT NOT NULL,
+            Joined_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (Group_Trip_ID, Traveller_ID)
+        )");
+        $sql = "DELETE FROM GROUP_TRIP_PARTICIPANT WHERE Group_Trip_ID = ? AND Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $group_trip_id, $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+
+        $sql2 = "UPDATE GROUP_TRIP SET Participants_Current = GREATEST(0, Participants_Current - 1) WHERE Group_Trip_ID = ?";
+        $stmt2 = $this->conn->prepare($sql2);
+        if ($stmt2) {
+            $stmt2->bind_param("i", $group_trip_id);
+            $stmt2->execute();
+        }
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function getTravellerFeedback($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+
+        $traveller_id = (int)$_SESSION['type_id'];
+        $sql = "SELECT f.Feedback_ID, f.Rating, f.Comment, f.Last_Updated, f.Package_Type, p.Name AS Package_Name
+                FROM FEEDBACK f
+                JOIN PACKAGE p ON p.Package_ID = f.Package_ID
+                WHERE f.Traveller_ID = ?
+                ORDER BY f.Last_Updated DESC, f.Feedback_ID DESC";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        $rows = [];
+        while ($row = $result->fetch_assoc()) $rows[] = $row;
+        return ["status" => "success", "timestamp" => time(), "data" => $rows];
+    }
+
+    public function updateFeedback($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["feedback_id"], $data["comment"])) return $this->error("Post parameters are missing");
+
+        $feedback_id = (int)$data["feedback_id"];
+        $comment = trim($data["comment"]);
+        $traveller_id = (int)$_SESSION['type_id'];
+        $sql = "UPDATE FEEDBACK SET Comment = ?, Last_Updated = CURRENT_TIMESTAMP
+                WHERE Feedback_ID = ? AND Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("sii", $comment, $feedback_id, $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function deleteFeedback($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["feedback_id"])) return $this->error("Post parameters are missing");
+
+        $feedback_id = (int)$data["feedback_id"];
+        $traveller_id = (int)$_SESSION['type_id'];
+        $sql = "DELETE FROM FEEDBACK WHERE Feedback_ID = ? AND Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $feedback_id, $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function getAgencyGroupTrips($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        $agency_id = (int)$_SESSION['type_id'];
+        $sql = "SELECT * FROM GROUP_TRIP WHERE Agency_ID = ? ORDER BY Start_Date ASC, Group_Trip_ID DESC";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        $rows = [];
+        while ($row = $result->fetch_assoc()) $rows[] = $row;
+        return ["status" => "success", "timestamp" => time(), "data" => $rows];
+    }
+
+    public function getPublicGroupTrips($data) {
+        $sql = "SELECT gt.Group_Trip_ID, gt.Trip_Name, gt.Start_Date, gt.End_Date, gt.Join_Deadline,
+                       gt.Participants_Min, gt.Participants_Max, gt.Participants_Current, gt.Trip_Status,
+                       gt.Agency_ID, a.Company_Name
+                FROM GROUP_TRIP gt
+                JOIN AGENCY a ON a.Agency_ID = gt.Agency_ID
+                WHERE gt.Trip_Status IN ('open','planned')
+                ORDER BY gt.Start_Date ASC, gt.Group_Trip_ID DESC";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        $rows = [];
+        while ($row = $result->fetch_assoc()) $rows[] = $row;
+        return ["status" => "success", "timestamp" => time(), "data" => $rows];
+    }
+
+    public function joinGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["group_trip_id"])) return $this->error("Post parameters are missing");
+        $traveller_id = (int)$_SESSION['type_id'];
+        $group_trip_id = (int)$data["group_trip_id"];
+        if ($group_trip_id <= 0) return $this->error("Invalid group trip id");
+
+        $this->conn->query("CREATE TABLE IF NOT EXISTS GROUP_TRIP_PARTICIPANT (
+            Group_Trip_ID INT NOT NULL,
+            Traveller_ID INT NOT NULL,
+            Joined_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (Group_Trip_ID, Traveller_ID)
+        )");
+        $sqlExist = "SELECT Group_Trip_ID FROM GROUP_TRIP_PARTICIPANT WHERE Group_Trip_ID = ? AND Traveller_ID = ?";
+        $stmtExist = $this->conn->prepare($sqlExist);
+        if ($stmtExist) {
+            $stmtExist->bind_param("ii", $group_trip_id, $traveller_id);
+            if ($stmtExist->execute()) {
+                $resExist = $stmtExist->get_result();
+                if ($resExist->num_rows > 0) return $this->error("You already joined this trip");
+            }
+        }
+
+        $sql = "UPDATE GROUP_TRIP
+                SET Participants_Current = Participants_Current + 1
+                WHERE Group_Trip_ID = ? AND Participants_Current < Participants_Max AND Trip_Status = 'open'";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $group_trip_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        if ($stmt->affected_rows <= 0) return $this->error("Unable to join this trip right now");
+        $sqlIns = "INSERT INTO GROUP_TRIP_PARTICIPANT (Group_Trip_ID, Traveller_ID) VALUES (?, ?)";
+        $stmtIns = $this->conn->prepare($sqlIns);
+        if ($stmtIns) {
+            $stmtIns->bind_param("ii", $group_trip_id, $traveller_id);
+            $stmtIns->execute();
+        }
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function updateGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["group_trip_id"], $data["trip_name"]))
+            return $this->error("Post parameters are missing");
+
+        $group_trip_id = (int)$data["group_trip_id"];
+        $trip_name = trim($data["trip_name"]);
+        $agency_id = (int)$_SESSION['type_id'];
+        $sql = "UPDATE GROUP_TRIP SET Trip_Name = ? WHERE Group_Trip_ID = ? AND Agency_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("sii", $trip_name, $group_trip_id, $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function cancelGroupTrip($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["group_trip_id"]))
+            return $this->error("Post parameters are missing");
+
+        $group_trip_id = (int)$data["group_trip_id"];
+        $agency_id = (int)$_SESSION['type_id'];
+        $sql = "UPDATE GROUP_TRIP SET Trip_Status = 'cancelled' WHERE Group_Trip_ID = ? AND Agency_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $group_trip_id, $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function getAgencyBookings($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        $agency_id = (int)$_SESSION['type_id'];
+        $sql = "SELECT b.Booking_ID, b.Booking_Date, b.Booking_Status, b.Number_Of_People, b.Total_Price,
+                       t.First_Name, t.Surname, p.Name AS Package_Name, b.Package_Type
+                FROM BOOKING b
+                JOIN PACKAGE p ON p.Package_ID = b.Package_ID
+                JOIN TRAVELLER t ON t.Traveller_ID = b.Traveller_ID
+                WHERE p.Agency_ID = ?
+                ORDER BY b.Booking_Date DESC, b.Booking_ID DESC";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        $rows = [];
+        while ($row = $result->fetch_assoc()) $rows[] = $row;
+        return ["status" => "success", "timestamp" => time(), "data" => $rows];
+    }
+
+    public function getAgencyPackages($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        $agency_id = (int)$_SESSION['type_id'];
+
+        $sql = "SELECT p.Package_ID, p.Agency_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status,
+                       ROUND(AVG(f.Rating), 1) AS Avg_Rating, COUNT(DISTINCT f.Feedback_ID) AS Review_Count,
+                       COUNT(DISTINCT b.Booking_ID) AS Total_Bookings
+                FROM PACKAGE p
+                LEFT JOIN FEEDBACK f ON p.Package_ID = f.Package_ID
+                LEFT JOIN BOOKING b ON p.Package_ID = b.Package_ID
+                WHERE p.Agency_ID = ?
+                GROUP BY p.Package_ID, p.Agency_ID, p.Name, p.Description, p.Base_Price, p.Duration, p.Package_Status
+                ORDER BY p.Package_ID DESC";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        $rows = [];
+        while ($row = $result->fetch_assoc()) $rows[] = $row;
+        return ["status" => "success", "timestamp" => time(), "data" => $rows];
+    }
+
+    public function deletePackage($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["package_id"])) return $this->error("Post parameters are missing");
+
+        $package_id = (int)$data["package_id"];
+        $agency_id = (int)$_SESSION['type_id'];
+        $sql = "DELETE FROM PACKAGE WHERE Package_ID = ? AND Agency_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $package_id, $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function updatePackage($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["package_id"], $data["name"], $data["description"], $data["base_price"], $data["duration"], $data["status"]))
+            return $this->error("Post parameters are missing");
+
+        $package_id = (int)$data["package_id"];
+        $name = trim($data["name"]);
+        $description = trim($data["description"]);
+        $price = (float)$data["base_price"];
+        $duration = $data["duration"];
+        $status = trim($data["status"]);
+        $agency_id = (int)$_SESSION['type_id'];
+
+        $sql = "UPDATE PACKAGE SET Name = ?, Description = ?, Base_Price = ?, Duration = ?, Package_Status = ?
+                WHERE Package_ID = ? AND Agency_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ssdssii", $name, $description, $price, $duration, $status, $package_id, $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function getAgencyProfile($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+
+        $agency_id = (int)$_SESSION['type_id'];
+        $user_id = (int)$_SESSION['user_id'];
+        $sql = "SELECT a.Company_Name, a.Description, a.Email, u.Username
+                FROM AGENCY a
+                JOIN USER u ON u.Agency_ID = a.Agency_ID
+                WHERE a.Agency_ID = ? AND u.User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $agency_id, $user_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) return $this->error("Profile not found", "db");
+        return ["status" => "success", "timestamp" => time(), "data" => $result->fetch_assoc()];
+    }
+
+    public function updateAgencyProfile($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["company_name"], $data["description"], $data["email"], $data["username"]))
+            return $this->error("Post parameters are missing");
+
+        $agency_id = (int)$_SESSION['type_id'];
+        $user_id = (int)$_SESSION['user_id'];
+        $company_name = trim($data["company_name"]);
+        $description = trim($data["description"]);
+        $email = trim($data["email"]);
+        $username = trim($data["username"]);
+
+        $sql = "UPDATE AGENCY SET Company_Name = ?, Description = ?, Email = ? WHERE Agency_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("sssi", $company_name, $description, $email, $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+
+        $sql = "UPDATE USER SET Username = ? WHERE User_ID = ? AND Agency_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("sii", $username, $user_id, $agency_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $_SESSION['username'] = $username;
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function updateAgencyPassword($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "agency_staff")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["current_password"], $data["new_password"]))
+            return $this->error("Post parameters are missing");
+
+        $user_id = (int)$_SESSION['user_id'];
+        $sql = "SELECT Password FROM USER WHERE User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $user_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) return $this->error("User not found", "db");
+        $row = $result->fetch_assoc();
+        if (!password_verify($data["current_password"], $row["Password"]))
+            return $this->error("Invalid current password", "cred");
+
+        $newHashed = password_hash($data["new_password"], PASSWORD_BCRYPT);
+        $sql = "UPDATE USER SET Password = ? WHERE User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("si", $newHashed, $user_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function getTravellerProfile($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+
+        $traveller_id = (int)$_SESSION['type_id'];
+        $user_id = (int)$_SESSION['user_id'];
+        $sql = "SELECT t.First_Name, t.Mid_Initial, t.Surname, t.Email, t.Country_Of_Residence, u.Username
+                FROM TRAVELLER t
+                JOIN USER u ON u.Traveller_ID = t.Traveller_ID
+                WHERE t.Traveller_ID = ? AND u.User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("ii", $traveller_id, $user_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) return $this->error("Profile not found", "db");
+        return ["status" => "success", "timestamp" => time(), "data" => $result->fetch_assoc()];
+    }
+
+    public function updateTravellerProfile($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type'], $_SESSION['type_id']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["first_name"], $data["surname"], $data["mid_initial"], $data["email"], $data["country"], $data["username"]))
+            return $this->error("Post parameters are missing");
+
+        $traveller_id = (int)$_SESSION['type_id'];
+        $user_id = (int)$_SESSION['user_id'];
+        $first = trim($data["first_name"]);
+        $mid = trim($data["mid_initial"]);
+        $surname = trim($data["surname"]);
+        $email = trim($data["email"]);
+        $country = trim($data["country"]);
+        $username = trim($data["username"]);
+
+        $sql = "UPDATE TRAVELLER SET First_Name = ?, Mid_Initial = ?, Surname = ?, Email = ?, Country_Of_Residence = ? WHERE Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("sssssi", $first, $mid, $surname, $email, $country, $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+
+        $sql = "UPDATE USER SET Username = ? WHERE User_ID = ? AND Traveller_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("sii", $username, $user_id, $traveller_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $_SESSION['username'] = $username;
+        return ["status" => "success", "timestamp" => time()];
+    }
+
+    public function updateTravellerPassword($data) {
+        if (!isset($_SESSION['user_id'], $_SESSION['user_type']))
+            return $this->error("Not authenticated", "cred");
+        if ($_SESSION['user_type'] !== "traveller")
+            return $this->error("Invalid user type", "fbdn");
+        if (!isset($data["current_password"], $data["new_password"]))
+            return $this->error("Post parameters are missing");
+
+        $user_id = (int)$_SESSION['user_id'];
+        $sql = "SELECT Password FROM USER WHERE User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("i", $user_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) return $this->error("User not found", "db");
+        $row = $result->fetch_assoc();
+        if (!password_verify($data["current_password"], $row["Password"]))
+            return $this->error("Invalid current password", "cred");
+
+        $newHashed = password_hash($data["new_password"], PASSWORD_BCRYPT);
+        $sql = "UPDATE USER SET Password = ? WHERE User_ID = ?";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) return $this->error("Connection failed", "db");
+        $stmt->bind_param("si", $newHashed, $user_id);
+        if (!$stmt->execute()) return $this->error("Query failed", "db");
+        return ["status" => "success", "timestamp" => time()];
     }
 
     private function error($msg, $type = "request") {

@@ -1,4 +1,4 @@
-const API_URL = 'api/api.php';
+const API_URL = '../api/api.php'; // CHANGED: fixed API path from /pages/*.html
 
 let currentUser = null;
 let editPackageId = null;
@@ -51,9 +51,13 @@ function showToast(msg) {
 
 function collectFormData(status) {
   const name        = document.getElementById('pkg-name')?.value.trim();
-  const description = document.querySelector('textarea')?.value.trim();
-  const basePrice   = document.querySelector('input[type=number]')?.value;
-  const duration    = document.querySelectorAll('input[type=number]')[1]?.value;
+  const sections = document.querySelectorAll('.form-section');
+  const basicSection = sections[0] || null;
+  const description = basicSection?.querySelector('textarea')?.value.trim();
+  // CHANGED: use the actual first section node, not :first-of-type selector.
+  const basicNumberInputs = basicSection ? basicSection.querySelectorAll('input[type=number]') : [];
+  const basePrice   = basicNumberInputs[0]?.value;
+  const duration    = basicNumberInputs[1]?.value;
 
   if (!name || !description || !basePrice || !duration) {
     alert('Please fill in all required fields.');
@@ -86,6 +90,23 @@ async function submitPackage(formData) {
 
   if (res.status === 'success') {
     const pid = editPackageId || res.data?.package_id;
+    if (!pid) {
+      alert('Package was created but package id was not returned.');
+      return;
+    }
+
+    // CHANGED: map package to current agency via AGENCY_DESIGNS_PACKAGE.
+    if (!editPackageId) {
+      const mapRes = await callAPI({
+        type: 'AddPackageAgency',
+        agency_id: Number(currentUser.type_id),
+        package_id: Number(pid)
+      });
+      if (mapRes.status !== 'success') {
+        alert(`Package created but agency link failed: ${mapRes.message || 'Unknown error'}`);
+        return;
+      }
+    }
 
     // add package options
     const optionRows = document.querySelectorAll('#options-list .option-row');
