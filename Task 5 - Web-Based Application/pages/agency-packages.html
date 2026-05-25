@@ -208,30 +208,7 @@
   </div>
 </footer>
 
-<script>
-function showDelete(name) {
-  document.getElementById('delete-pkg-name').textContent = name;
-  document.getElementById('delete-modal').classList.add('show');
-}
-function closeDelete() {
-  document.getElementById('delete-modal').classList.remove('show');
-}
-function confirmDelete() {
-  closeDelete();
-  alert('Package deleted. (In production, this calls delete_package.php)');
-}
-function publishPkg(btn) {
-  const row = btn.closest('.pkg-row');
-  row.querySelector('.badge-amber').className = 'badge badge-green';
-  row.querySelector('.badge-green').textContent = 'Active';
-  const small = row.querySelector('.text-xs.text-muted');
-  if(small) small.textContent = '0 bookings';
-  btn.textContent = 'Unpublish';
-  btn.classList.remove('btn-primary');
-}
-document.getElementById('delete-modal').addEventListener('click', function(e) {
-  if(e.target === this) closeDelete();
-});
-</script>
+<script src="../js/agency-packages.js"></script>
 </body>
 </html>
+
